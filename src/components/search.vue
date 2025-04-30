@@ -9,13 +9,34 @@
                 d="M12 22s8-4.5 8-12a8 8 0 10-16 0c0 7.5 8 12 8 12z"/>
         </svg>
         <select v-model="destination" class="dropdown">
-          <option disabled value="">Destination</option>
-          <option>Phnom Penh</option>
-          <option>Siem Reap</option>
-          <option>Sihanoukville</option>
-          <option>Battambang</option>
-          <option>Kampot</option>
+            <option disabled value="">Destination</option>
+            <option>Phnom Penh</option>
+            <option>Banteay Meanchey</option>
+            <option>Battambang</option>
+            <option>Kampong Cham</option>
+            <option>Kampong Chhnang</option>
+            <option>Kampong Speu</option>
+            <option>Kampong Thom</option>
+            <option>Kampot</option>
+            <option>Kandal</option>
+            <option>Koh Kong</option>
+            <option>Kratie</option>
+            <option>Mondulkiri</option>
+            <option>Oddar Meanchey</option>
+            <option>Pailin</option>
+            <option>Preah Vihear</option>
+            <option>Preah Sihanouk</option>
+            <option>Prey Veng</option>
+            <option>Pursat</option>
+            <option>Ratanakiri</option>
+            <option>Siem Reap</option>
+            <option>Stung Treng</option>
+            <option>Svay Rieng</option>
+            <option>Takeo</option>
+            <option>Tboung Khmum</option>
+            <option>Kep</option>
         </select>
+
         <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M19 9l-7 7-7-7"/>
@@ -71,7 +92,7 @@
     align-items: center;
     background: white;
     padding: 12px 20px;
-    border-radius: 20px;
+    border-radius: 12px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 1000px;
@@ -107,7 +128,7 @@
     appearance: none;
     border: none;
     background: transparent;
-    padding-right: 24px;
+    padding: 10px 20px 10px 30px;
     font-size: 14px;
     font-weight: 500;
     color: #333;
@@ -136,20 +157,19 @@
   
   /* Button */
   .search-button {
-    background-color: #555;
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    margin-left: 16px;
-    border-radius: 999px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  
-  .search-button:hover {
-    background-color: #333;
-  }
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.search-button:hover {
+  background-color: #333;
+}
   @media (max-width: 768px) {
   .search-bar {
     flex-direction: column;

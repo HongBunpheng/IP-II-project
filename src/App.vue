@@ -1,18 +1,28 @@
 <template>
   <div id="app">
-    <search />
+    <!-- <JournalBox /> -->
+    <!-- <ChatBot /> -->
+    <Search />
+    <!-- <calendar /> -->
+
   </div>
 </template>
 
 <script>
 
-import search from './components/search.vue'
+// import ChatBot from './components/chatBot.vue';
+// import JournalBox from './components/JournalBox.vue';
+// import Calendar from './components/KhmerEventCalendar.vue';
+import Search from './components/search.vue';
 
 
 export default {
   name: 'App',
   components: {
-    search,
+    // ChatBot,
+    // JournalBox,
+    // Calendar,
+    Search,
   }
 }
 </script>
