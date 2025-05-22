@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 // import Province from '@/components/Province.vue'
-// import ChooseTransport from '@/views/ChooseTransport.vue'
-import LandingPage from '@/views/LandingPage.vue'
-import CityDestination from '@/views/CityDestination.vue'
+import ChooseTransport from '@/views/ChooseTransport.vue'
+// import LandingPage from '@/views/LandingPage.vue'
+// import CityDestination from '@/views/CityDestination.vue'
 
 const routes = [
   // {
@@ -11,21 +11,25 @@ const routes = [
   //   name: 'Province',
   //   component: Province
   // },
-  // {
-    // path: '/choose-transport',
-    // name: 'ChooseTransport',
-    // component: ChooseTransport
-  // },
-  {
+   {
     path: '/',
-    name: 'LandingPage',
-    component: LandingPage
+    redirect: '/choose-transport'
   },
   {
-    path: '/cityDestination',
-    name: 'CityDestination',
-    component: CityDestination
+    path: '/choose-transport',
+    name: 'ChooseTransport',
+    component: ChooseTransport
   }
+  // {
+  //   path: '/',
+  //   name: 'LandingPage',
+  //   component: LandingPage
+  // },
+  // {
+  //   path: '/cityDestination',
+  //   name: 'CityDestination',
+  //   component: CityDestination
+  // }
   
 ]
 
