@@ -1,5 +1,6 @@
 <template>
   <div class="choose-transport">
+    <Header />
     <!-- Header Section -->
     <div class="header-section">
       <img src="https://yimbyqld.com.au/wp-content/uploads/2023/06/gold-coast-light-rail.png" alt="Train" class="header-image" />
@@ -39,11 +40,14 @@
         :price="item.price"
       />
     </div>
+    <Footer />
   </div>
 </template>
 
 <script setup>
 import Transportation from '@/components/Transportation.vue'
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
 
 const transports = [
   {
