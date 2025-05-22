@@ -2,7 +2,7 @@
   <div class="choose-transport">
     <!-- Header Section -->
     <div class="header-section">
-      <img src="@/assets/transport.png" alt="Train" class="header-image" />
+      <img src="https://yimbyqld.com.au/wp-content/uploads/2023/06/gold-coast-light-rail.png" alt="Train" class="header-image" />
       <div class="header-text">
         <h1>Your Journey<br/>Of Exploration<br/>Begins Here!</h1>
         <p>
@@ -34,11 +34,17 @@
       >
         <div class="card-body">
           <div class="time-info">
-            <p>{{ item.fromTime }}</p>
+                <span>{{ item.fromTime }}</span>
+                <div class="station-line">
+                  <div class="station-dot"></div>
+                </div>
+                <span>{{ item.toTime }}</span>
+          </div>
+          <div class="station-details">
             <p class="bold">{{ item.from }}</p>
-            <div class="line"></div>
-            <p>{{ item.toTime }}</p>
-            <p class="bold">{{ item.to }}</p>
+            <div class="line">
+              <p class="bold">{{ item.to }}</p>
+            </div>
           </div>
           <div class="card-actions">
             <button>Book Now</button>
@@ -99,21 +105,24 @@ const transportOptions = [
   width: 100%;
   display: flex;
   justify-content: center;
+  overflow: hidden;
   margin-top: 40px;
 }
 
 .header-image {
   width: 95%;
   height: 430px;
-  /* object-fit: cover; */
+  /* max-width: 1200px; */
+  object-fit: cover;
   border-radius: 50px;
   display: block;
+  /* image-rendering: auto; */
 }
 
 .header-text {
   position: absolute;
   top: 30px;
-  /* left: 50%; */
+  left: 50px;
   right: 40%;
   color: white;
   width: 90%;
@@ -131,6 +140,7 @@ const transportOptions = [
   font-size: 2rem;
   font-weight: bold;
   line-height: 1.3;
+  margin: 0;
 }
 
 .header-text p {
@@ -139,8 +149,11 @@ const transportOptions = [
 }
 
 .back-button {
-  font-size: 1.8rem;
-  padding: 20px;
+  position: absolute;
+  margin-top: 30px;
+  left: 50px;
+  font-size: 3rem;
+  /* padding: 20px; */
   cursor: pointer;
 }
 
@@ -162,7 +175,7 @@ const transportOptions = [
 }
 
 .sub {
-  font-weight: 600;
+  font-weight: bold;
   margin-top: 10px;
 }
 
@@ -187,18 +200,55 @@ const transportOptions = [
 }
 
 .time-info {
-  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60px;
+  position: relative;
+  font-size: 13px;
+  color: #333;
 }
+
 
 .bold {
   font-weight: bold;
   font-size: 16px;
 }
 
-.line {
+/* .line {
   border-left: 2px solid green;
   height: 30px;
   margin: 8px 0;
+} */
+.station-details {
+  display: flex;
+  position:absolute;
+  margin-left: 40rem;
+  flex-direction: column;
+  justify-content: left;
+  height: 75px; /* Match the visual height of .time-info */
+  left: 0px;
+}
+
+
+.station-line {
+  height: 55px;
+  width: 2px;
+  background-color: #00b894;
+  /* margin: 5px 0; */
+  left: 50px;
+  position: relative;
+}
+
+.station-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #00b894;
+  border-radius: 50%;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .card-actions {
@@ -252,4 +302,20 @@ const transportOptions = [
   font-size: 24px;
   font-weight: bold;
 }
+@media (max-width: 768px) {
+  .header-text {
+    left: 20px;
+    top: 20px;
+    max-width: 90%;
+  }
+
+  .header-text h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-text p {
+    font-size: 13px;
+  }
+}
+
 </style>

@@ -1,7 +1,6 @@
 <script setup>
 import Province from './components/Province.vue'
 import Transportation from './components/Transportation.vue';
-// import the image file so Vite can bundle it
 import angkor from '@/assets/angkor.jpg'
 
 import { useRoute } from 'vue-router'
@@ -26,12 +25,11 @@ const route = useRoute()
 
 <template>
   <div>
-    <!-- <router-link to="/choose-transport">Go to Choose Transport</router-link> -->
      <router-link
       v-if="route.path !== '/choose-transport'"
       to="/choose-transport"
     >
-      Go to Choose Transport
+      <!-- Go to Choose Transport -->
     </router-link>
     <router-view />
   </div>
