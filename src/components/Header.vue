@@ -7,7 +7,7 @@
       </div>
 
       <div class="logo">
-        <img src="@/assets/picture/logo.png" alt="TripTrek Logo" />
+        <img src="@/assets/logo.png" alt="TripTrek Logo" />
       </div>
 
       <div class="other-links">
@@ -84,6 +84,8 @@ export default {
 }
 
 .logo {
+  width: 100px;
+  height: auto;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
