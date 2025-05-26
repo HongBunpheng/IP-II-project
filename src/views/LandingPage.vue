@@ -1,190 +1,189 @@
 <template>
   <div class="landing-page">
-    <!-- Nav -->
-    <header class="top-bar">
-      <nav class="nav-links">
-        <router-link to="#">Explore</router-link>
-        <router-link to="#">Journal</router-link>
-        <router-link to="#">About us</router-link>
-      </nav>
-      <div class="right-tools">
-        <button class="theme-toggle">🌙</button>
-        <!-- <i class="ri-moon-clear-fill"></i> -->
-        <button class="login-button">Login</button>
-        <button class="weather"><i class="ri-moon-cloudy-line"></i></button>
+    <!-- Navigation Bar -->
+    <header class="nav-bar">
+      <div class="nav-left">
+        <div class="nav-links">
+          <a href="#">Explore</a>
+          <a href="#">Journal</a>
+          <a href="#">About us</a>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button class="icon-btn" title="Toggle Theme"><i class="ri-moon-clear-line"></i></button>
+        <button class="icon-btn" title="Weather"><i class="ri-moon-cloudy-line"></i></button>
+        <button class="login-btn">Login</button>
       </div>
     </header>
 
     <!-- Hero Text -->
     <div class="hero-text">
       <h1>
-        <span>Discover New Places and Create</span><br>
-          <span>Unforgettable Memories together</span>
-        <span></span>
+        Discover New Places and Create<br />
+        Unforgettable Memories<br />
+        together
       </h1>
     </div>
 
-    <!-- Image Columns -->
-    <div class="image-columns">
-      <div class="image-box" style="background-image: url('/src/assets/waterfall.png')">
-        <div class="label">Mountain</div>
-        <span>→</span>
-      </div>
-      <div class="image-box" style="background-image: url('/src/assets/temple.png')">
-        <div class="label">Temple</div>
-        <span>→</span>
-      </div>
-      <div class="image-box" style="background-image: url('/src/assets/river.png')">
-        <div class="label">SEA</div>
-        <span>→</span>
-      </div>
+    <!-- Image Cards -->
+    <div class="card-container">
+      <Newplace image="mountain.png" label="Mountain" />
+      <Newplace image="temple.png" label="Temple" />
+      <Newplace image="sea.png" label="SEA" />
     </div>
   </div>
 </template>
 
 <script setup>
-// No script yet, can be enhanced later with interactivity
+import Newplace from '@/components/Newplace.vue';
 </script>
 
 <style scoped>
 .landing-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  color: white;
-  font-family: 'Segoe UI', sans-serif;
   position: relative;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  background-color: black;
 }
 
-.top-bar {
+/* NAVIGATION BAR */
+.nav-bar {
   position: absolute;
-  top: 0;
-  width: 100%;
-  padding: 20px 40px;
+  top: 20px;
+  left: 30px;
+  right: 30px;
+  z-index: 20;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 2;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.nav-links {
+.nav-left {
+  flex-grow: 1;
+}
+
+ .nav-links {
   display: flex;
-  width: 30rem;
+  width: 500px;
+  gap: 2rem;
+  font-size: 1.7rem;
+  font-weight: bold;
   justify-content: space-between;
-  font-size: 20px;
-  gap: 30px;
-  /* background-color: red; */
 }
-
 
 .nav-links a {
   color: white;
   text-decoration: none;
-  font-weight: 500;
-  /* background-color: aquamarine; */
-  cursor: pointer;
-}
-.nav-links a:hover{
-  /* background-color: rgb(172, 233, 213); */
-  cursor: pointer;
-  border-radius: 5px;
+  position: relative;
+  padding-bottom: 4px;
+  transition: all 0.3s ease;
 }
 
-.right-tools {
-  display: flex;
-  gap: 15px;
-}
-
-.login-button {
-  margin-right: 4rem;
-    margin-top: 3px;
-  background: white;
-  color: black;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
-}
-.weather{
-    margin-right: 10rem;
-    margin-top: 3px;
-    font-size: 1.5rem;
-    right: 55.5px;
-    position: absolute;
-    color: black;
-    background: none;
-    border: none;
-    /* font-weight: bold; */
-
-}
-
-.theme-toggle {
+.nav-links a::after {
+  content: '';
   position: absolute;
-  right: 11rem;
-  background: transparent;
-  color: white;
-  border: none;
-  font-size: 1.4rem;
-  cursor: pointer;
+  width: 0%;
+  height: 2px;
+  left: 0;
+  bottom: 0;
+  background-color: white;
+  transition: width 0.3s ease;
 }
 
-.hero-text {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  overflow: hidden;
-  text-align: center;
-  z-index: 2;
-}
-
-.hero-text h1 {
-  width: 60rem;
-  height: 20rem;
-  font-size: 4rem;
-  line-height: 1.2;
-  font-weight: bold;
-  margin-top: 10rem;
-  /* background-color: red; */
-}
-
-.image-columns {
-  display: flex;
-  height: 100vh;
+.nav-links a:hover::after {
   width: 100%;
 }
 
-.image-box {
-  flex: 1;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 30px;
+.nav-links a:hover {
+  color: #ccc;
 }
 
-.label {
-  font-size: 1.6rem;
-  font-weight: bold;
-  right: 10rem;
-  margin-bottom: 40px;
-  /* background-color: rgba(0, 0, 0, 0.4); */
-  padding: 10px 20px;
-  border-radius: 20px;
-  position: relative;
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
-.label:hover{
-  background-color: aquamarine;
+
+/* ICON BUTTONS */
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
   cursor: pointer;
 }
-.image-columns span{
-  bottom: 20px;
-  font-size: 3rem;
-  left: 28rem;
+
+/* LOGIN BUTTON */
+.login-btn {
+  background: white;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 18px;
+  cursor: pointer;
+}
+
+/* HERO TEXT */
+.hero-text {
   position: absolute;
+  width: 80rem;
+  z-index: 10;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  font-size: 2.3rem;
+  /* font-weight: bold; */
+}
+
+/* IMAGE CARDS */
+.card-container {
+  display: flex;
+  height: 100vh;
+}
+
+.card-container > * {
+  flex: 1;
+}
+
+/* RESPONSIVE STYLES */
+@media (max-width: 768px) {
+  .hero-text {
+    font-size: 1.5rem;
+    width: 90%;
+    padding: 0 1rem;
+  }
+
+  .nav-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .nav-right {
+    flex-direction: row;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .card-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .card-container > * {
+    height: 33vh;
+  }
 }
 </style>
