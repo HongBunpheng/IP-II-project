@@ -48,6 +48,8 @@ const imageUrl = props.image
   bottom: 6rem;
   color: white;
   font-size: 2.8rem;
+    justify-content: space-between;
+
   /* font-weight: 600; */
 }
 

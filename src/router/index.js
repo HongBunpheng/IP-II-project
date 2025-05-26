@@ -2,13 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // import Province from '@/components/Province.vue'
 // import ChooseTransport from '@/views/ChooseTransport.vue'
-import LandingPage from '@/views/LandingPage.vue'
+import Landingpage from '@/views/Landingpage.vue'
 // import CityDestination from '@/views/CityDestination.vue'
 const routes = [
   {
     path: '/',
-    name: 'LandingPage',
-    component: LandingPage
+    name: 'Landingpage',
+    component: Landingpage
   }
   // {
   //   path: '/province',

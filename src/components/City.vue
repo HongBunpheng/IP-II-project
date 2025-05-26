@@ -1,30 +1,36 @@
 <template>
   <div class="city-card">
-    <img src="@/assets/statue.jpg" alt="City Panel" class="city-image" />
+    <img :src="imageUrl" alt="city image" class="thumbnail" />
   </div>
 </template>
 
 <script setup>
-// No props yet, static for now — you can extend with props later
+const props = defineProps({
+  image: String
+});
+
+const imageUrl = props.image
+  ? new URL(`../assets/${props.image}`, import.meta.url).href
+  : null;
 </script>
 
 <style scoped>
 .city-card {
-  width: 140px;
-  height: 240px;
-  border-radius: 15px;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
   overflow: hidden;
-  /* backdrop-filter: blur(6px); */
-  /* background: rgba(255, 255, 255, 0.1); */
-  box-shadow:rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease;
+  background: red;
+  cursor: pointer;
 }
 
 .city-card:hover {
-  transform: scale(1.03);
+  transform: scale(1.05);
 }
 
-.city-image {
+.thumbnail {
   width: 100%;
   height: 100%;
   object-fit: cover;

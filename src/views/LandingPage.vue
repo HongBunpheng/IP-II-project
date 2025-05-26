@@ -1,5 +1,15 @@
+<script setup>
+import Newplace from '@/components/Newplace.vue';
+import Cityslider from './Cityslider.vue';
+</script>
+
 <template>
   <div class="landing-page">
+    <!-- Logo -->
+    <div class="logo">
+      <img src="/src/assets/logo.png" alt="TripTrek Logo" />
+    </div>
+
     <!-- Navigation Bar -->
     <header class="nav-bar">
       <div class="nav-left">
@@ -31,23 +41,38 @@
       <Newplace image="temple.png" label="Temple" />
       <Newplace image="sea.png" label="SEA" />
     </div>
+
+    <!-- New City Section -->
+    <div class="newcity-section">
+      <Cityslider />
+    </div>
   </div>
 </template>
 
-<script setup>
-import Newplace from '@/components/Newplace.vue';
-</script>
-
 <style scoped>
 .landing-page {
-  position: relative;
-  height: 100vh;
+  width: 100%;
   font-family: 'Poppins', sans-serif;
-  overflow: hidden;
-  background-color: black;
+  overflow-x: hidden;
+  /* background-color: #000; */
+  color: white;
 }
 
-/* NAVIGATION BAR */
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+}
+
+.logo img {
+  height: 4.5rem;
+  margin-top: 8px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
 .nav-bar {
   position: absolute;
   top: 20px;
@@ -57,29 +82,24 @@ import Newplace from '@/components/Newplace.vue';
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   gap: 1rem;
 }
 
-.nav-left {
-  flex-grow: 1;
-}
-
- .nav-links {
+.nav-links {
   display: flex;
-  width: 500px;
-  gap: 2rem;
-  font-size: 1.7rem;
-  font-weight: bold;
+  gap: 7.5rem;
+  font-size: 1.2rem;
   justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .nav-links a {
+  font-weight: bold;
+  font-size: 22px;
   color: white;
   text-decoration: none;
   position: relative;
-  padding-bottom: 4px;
-  transition: all 0.3s ease;
 }
 
 .nav-links a::after {
@@ -88,7 +108,7 @@ import Newplace from '@/components/Newplace.vue';
   width: 0%;
   height: 2px;
   left: 0;
-  bottom: 0;
+  bottom: -4px;
   background-color: white;
   transition: width 0.3s ease;
 }
@@ -97,17 +117,12 @@ import Newplace from '@/components/Newplace.vue';
   width: 100%;
 }
 
-.nav-links a:hover {
-  color: #ccc;
-}
-
 .nav-right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-/* ICON BUTTONS */
 .icon-btn {
   background: transparent;
   border: none;
@@ -116,7 +131,6 @@ import Newplace from '@/components/Newplace.vue';
   cursor: pointer;
 }
 
-/* LOGIN BUTTON */
 .login-btn {
   background: white;
   color: black;
@@ -127,21 +141,20 @@ import Newplace from '@/components/Newplace.vue';
   cursor: pointer;
 }
 
-/* HERO TEXT */
 .hero-text {
   position: absolute;
-  width: 80rem;
-  z-index: 10;
+  width: 100%;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
   text-align: center;
-  color: white;
-  font-size: 2.3rem;
-  /* font-weight: bold; */
+  z-index: 10;
 }
 
-/* IMAGE CARDS */
+.hero-text h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
 .card-container {
   display: flex;
   height: 100vh;
@@ -151,12 +164,27 @@ import Newplace from '@/components/Newplace.vue';
   flex: 1;
 }
 
-/* RESPONSIVE STYLES */
+.newcity-section {
+  margin-top: 5rem;
+  padding: 2rem;
+  background-color: white;
+  color: black;
+  border-top: 2px solid #eee;
+}
+
 @media (max-width: 768px) {
-  .hero-text {
-    font-size: 1.5rem;
-    width: 90%;
-    padding: 0 1rem;
+  .hero-text h1 {
+    font-size: 1.8rem;
+  }
+
+  .card-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .card-container > * {
+    height: 33vh;
+    
   }
 
   .nav-bar {
@@ -167,23 +195,7 @@ import Newplace from '@/components/Newplace.vue';
 
   .nav-links {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
-  }
-
-  .nav-right {
-    flex-direction: row;
-    gap: 0.8rem;
-    margin-top: 0.5rem;
-  }
-
-  .card-container {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .card-container > * {
-    height: 33vh;
+    gap: 1rem;
   }
 }
 </style>
