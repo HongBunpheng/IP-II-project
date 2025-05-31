@@ -27,8 +27,9 @@
                     <p class="description">{{ journal.description }}</p>
 
                     <!-- Read More -->
-                    <a :href="journal.link" class="read-more">
-                        Read Full Post <span class="arrow">↗</span>
+                    <a :href="journal.link" class="read-more" to="/ReadFullPost">
+                        <router-link to="/ReadFullPost">Read Full Post</router-link>
+                        <span class="arrow">↗</span>
                     </a>
                 </div>
             </div>
@@ -43,28 +44,117 @@ export default {
     data() {
         return {
             journals: [
-                {
-                    image: '/src/assets/view.png',
-                    authorImage: '/src/assets/profile.png',
-                    authorName: 'Mina',
-                    location: 'Kep Province',
-                    date: 'Feb 27, 2023',
-                    readTime: '8 min read',
-                    title: 'The Best Time to visit Sea',
-                    description: 'I had always been interested in Kep, so I decided to take a year-long journey to Cambodia...',
-                    link: '#'
-                },
-                {
-                    image: '/src/assets/view1.png',
-                    authorImage: '/src/assets/p2.png',
-                    authorName: 'Renald DeVor',
-                    location: 'Waterfall in Phnom Kulen, Siem Reap, Cambodia',
-                    date: 'Feb 27, 2023',
-                    readTime: '5 min read',
-                    title: 'The Best Time to visit Phnom Kulen',
-                    description: 'I had just graduated from college and decided to take a six-month solo trip...',
-                    link: '#'
-                }
+{
+          image: '/src/assets/i1.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Mina',
+          location: 'Kep Province',
+          date: 'Feb 27, 2023',
+          readTime: '8 min read',
+          title: 'The Best Time to visit Sea',
+          description: 'I had always been interested in Kep...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i2.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i3.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i4.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i5.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i6.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i7.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i8.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i9.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        },
+        {
+          image: '/src/assets/i10.png',
+          authorImage: '/src/assets/profile.png',
+          authorName: 'Renald DeVor',
+          location: 'Phnom Kulen',
+          date: 'Feb 27, 2023',
+          readTime: '5 min read',
+          title: 'The Best Time to visit Phnom Kulen',
+          description: 'Phnom Kulen is a national park in Cambodia...',
+          link: '#'
+        }
+
             ]
         }
     }
@@ -80,9 +170,10 @@ export default {
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
     gap: 40px;
 }
+
 
 .journal-box {
     background: #fff;

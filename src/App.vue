@@ -18,6 +18,7 @@ import Transportation from './components/Transportation.vue';
 import Province from './components/Province.vue';
 
 
+
   export default {
     name: 'App',
     components: {
