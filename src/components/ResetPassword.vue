@@ -9,65 +9,101 @@
             <p>With just one click, access all the must-have essentials you need for your day-to-day life.</p>
           </div>
         </div>
+
         <!-- Right Frame -->
         <div class="right-frame">
           <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
           <a href="#" class="back-btn" @click="$emit('go-back')">
-    <font-awesome-icon :icon="['far', 'circle-left']" /> Back</a>
-    
+            <font-awesome-icon :icon="['far', 'circle-left']" /> Back
+          </a>
+
           <h2 class="title">Reset Password</h2>
-          <p class="subtitle">Enter your New Password to access your account</p>
+          <p class="subtitle">Enter your new password to access your account</p>
+
           <form @submit.prevent="handleResetPassword">
             <label>New Password</label>
             <input type="password" placeholder="Enter your new password" v-model="newPassword" />
             <div v-if="loginError.password" class="error-message">{{ loginError.password }}</div>
+
             <label>Confirm Password</label>
             <input type="password" placeholder="Confirm your new password" v-model="confirmPassword" />
             <div v-if="loginError.confirmpassword" class="error-message">{{ loginError.confirmpassword }}</div>
+
             <div v-if="loginError.general" class="error-message">{{ loginError.general }}</div>
-           
+
             <button type="submit" class="resetpw-btn">Reset Password</button>
-        </form>
-  
+          </form>
+
           <div class="divider"><span>Or</span></div>
-  
+
           <div class="social-login">
-          <a href="#" class="social-icon">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" />
-          </a>
-          <a href="#" class="social-icon">
-            <img src="https://www.svgrepo.com/show/448224/facebook.svg" />
-          </a>
-          <a href="#" class="social-icon">
-            <img src="https://www.svgrepo.com/show/475689/twitter-color.svg" />
-          </a>
-        </div>
-  
-        <p class="login">
-          Already have an account?
-          <a href="#" @click="$emit('show-login')">Login Here</a>
-        </p>
+            <a href="#" class="social-icon">
+              <img src="https://www.svgrepo.com/show/475656/google-color.svg" />
+            </a>
+            <a href="#" class="social-icon">
+              <img src="https://www.svgrepo.com/show/448224/facebook.svg" />
+            </a>
+            <a href="#" class="social-icon">
+              <img src="https://www.svgrepo.com/show/475689/twitter-color.svg" />
+            </a>
+          </div>
+
+          <p class="login">
+            Already have an account?
+            <a href="#" @click="$emit('show-login')">Login Here</a>
+          </p>
         </div>
       </div>
     </div>
   </div>
-  </template>
-  
- <script>
+</template>
+
+<script>
+import axios from 'axios'
+const baseURL = import.meta.env.VITE_API_URL
+
 export default {
+  props: ['email', 'code'],
   data() {
     return {
-      email: "",
+      newPassword: "",
+      confirmPassword: "",
       loginError: {},
     };
   },
   methods: {
-    handleResetPassword() {
-        console.log("Resetting password:", this.newPassword);
-    },
-  },
+    async handleResetPassword() {
+      this.loginError = {};
+
+      if (this.newPassword !== this.confirmPassword) {
+        this.loginError.confirmpassword = "Passwords do not match";
+        return;
+      }
+
+      try {
+        await axios.post(`${baseURL}/api/reset-password`, {
+          email: this.email,
+          code: this.code,
+          password: this.newPassword,
+          password_confirmation: this.confirmPassword
+        });
+
+        alert("✅ Password reset successfully!");
+        this.$emit("show-login");
+      } catch (err) {
+        if (err.response?.data?.message) {
+          this.loginError.general = err.response.data.message;
+        } else if (err.response?.data?.errors) {
+          this.loginError = err.response.data.errors;
+        } else {
+          this.loginError.general = "Something went wrong.";
+        }
+      }
+    }
+  }
 };
 </script>
+
   
   <style scoped>
   /* Background for the entire screen */

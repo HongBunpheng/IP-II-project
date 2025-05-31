@@ -17,6 +17,7 @@ defineProps({
     imageSrc: { type: String, required: true },
     location: { type: String, default: '' },
     name: { type: String, required: true }
+    
 })
 </script>
 <style scoped>

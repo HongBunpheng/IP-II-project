@@ -1,218 +1,363 @@
 <template>
-    <div class="review-form">
-        <h2>Top places with reviews</h2>
-        <p>Travelers want to see more reviews of these places.</p>
-
-        <form @submit.prevent="submitReview">
-            <div class="form-rows">
-                <div class="upload-container">
-                    <label class="upload-label" for="file-upload">
-                        <div class="upload-placeholder">
-                            <span class="camera-icon">📷</span>
-                        </div>
-                    </label>
-                    <input type="file" id="file-upload" @change="onFileChange" accept="image/*" />
-                </div>
-
-                <div class="form">
-                    <div class="form-group">
-                        <label for="review-title">Title of your review</label>
-                        <input type="text" id="review-title" v-model="reviewTitle"
-                            placeholder="Summarize your Travel Journey" required />
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label for="review-content">Your review</label>
-                        <textarea id="review-content" v-model="reviewContent"
-                            placeholder="A detailed review of your Travel Journey. Travelers will love to know your experience."
-                            required></textarea>
-
-                        <div class="form-roww">
-                            <div class="form-group">
-                                <label for="location">Location</label>
-                                <input type="text" id="location" v-model="location" placeholder="Enter Travel Location"
-                                    required />
-                            </div>
-
-                            <div class="form-group">
-                                <label for="travel-date">When did you travel?</label>
-                                <input type="date" id="travel-date" v-model="travelDate" required />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="disclaimer">
-                        <input type="checkbox" />
-                        <p>
-                            I certify that the information in this review is based solely on my own experiences
-                            with the product or service in question. I also attest that I have no personal or
-                            professional affiliation with the business in question and have not been given any
-                            incentives or payment from the business to write this review. I am aware that fake
-                            reviews are strictly prohibited on Tripadvisor.
-                        </p>
-                    </div>
+    <form class="form-grid" @submit.prevent="handleSubmit">
+        <!-- Image Upload Section -->
+        <div class="image-upload">
+            <input type="file" multiple @change="handleFiles" ref="fileInput" hidden />
+            <label class="upload-box" v-if="!previews.length" @click="triggerFilePicker">
+                <i class="bi bi-camera" style="font-size: 2rem;"></i>
+                <p>Click to upload photos</p>
+            </label>
+            <div v-if="previews.length" class="masonry-grid">
+                <div v-for="(img, i) in previews" :key="i" :class="['masonry-item', i === 0 ? 'large' : '']">
+                    <img :src="img" />
+                    <button class="remove-btn" @click.prevent="removeImage(i)">×</button>
                 </div>
             </div>
+            <button type="button" class="add-btn" v-if="previews.length" @click="triggerFilePicker">+ Add More
+                Photos</button>
+        </div>
 
-            <button type="submit">Submit Review</button>
-        </form>
-    </div>
+        <!-- Text Fields -->
+        <div class="form-fields">
+            <label>Title of your review</label>
+            <input v-model="title" type="text" placeholder="Summarize your Travel Journey" required />
+
+            <label>Your review</label>
+            <textarea v-model="content" placeholder="A detailed review of your Travel Journey." required></textarea>
+
+            <!-- Location -->
+            <label>Location</label>
+            <div class="location-input-group">
+                <input v-model="location" type="text" placeholder="Enter a location" class="location-input"
+                    @input="searchLocations" />
+                <button type="button" class="use-location-btn" @click="getCurrentLocation">📍 Use My Location</button>
+            </div>
+            <ul v-if="locationSuggestions.length" class="suggestion-dropdown">
+                <li v-for="loc in locationSuggestions" :key="loc" @click="selectLocation(loc)">
+                    {{ loc }}
+                </li>
+            </ul>
+
+            <!-- Mentions -->
+            <label>Tag a friend in this journal</label>
+            <input v-model="mention" type="text" placeholder="Type friend's name" @input="searchUsers" />
+            <ul v-if="mentionSuggestions.length" class="suggestion-dropdown">
+                <li v-for="user in mentionSuggestions" :key="user.id" @click="addMention(user)">
+                    {{ user.name }}
+                </li>
+            </ul>
+
+            <!-- Agreement -->
+            <div class="terms">
+                <input type="checkbox" id="agree" v-model="agreed" />
+                <label for="agree">
+                    I certify this review is based solely on my own experience and no affiliation/payment was involved.
+                </label>
+            </div>
+
+            <button type="submit" class="submit-btn" :disabled="!agreed">Submit Review</button>
+            <p class="error-msg" v-if="formError">{{ formError }}</p>
+            <p class="success-msg" v-if="message">{{ message }}</p>
+        </div>
+    </form>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            reviewTitle: '',
-            reviewContent: '',
-            location: '',
-            travelDate: '',
-            imageFile: null,
-        };
-    },
-    methods: {
-        onFileChange(event) {
-            this.imageFile = event.target.files[0];
-        },
-        submitReview() {
-            console.log({
-                reviewTitle: this.reviewTitle,
-                reviewContent: this.reviewContent,
-                location: this.location,
-                travelDate: this.travelDate,
-                imageFile: this.imageFile,
-            });
-            this.resetForm();
-        },
-        resetForm() {
-            this.reviewTitle = '';
-            this.reviewContent = '';
-            this.location = '';
-            this.travelDate = '';
-            this.imageFile = null;
-        },
-    },
-};
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+
+const baseApi = import.meta.env.VITE_API_BASE_URL
+
+const title = ref('')
+const content = ref('')
+const location = ref('')
+const mention = ref('')
+const mentions = ref([])
+const files = ref([])
+const previews = ref([])
+const locationSuggestions = ref([])
+const mentionSuggestions = ref([])
+const agreed = ref(false)
+const message = ref('')
+const formError = ref('')
+const fileInput = ref(null)
+const router = useRouter()
+
+const handleFiles = (e) => {
+    const newFiles = Array.from(e.target.files)
+    newFiles.forEach(file => {
+        const reader = new FileReader()
+        reader.onload = e => previews.value.push(e.target.result)
+        reader.readAsDataURL(file)
+    })
+    files.value.push(...newFiles)
+}
+
+const triggerFilePicker = () => fileInput.value?.click()
+const removeImage = i => {
+    previews.value.splice(i, 1)
+    files.value.splice(i, 1)
+}
+
+const addMention = (user) => {
+    if (!mentions.value.includes(user.id)) mentions.value.push(user.id)
+    mention.value = ''
+    mentionSuggestions.value = []
+}
+
+const handleSubmit = async () => {
+    formError.value = ''
+    message.value = ''
+
+    if (!title.value || !content.value || !location.value || !agreed.value) {
+        formError.value = '❌ Please fill all required fields.'
+        return
+    }
+
+    const formData = new FormData()
+    formData.append('title', title.value)
+    formData.append('content', content.value)
+    formData.append('location', location.value)
+    mentions.value.forEach((id, i) => formData.append(`mentions[${i}]`, id))
+    files.value.forEach(file => formData.append('images[]', file))
+
+    console.log("📦 FormData Content:");
+    for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+    }
+
+    try {
+        const base = import.meta.env.VITE_API_BASE_URL
+        const res = await axios.post(`${base}/journals`, formData)
+
+        message.value = res.data.message || '✅ Journal saved!'
+        title.value = ''
+        content.value = ''
+        location.value = ''
+        mention.value = ''
+        mentions.value = []
+        files.value = []
+        previews.value = []
+        agreed.value = false
+
+        setTimeout(() => router.push('/journal'), 1000)
+    } catch (err) {
+        formError.value = err.response?.data?.message || 'Submission failed. Try again.'
+    }
+}
 </script>
 
 <style scoped>
-.review-form {
-    width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-}
-
-h2 {
-    text-align: center;
-}
-
-.form-rows {
+.form-grid {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 40px;
 }
 
-.upload-container,
-.form {
-    width: 50%;
+@media (min-width: 768px) {
+    .form-grid {
+        flex-direction: row;
+        gap: 60px;
+    }
 }
 
-.upload-label {
-    cursor: pointer;
+.image-upload {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.upload-placeholder {
+.upload-box {
     width: 100%;
-    height: 330px;
-    background-color: #e0e0e0;
-    border-radius: 8px;
+    height: 250px;
+    background-color: #e5e5e5;
+    border-radius: 10px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 48px;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
     color: #555;
 }
 
-input[type='file'] {
-    display: none;
+.masonry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-auto-rows: 120px;
+    gap: 10px;
 }
 
-.form-group {
+.masonry-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.masonry-item img {
     width: 100%;
-    margin-bottom: 15px;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
 }
 
-.form-roww {
+.masonry-item.large {
+    grid-column: span 2;
+    grid-row: span 2;
+    height: 250px;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.add-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: start;
+}
+
+.add-btn:hover {
+    background-color: #0056b3;
+}
+
+.form-fields {
+    flex: 2;
     display: flex;
+    flex-direction: column;
     gap: 20px;
 }
 
-.form-roww .form-group {
-    flex: 1;
-}
-
-input[type='text'],
-textarea,
-input[type='date'] {
+.form-fields input,
+.form-fields textarea,
+.form-fields select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
+    border-radius: 6px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    font-size: 1rem;
 }
 
 textarea {
-    height: 70px;
+    min-height: 100px;
+    resize: vertical;
 }
 
-.full-width {
-    width: 100%;
-}
-
-button {
-    width: 110px;
-    margin: 20px auto 0;
+.location-label {
     display: block;
+    font-weight: 500;
+}
+
+.location-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0.3rem;
+}
+
+.location-input {
+    flex: 1;
     padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 50px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.use-location-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.use-location-btn:hover {
+    background-color: #e2e2e2;
+}
+
+.suggestion-dropdown {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
+}
+
+.suggestion-dropdown li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-dropdown li:hover {
+    background-color: #f9f9f9;
+}
+
+.terms {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+}
+
+.terms input {
+    width: 68px;
+    height: 25px;
     cursor: pointer;
 }
 
-.disclaimer {
-    font-size: 12px;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    margin-top: 10px;
+.submit-btn {
+    background-color: #198754;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-/* Optional Responsive */
-@media (max-width: 768px) {
-    .form-rows {
-        flex-direction: column;
-    }
-
-    .upload-container,
-    .form {
-        width: 100%;
-    }
+.submit-btn:disabled {
+    background-color: #bbb;
+    cursor: not-allowed;
 }
 
-.review-form * {
-    text-align: left !important;
-}
-.review-form {
-  padding: 40px 20px 20px; /* top padding increased from 20px to 40px */
-}
-.review-form h2,
-.review-form p {
-  margin-bottom: 16px; /* adds space below the headings */
-  text-align: left;
-  font-weight: bold;
+.submit-btn:hover:not(:disabled) {
+    background-color: #157347;
 }
 
+.error-msg {
+    color: red;
+    font-size: 0.95rem;
+}
+
+.success-msg {
+    color: green;
+    font-size: 0.95rem;
+}
 </style>

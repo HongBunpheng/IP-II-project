@@ -1,94 +1,93 @@
 <template>
   <div class="login-background">
-  <div class="login-popup">
-    <div class="login-container">
-      <!-- Left Frame -->
-      <div class="left-frame">
-        <div class="overlay">
-          <h2>Everyday <br />Must-Haves</h2>
-          <p>With just one click, access all the must-have essentials you need for your day-to-day life.</p>
-        </div>
-      </div>
-      <!-- Right Frame -->
-      <div class="right-frame">
-        <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
-        <h2 class="title">Welcome Back</h2>
-        <p class="subtitle">Enter your email and password to access your account</p>
-        <form @submit.prevent="handleLogin">
-          <label>Email</label>
-          <input type="email" placeholder="Enter your email" v-model="email" />
-          <div v-if="loginError.email" class="error-message">{{ loginError.email }}</div>
-          <label>Password</label>
-          <input type="password" placeholder="Enter your password" v-model="password" />
-          <div v-if="loginError.password" class="error-message">{{ loginError.password }}</div>
-          <div v-if="loginError.general" class="error-message">{{ loginError.general }}</div>
-
-          <div class="options">
-            <label class="remember">
-              <input type="checkbox" /> Remember Me
-            </label>
-            <a href="#" class="forgot" @click.prevent="emitForgotPassword">Forgot Password</a>
-            <!-- <a href="#" class="forgot">Forgot Password</a> -->
+    <div class="login-popup">
+      <div class="login-container">
+        <div class="left-frame">
+          <div class="overlay">
+            <h2>Everyday <br />Must-Haves</h2>
+            <p>Access all the essentials you need for your day-to-day life.</p>
           </div>
-          <button type="submit" class="signin-btn">Sign In</button>
-        </form>
-
-        <div class="divider"><span>Or</span></div>
-
-        <div class="social-button google">
-          <div class="icon">
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" />
-          </div>
-          <div class="text">Sign in with Google</div>
         </div>
-        <div class="social-button facebook">
-            <div class="icon">
-                <img src="https://www.svgrepo.com/show/448224/facebook.svg" />
+
+        <div class="right-frame">
+          <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
+          <h2 class="title">Welcome Back</h2>
+          <p class="subtitle">Enter your email and password to login</p>
+
+          <form @submit.prevent="handleLogin">
+            <label>Email</label>
+            <input type="email" placeholder="Enter your email" v-model="email" />
+            <div v-if="loginError.email" class="error-message">{{ loginError.email }}</div>
+
+            <label>Password</label>
+            <input type="password" placeholder="Enter your password" v-model="password" />
+            <div v-if="loginError.password" class="error-message">{{ loginError.password }}</div>
+            <div v-if="loginError.general" class="error-message">{{ loginError.general }}</div>
+
+            <div class="options">
+              <label class="remember">
+                <input type="checkbox" /> Remember Me
+              </label>
+              <a href="#" class="forgot" @click.prevent="emitForgotPassword">Forgot Password</a>
             </div>
-            <div class="text">Sign in with Facebook</div>
-        </div>
-        <div class="social-button twitter">
-            <div class="icon">
-                <img src="https://www.svgrepo.com/show/475689/twitter-color.svg" />
-            </div>
-            <div class="text">Sign in with Twitter</div>
-        </div>
 
-        <p class="signup">
-          Don’t have an account?
-          <a href="#" @click.prevent="emitShowRegister">Sign Up</a>
-        </p>
+            <button type="submit" class="signin-btn">Sign In</button>
+          </form>
+
+          <p class="signup">
+            Don’t have an account?
+            <a href="#" @click.prevent="emitShowRegister">Sign Up</a>
+          </p>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
+import axios from 'axios'
+const baseURL = import.meta.env.VITE_API_URL
 
 export default {
   name: "Login",
-  emits: ['show-register', 'show-forgotpw'],
+  emits: ['show-register', 'show-forgot-password'],
   data() {
     return {
       email: "",
       password: "",
-      rememberMe: false,
       loginError: {},
-    };
+    }
   },
   methods: {
-    handleLogin() {
-      console.log("Login attempt:", this.email, this.password);
+    async handleLogin() {
+      this.loginError = {}
+
+      try {
+        const res = await axios.post(`${baseURL}/api/login`, {
+          email: this.email,
+          password: this.password
+        })
+
+        alert(res.data.message)
+        localStorage.setItem('user', JSON.stringify(res.data.user))
+        this.email = ''
+        this.password = ''
+      } catch (err) {
+        if (err.response && err.response.data.message) {
+          this.loginError = err.response.data.message
+        } else {
+          this.loginError.general = "Login failed. Please try again."
+        }
+      }
     },
     emitShowRegister() {
-      this.$emit("show-register");
+      this.$emit("show-register")
     },
     emitForgotPassword() {
-      this.$emit("show-forgot-password");
+      this.$emit("show-forgot-password")
     },
   },
-};
+}
 </script>
 
 <style scoped>
@@ -171,7 +170,7 @@ export default {
 /* Right frame with form */
 .right-frame {
   flex: 1;
-  padding: 1.5rem 1.5rem; 
+  padding: 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -180,13 +179,15 @@ export default {
 
 /* Logo */
 .logo {
-  width: 78px; /* smaller logo */
+  width: 78px;
+  /* smaller logo */
   margin-bottom: 0.5rem;
 }
 
 /* Welcome titles */
 .title {
-  font-size: 1.5rem; /* slightly smaller */
+  font-size: 1.5rem;
+  /* slightly smaller */
   font-weight: bold;
   margin-bottom: 0.2rem;
   font-family: 'Prata', serif;
@@ -201,7 +202,8 @@ export default {
 /* Form styling */
 form {
   width: 100%;
-  max-width: 280px; /* narrower */
+  max-width: 280px;
+  /* narrower */
   text-align: left;
 }
 
@@ -296,7 +298,7 @@ form input[type="password"] {
 /* Social Buttons */
 .social-button {
   display: grid;
-  grid-template-columns: auto 1fr; 
+  grid-template-columns: auto 1fr;
   align-items: center;
   justify-content: center;
   gap: 1.6rem;
@@ -311,33 +313,35 @@ form input[type="password"] {
 }
 
 .social-button .icon {
-    margin-right: 0.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 24px;
-    border-radius: 50%;
-    /* background-color: #f0f0f0; */
-    padding: 0.4rem;
-    box-sizing: border-box;
-    transition: background-color 0.2s ease-in-out;
+  margin-right: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 24px;
+  border-radius: 50%;
+  /* background-color: #f0f0f0; */
+  padding: 0.4rem;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease-in-out;
 }
+
 .social-button:hover .icon {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
+
 .social-button:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .social-button .text {
-    flex-grow: 1;
-    text-align: left;
+  flex-grow: 1;
+  text-align: left;
 }
 
 .social-button img {
-    width: 16px;
-    height: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 .social-button.google,

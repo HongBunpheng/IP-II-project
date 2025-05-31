@@ -1,94 +1,125 @@
 <template>
-<div class="signup-background">
-  <div class="signup-popup">
-    <div class="signup-container">
-      <!-- Left Frame -->
-      <div class="left-frame">
-        <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
-        <h2 class="title">Hello User!</h2>
-        <p class="subtitle">Enter below details to create an account</p>
+  <div class="signup-background">
+    <div class="signup-popup">
+      <div class="signup-container">
+        <!-- Left Frame -->
+        <div class="left-frame">
+          <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
+          <h2 class="title">Hello User!</h2>
+          <p class="subtitle">Enter below details to create an account</p>
 
-        <form @submit.prevent="handleSubmit">
-          <div class="form-group">
-            <label for="fullName">Full Name</label>
-            <input type="text" id="fullName" v-model="fullName" placeholder="Enter your full name" required />
+          <form @submit.prevent="handleSubmit">
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" v-model="fullName" placeholder="Enter your full name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Mail</label>
+              <input type="email" id="email" v-model="email" placeholder="Enter your mail" required />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" v-model="password" placeholder="Enter password" required />
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input type="password" id="confirmPassword" v-model="confirmPassword" placeholder="Confirm your password" required />
+            </div>
+
+            <div v-if="signUpError.password" class="error-message">{{ signUpError.password }}</div>
+            <div v-if="signUpError.confirmpassword" class="error-message">{{ signUpError.confirmpassword }}</div>
+            <div v-if="signUpError.email" class="error-message">{{ signUpError.email }}</div>
+            <div v-if="signUpError.general" class="error-message">{{ signUpError.general }}</div>
+
+            <button type="submit" class="signup-button">Sign Up</button>
+          </form>
+
+          <div class="divider">
+            <span>Or</span>
           </div>
-          <div class="form-group">
-            <label for="email">Mail</label>
-            <input type="email" id="email" v-model="email" placeholder="Enter your mail" required />
+
+          <div class="social-login">
+            <a href="#" class="social-icon">
+              <img src="https://www.svgrepo.com/show/475656/google-color.svg" />
+            </a>
+            <a href="#" class="social-icon">
+              <img src="https://www.svgrepo.com/show/448224/facebook.svg" />
+            </a>
+            <a href="#" class="social-icon">
+              <img src="https://www.svgrepo.com/show/475689/twitter-color.svg" />
+            </a>
           </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" v-model="password" placeholder="Enter password" required />
-          </div>
-          <div class="form-group">
-            <label for="confirmPassword">Confirm Password</label>
-            <input type="password" id="confirmPassword" v-model="confirmPassword" placeholder="Confirm your password" required />
-          </div>
-          <div v-if="signUpError.password" class="error-message">{{ signUpError.password }}</div>
-          <div v-if="signUpError.confirmpassword" class="error-message">{{ signUpError.confirmpassword }}</div>
-          <div v-if="signUpError.general" class="error-message">{{ signUpError.general }}</div>
 
-          <button type="submit" class="signup-button">Sign Up</button>
-        </form>
-
-        <div class="divider">
-          <span>Or</span>
-        </div>
-
-        <div class="social-login">
-          <a href="#" class="social-icon">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" />
-          </a>
-          <a href="#" class="social-icon">
-            <img src="https://www.svgrepo.com/show/448224/facebook.svg" />
-          </a>
-          <a href="#" class="social-icon">
-            <img src="https://www.svgrepo.com/show/475689/twitter-color.svg" />
-          </a>
-        </div>
-
-        <p class="login">
-          Already have an account?
-          <a href="#" @click.prevent="$emit('show-login')">Login Here</a>
-        </p>
-      </div>
-
-      <!-- Right Frame -->
-      <div class="right-frame">
-        <div class="overlay">
-          <h2>Unleash Your<br />Shopping Spirit!</h2>
-          <p>
-            Unleash Your Shopping Spirit! and discover a world filled with exciting products and exclusive deals that transform shopping from a chore into a joyful adventure, tailored just for you.
+          <p class="login">
+            Already have an account?
+            <a href="#" @click.prevent="$emit('show-login')">Login Here</a>
           </p>
+        </div>
+
+        <!-- Right Frame -->
+        <div class="right-frame">
+          <div class="overlay">
+            <h2>Unleash Your<br />Shopping Spirit!</h2>
+            <p>
+              Unleash Your Shopping Spirit! and discover a world filled with exciting products and exclusive deals that transform shopping from a chore into a joyful adventure, tailored just for you.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
-  
-  <script>
-  export default {
-    emits: ['close'],
-    data() {
-      return {
-        fullName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        signUpError: {},
-      };
-    },
-    methods: {
-    handleSubmit() {
-      console.log("Registration attempt:", this.fullName, this.email, this.password);
-      // Add your registration logic here
-    },
+<script>
+import axios from 'axios'
+
+const baseURL = import.meta.env.VITE_API_URL
+
+export default {
+  emits: ['close'],
+  data() {
+    return {
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      signUpError: {},
+    };
   },
+  methods: {
+    async handleSubmit() {
+      this.signUpError = {}
+
+      if (this.password !== this.confirmPassword) {
+        this.signUpError.confirmpassword = "Passwords do not match";
+        return;
+      }
+
+      try {
+        await axios.post(`${baseURL}/api/accounts`, {
+          name: this.fullName,
+          email: this.email,
+          password: this.password,
+          password_confirmation: this.confirmPassword
+        });
+
+        alert('✅ Registered successfully!');
+        this.fullName = '';
+        this.email = '';
+        this.password = '';
+        this.confirmPassword = '';
+      } catch (err) {
+        if (err.response && err.response.data.errors) {
+          this.signUpError = err.response.data.errors;
+        } else {
+          this.signUpError.general = "Something went wrong. Please try again.";
+        }
+      }
+    }
   }
-  </script>
+}
+</script>
+
   
   <style scoped>
 .signup-background {

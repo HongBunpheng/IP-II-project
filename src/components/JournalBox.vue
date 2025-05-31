@@ -1,208 +1,135 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+
+// Only use ONE .env variable
+const baseApi = import.meta.env.VITE_API_BASE_URL
+
+const journals = ref([])
+
+onMounted(async () => {
+    try {
+        const res = await axios.get(`${baseApi}/api/journals`)
+        console.log('✅ Loaded:', res.data) // ⬅️ Check if logs data
+        journals.value = res.data.map(j => ({
+            ...j,
+            images: Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]'),
+            mentions: Array.isArray(j.mentions) ? j.mentions : JSON.parse(j.mentions || '[]'),
+        }))
+    } catch (err) {
+        console.error('❌ Failed to fetch journals:', err)
+    }
+})
+
+function getImageUrl(img) {
+    return `${baseApi}/storage/${img}`
+}
+</script>
+
 <template>
-    <div class="journal-list">
-        <div class="grid-container">
-            <div class="journal-box" v-for="(journal, index) in journals" :key="index">
-                <img :src="journal.image" alt="Cover" class="cover-image" />
+    <div class="journal-grid">
+        <div v-for="journal in journals" :key="journal.id" class="journal-box">
+            <div v-if="Array.isArray(journal.images) && journal.images.length">
+                <img v-for="(img, i) in journal.images" :key="i" :src="getImageUrl(img)" alt="journal image"
+                    class="data-image" />
+            </div>
 
-                <div class="journal-details">
-                    <!-- Author Info -->
-                    <div class="author-section">
-                        <div class="author-top-row">
-                            <img :src="journal.authorImage" alt="Author" class="author-avatar" />
-                            <div class="author-name">{{ journal.authorName }}</div>
-                        </div>
-
-                        <div class="location-date-row">
-                            <div class="location">{{ journal.location }}</div>
-                            <div class="date-read">
-                                <span>{{ journal.date }}</span>
-                                <span class="dot">•</span>
-                                <span>{{ journal.readTime }}</span>
-                            </div>
-                        </div>
+            <div class="journal-body">
+                <div class="journal-meta">
+                    <div class="meta-bottom">
+                        <span>{{ journal.location }}</span>
+                        <span class="dot">•</span>
+                        <span>{{ formatDate(journal.created_at) }}</span>
+                        <span class="dot">•</span>
+                        <span>{{ journal.readTime || '8 min read' }}</span>
                     </div>
-
-                    <!-- Title & Content -->
-                    <h2 class="title">{{ journal.title }}</h2>
-                    <p class="description">{{ journal.description }}</p>
-
-                    <!-- Read More -->
-                    <a :href="journal.link" class="read-more">
-                        Read Full Post <span class="arrow">↗</span>
-                    </a>
                 </div>
+
+                <h3 class="title">{{ journal.title }}</h3>
+                <p class="summary">{{ journal.content }}</p>
             </div>
         </div>
     </div>
 </template>
 
-
-<script>
-export default {
-    name: 'JournalBox',
-    data() {
-        return {
-            journals: [
-                {
-                    image: '/src/assets/view.png',
-                    authorImage: '/src/assets/profile.png',
-                    authorName: 'Mina',
-                    location: 'Kep Province',
-                    date: 'Feb 27, 2023',
-                    readTime: '8 min read',
-                    title: 'The Best Time to visit Sea',
-                    description: 'I had always been interested in Kep, so I decided to take a year-long journey to Cambodia...',
-                    link: '#'
-                },
-                {
-                    image: '/src/assets/view1.png',
-                    authorImage: '/src/assets/p2.png',
-                    authorName: 'Renald DeVor',
-                    location: 'Waterfall in Phnom Kulen, Siem Reap, Cambodia',
-                    date: 'Feb 27, 2023',
-                    readTime: '5 min read',
-                    title: 'The Best Time to visit Phnom Kulen',
-                    description: 'I had just graduated from college and decided to take a six-month solo trip...',
-                    link: '#'
-                }
-            ]
-        }
-    }
-}
-</script>
-
 <style scoped>
-.journal-list {
-    padding: 48px 24px;
-    max-width: 1800px;
-    margin: 0 auto;
-}
-
-.grid-container {
+.journal-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
 }
 
 .journal-box {
     background: #fff;
-    border-radius: 20px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    font-family: 'Urbanist', sans-serif;
+}
+
+.data-image {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    margin-bottom: 6px;
+}
+
+.journal-body {
+    padding: 16px;
+}
+
+.journal-meta {
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.cover-image {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-radius: 15px 15px 15px 15px;
-    display: block;
-}
-
-.journal-details {
-    padding: 32px;
-}
-
-.author-section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.author-top-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.author-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.author-name {
-    font-weight: 600;
-    font-size: 18px;
-    color: #111;
-}
-
-.location-date-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 18px;
+    font-size: 13px;
     color: #666;
-    width: 100%;
+    gap: 6px;
 }
 
-.location {
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.date-read {
+.meta-bottom {
     display: flex;
     gap: 8px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    align-items: center;
+    flex-wrap: wrap;
 }
 
 .dot {
-    font-size: 10px;
+    font-weight: bold;
+    color: #999;
 }
 
 .title {
-    font-size: 26px;
-    font-weight: 700;
-    color: #111;
-    margin: 20px 0 12px 0;
-}
-
-.description {
-    font-size: 17px;
-    color: #444;
-    margin-bottom: 28px;
-}
-
-.read-more {
-    display: inline-flex;
-    align-items: center;
+    font-size: 18px;
     font-weight: 600;
-    color: #00c896;
+    margin: 10px 0 4px;
+}
+
+.summary {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 8px;
+}
+
+.mentions {
+    background: #f3f3f3;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #555;
+}
+
+.mention-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.read-link {
+    color: #007f3d;
+    font-weight: 600;
     text-decoration: none;
-    font-size: 16px;
 }
 
-.arrow {
-    margin-left: 6px;
-}
-
-@media (max-width: 768px) {
-    .journal-details {
-        padding: 20px;
-    }
-
-    .title {
-        font-size: 22px;
-    }
-
-    .description {
-        font-size: 15px;
-    }
-
-    .author-avatar {
-        width: 40px;
-        height: 40px;
-    }
+.read-link i {
+    margin-left: 4px;
 }
 </style>
