@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // import Province from '@/components/Province.vue'
 // import ChooseTransport from '@/views/ChooseTransport.vue'
-import Landingpage from '@/views/Landingpage.vue'
+// import Landingpage from '@/views/Landingpage.vue'
+import Landingpage from '@/views/LandingPage.vue'
 // import CityDestination from '@/views/CityDestination.vue'
 const routes = [
   {
@@ -10,6 +11,7 @@ const routes = [
     name: 'Landingpage',
     component: Landingpage
   }
+
   // {
   //   path: '/province',
   //   name: 'Province',
@@ -32,5 +34,6 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
+// const activeIndex = ref(0)
 
 export default router

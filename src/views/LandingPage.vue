@@ -1,6 +1,6 @@
 <script setup>
-import Newplace from '@/components/Newplace.vue';
-import Cityslider from './Cityslider.vue';
+import Newplace from '@/components/Newplace.vue'
+import City from '@/components/City.vue'
 </script>
 
 <template>
@@ -42,9 +42,15 @@ import Cityslider from './Cityslider.vue';
       <Newplace image="sea.png" label="SEA" />
     </div>
 
-    <!-- New City Section -->
-    <div class="newcity-section">
-      <Cityslider />
+    <!-- City Section Title + Slider with background -->
+    <div class="city-wrapper">
+      <div class="city-section">
+        <h1 class="title">City And Destination are waiting for you</h1>
+        <h2 class="subtitle">WHY HESITATING</h2>
+        <div class="newcity-section">
+          <City />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -54,10 +60,10 @@ import Cityslider from './Cityslider.vue';
   width: 100%;
   font-family: 'Poppins', sans-serif;
   overflow-x: hidden;
-  /* background-color: #000; */
   color: white;
 }
 
+/* Logo */
 .logo {
   position: absolute;
   top: 20px;
@@ -73,6 +79,7 @@ import Cityslider from './Cityslider.vue';
   filter: brightness(0) invert(1);
 }
 
+/* Navigation */
 .nav-bar {
   position: absolute;
   top: 20px;
@@ -141,6 +148,7 @@ import Cityslider from './Cityslider.vue';
   cursor: pointer;
 }
 
+/* Hero Section */
 .hero-text {
   position: absolute;
   width: 100%;
@@ -155,6 +163,7 @@ import Cityslider from './Cityslider.vue';
   font-weight: bold;
 }
 
+/* Image Cards */
 .card-container {
   display: flex;
   height: 100vh;
@@ -164,14 +173,40 @@ import Cityslider from './Cityslider.vue';
   flex: 1;
 }
 
-.newcity-section {
-  margin-top: 5rem;
-  padding: 2rem;
-  background-color: white;
+/* City Section with background image */
+.city-wrapper {
+  background-image: url('/src/assets/Background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 3rem 1rem;
   color: black;
-  border-top: 2px solid #eee;
+  /* background-color: pink; */
+
 }
 
+.city-section {
+  text-align: center;
+}
+
+.city-section .title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.city-section .subtitle {
+  color: #00cc99;
+  font-family: 'Brush Script MT', cursive;
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.newcity-section {
+  margin-top: 2rem;
+  padding: 2rem 0;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .hero-text h1 {
     font-size: 1.8rem;
@@ -184,7 +219,6 @@ import Cityslider from './Cityslider.vue';
 
   .card-container > * {
     height: 33vh;
-    
   }
 
   .nav-bar {
