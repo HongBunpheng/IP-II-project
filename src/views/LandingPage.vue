@@ -1,6 +1,7 @@
 <script setup>
 import Newplace from '@/components/Newplace.vue'
 import City from '@/components/City.vue'
+import Budget from '@/components/Budget.vue';
 </script>
 
 <template>
@@ -49,6 +50,7 @@ import City from '@/components/City.vue'
         <h2 class="subtitle">WHY HESITATING</h2>
         <div class="newcity-section">
           <City />
+          <Budget />
         </div>
       </div>
     </div>

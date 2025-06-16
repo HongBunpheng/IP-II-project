@@ -72,11 +72,11 @@ onMounted(() => {
   background-position: center;
   background-repeat: no-repeat;
   background-image: url('@/assets/angkor-bg.png');
-  border-radius: 20px;
+  /* border-radius: 20px; */
   overflow: hidden;
   padding: 2rem;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  width: 90%;
+  width: 100%;
   height: 38rem;
   margin: 0 auto;
   color: white;
@@ -98,7 +98,7 @@ onMounted(() => {
 
 .city-left h1 {
   font-size: 4rem;
-  margin-top: 0;
+  margin-top: 20px;
   font-weight: bold;
 
   

@@ -1,73 +1,169 @@
 <template>
-  <div class="budget-card">
-    <img src="@/assets/budget.png" alt="Budget Feature" class="budget-image" />
-    <div class="overlay">
-      <h3 class="title">Budget Recom</h3>
-      <p class="desc">Analysis and recommend the best <br>place with your budget</p>
-      <button class="btn">Let's go</button>
+  <div class="budget-wrapper">
+    <div class="budget-header">
+      <h2 class="budget-title">Try our features</h2>
+      <p class="budget-subtitle">Enhancing your experiences with our latest features</p>
+    </div>
+
+    <div class="budget-cards">
+      <div
+        class="card"
+        v-for="(item, index) in features"
+        :key="index"
+        :class="{ active: index === 1,
+                  left: index === 0,
+                  right: index === 2
+         }"
+      >
+        <img :src="getImage(item.image)" alt="feature" class="card-img" />
+        <div v-if="index === 1" class="card-overlay">
+            <h3 class="card-title">{{ item.title }}</h3>
+            <p class="card-desc">{{ item.desc }}</p>
+            <button class="card-btn"><i class="ri-send-plane-fill"></i>Let's go</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-// static content only
+const features = [
+  { image: 'budget1.png' },
+  {
+    image: 'budget.png',
+    title: 'Budget Recom',
+    desc: 'Analysis and recommend the best place with your budget'
+  },
+  { image: 'budget2.png' }
+]
+
+const getImage = (img) => new URL(`../assets/${img}`, import.meta.url).href
 </script>
 
 <style scoped>
-.budget-card {
-  width: 400px;
-  height: 470px;
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+.budget-wrapper {
+  width: 100%;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to bottom, #fff, #e9fdf7);
 }
 
-.budget-image {
+.budget-header {
+  margin-bottom: 2rem;
+}
+
+.budget-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #111;
+}
+
+.budget-subtitle {
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.budget-cards {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.card {
+  position: relative;
+  width: 250px;
+  height: 350px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, z-index 0.3s;
+  opacity: 0.4;
+  filter: brightness(0.6);
+  z-index: 1;
+}
+
+.card.active {
+  transform: scale(1.1);
+  opacity: 1;
+  filter: brightness(1);
+  z-index: 3;
+}
+/* Left/right smaller + dimmed */
+.card.left,
+.card.right {
+  transform: scale(0.9);
+  opacity: 1;
+  margin-left: -50px;
+  margin-right: -50px;
+  filter: brightness(0.6);
+  z-index: 1;
+  
+}
+
+.card-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.3s ease;
 }
 
-.overlay .desc{
+.card-overlay {
   position: absolute;
-  left: -1.2rem;
-  bottom: 30px;
-  width: 100%;
-  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  padding: 30px 20px;
-  color: white;
-  text-align: center;
-  display: flex; 
-  flex-direction: column; 
-  justify-content: center;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
+  padding-bottom: 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  color: #fff;
+  text-align: center;
+}
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-.title {
-  font-size: 22px;
+.card-title {
+  font-size: 1.1rem;
   font-weight: bold;
-  margin-bottom: 8px;
+  margin: 0;
 }
-/* .desc {
-  font-size: 14px;
-  margin-bottom: 16px;
-  line-height: 1.5;
-} */
-.btn {
-  background: #23c67c;
+
+.card-desc {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  padding: 0 1rem;
+  color: #e0e0e0;
+  margin: 0;
+}
+
+
+.card-btn {
+  background: #00c99f;
   border: none;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #fff;
+  padding: 0.5rem;
+  border-radius: 0px;
+  color: #000000;
+  font-size: 0.5rem;
   cursor: pointer;
   transition: background 0.3s ease;
 }
+.card-btn i {
+  margin-right: 0.3rem;
+  color: black;
+}
 
-.btn:hover {
-  background: #1ab06b;
+.card-btn:hover {
+  background: #009f7a;
 }
 </style>
