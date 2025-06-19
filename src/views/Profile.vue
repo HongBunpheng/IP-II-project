@@ -48,17 +48,26 @@
   <div v-if="currentTab === 'settings'" class="settings-card">
     <div class="setting-row" v-for="(field, index) in settings" :key="index">
       <div class="setting-info">
-        <div class="field-label">{{ field.label }}</div>
-        <div class="field-value-group">
-          <div class="field-value">{{ field.value }}</div>
+  <div class="field-label">{{ field.label }}</div>
+  <div class="field-value-group">
+    <div v-if="editFields[field.label]">
+      <input v-model="field.value" class="modal-input" />
+    </div>
+    <div v-else>
+      <div class="field-value">{{ field.value }}</div>
+    </div>
+  </div>
+</div>
 
-        <!-- Add extra button for Email only -->
-        <button v-if="field.label === 'Email'" class="add-email-btn">⬤ Add another email</button>
-      </div>
-    </div>
-    <div class="button-column">
-      <button class="change-btn">✏️ Change</button>
-    </div>
+<div class="button-column">
+  <button v-if="editFields[field.label]" class="change-btn" @click="editFields[field.label] = false">
+    ✅ Save
+  </button>
+  <button v-else class="change-btn" @click="editFields[field.label] = true">
+    ✏️ Change
+  </button>
+</div>
+
   </div>
 </div>
 
@@ -206,147 +215,167 @@
 <script>
 import Footer from '@/components/Footer.vue';
 import PostCard from '@/views/PostCard.vue';
+import axios from 'axios';
 
 export default {
   name: 'ProfilePage',
     components: {
     PostCard,
     Footer,
-
-
   },
   data() {
     return {
-      currentTab: 'post', // Default tab
-      viewMode: 'grid',
-      showCreatePost: false,
-      profileImage: null,
-      defaultImage: "/src/assets/pf.png",
-      showImageOptions: false,
-      showEditBioModal: false,
-      newBioText: '',
-
-      bioText: "I'm a vlogger in Cambodia. I love traveling :)",
-
-      details: {
-      location: 'From Phnom Penh',
-      instagram: 'Nikah Official',
-      nickname: 'Nikah'
-      },
+          currentTab: 'post', // Default tab
+          viewMode: 'grid',
+          showCreatePost: false,
+          profileImage: null,
+          defaultImage: "/src/assets/pf.png",
+          showImageOptions: false,
+          showEditBioModal: false,
+          newBioText: '',
+          bioText: "I'm a vlogger in Cambodia. I love traveling :)",
+          details: {
+            location: 'From Phnom Penh',
+            instagram: 'Nikah Official',
+            nickname: 'Nikah',
+          },
     showEditDetailsModal: false,
-    newDetails: {
-      location: '',
-      instagram: '',
-      nickname: ''
-    },
-    posts: [
-        {
-          title: "Traditional Cambodian Food",
-          image: "/src/assets/v1.png",
-          location: "Siem Reap",
-          date: "September 19, 2022"
+        newDetails: {
+          location: '',
+          instagram: '',
+          nickname: '',
         },
-        {
-          title: "The Angkor Remembrance Festival",
-          image: "/src/assets/v2.png",
-          location: "Siem Reap",
-          date: "December 16, 2022"
-        },
-        {
-          title: "Khmer New Year Celebration",
-          image: "/src/assets/v3.png",
-          location: "Phnom Penh",
-          date: "April 16, 2024"
-        },
-        {
-          title: "Cambodia’s 71 Years of Independence",
-          image: "/src/assets/v4.png",
-          location: "Phnom Penh",
-          date: "November 9, 2024"
-        }
-      ],
-      galleryPhotos: [
-          '/src/assets/p6.png',
-          '/src/assets/p7.png',
-          '/src/assets/p8.png',
-          '/src/assets/p9.png',
-          '/src/assets/p10.png',
-          '/src/assets/p11.png',
-          '/src/assets/p12.png',
-          '/src/assets/p6.png',
-          '/src/assets/p7.png',
-        ],
-        featuredPhotos: [
-          '/src/assets/p1.png',
-          '/src/assets/p3.png',
-          '/src/assets/p1.png',
-          '/src/assets/p1.png',
-        ],
+        posts: [],
+        galleryPhotos: [],
+        featuredPhotos: [],
         showEditFeaturedModal: false,
-
-
-      settings: [
-        { label: 'Name', value: 'Lyka' },
-        { label: 'Email', value: 'lyka99@gmail.com' },
-        { label: 'Password', value: '************' },
-        { label: 'Phone number', value: '0987653562' },
-        { label: 'Address', value: 'St 32, Beoung Kak2, khan tuol kork, Phnom Penh, Cambodia' },
-        { label: 'Date of birth', value: '01-01-1998' },
-      ]
-    };
-  },
+  };
+},
+created() {
+  this.fetchUserProfile();
+  this.fetchUserPosts();
+  this.fetchUserPhotos();
+},
   methods: {
-      handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.profileImage = URL.createObjectURL(file);
-        this.showImageOptions = false;
-      }
-    },
-    selectFromLibrary() {
-      this.$refs.fileInput.click();
-    },
-    takePhoto() {
-      alert("Camera access not implemented.");
-      this.showImageOptions = false;
-    },
-    changeCoverPhoto() {
-      alert("You selected change cover.");
-      this.showImageOptions = false;
-    },
-    deleteProfileImage() {
-      this.profileImage = null;
-      this.showImageOptions = false;
-    },
-    openEditBioModal() {
-      this.newBioText = this.bioText; // set existing bio
-      this.showEditBioModal = true;
-    },
-    saveBio() {
-      this.bioText = this.newBioText;
-      this.showEditBioModal = false;
-    },
-    openEditDetailsModal() {
-      this.newDetails = { ...this.details };
-      this.showEditDetailsModal = true;
-    },
-    saveDetails() {
-      this.details = { ...this.newDetails };
-      this.showEditDetailsModal = false;
-    },
-    removeFeatured(index) {
-      this.featuredPhotos.splice(index, 1);
-    },
-    addFeaturedPhoto(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const imageUrl = URL.createObjectURL(file);
-        this.featuredPhotos.push(imageUrl);
-  }
-}
+    // user profile
+  // Fetch user profile data
+  async fetchUserProfile() {
+    try {
+      const res = await axios.get('http://localhost:8000/api/user/1'); // Assuming 1 is the user ID
+      const data = res.data;
+      this.bioText = data.bio || "I'm a vlogger in Cambodia. I love traveling :)";
+      this.profileImage = data.profile_image || this.defaultImage;
+      this.details = {
+        location: res.data.location,
+        instagram: res.data.instagram,
+        nickname: res.data.nickname,
+      };
+    } catch (err) {
+      console.error("Error fetching user profile:", err);
+    }
+  },
 
-  }
-};
+  // Update user profile details
+  async updateUserProfile() {
+    try {
+      const res = await axios.put(`http://localhost:8000/api/user/${this.userId}`, {
+        name: this.details.name,
+        location: this.details.location,
+        instagram: this.details.instagram,
+        nickname: this.details.nickname,
+      });
+      this.userProfile = res.data;
+      alert("Profile updated!");
+    } catch (err) {
+      console.error("Error updating user profile:", err);
+    }
+  },
+    // Handle image upload
+  async handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("user_id", 1); // Assuming user_id is 1
+
+      try {
+        const res = await axios.post(`http://localhost:8000/api/user/upload-profile`, formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        this.profileImage = res.data.profile_image;
+      } catch (err) {
+        console.error("Error uploading profile image:", err);
+      }
+    }
+  },
+  // Handle bio update
+  saveBio() {
+    this.bioText = this.newBioText;
+    this.showEditBioModal = false;
+    this.updateUserProfile();
+  },
+
+  // Fetch user posts
+  async fetchUserPosts() {
+    try {
+      const res = await axios.get('http://localhost:8000/api/posts/1'); // Replace with actual API endpoint
+      this.posts = res.data;
+    } catch (err) {
+      console.error("Error fetching user posts:", err);
+    }
+  },
+
+  // Fetch user photos (Gallery and Featured)
+  async fetchUserPhotos() {
+    try {
+      const res = await axios.get('http://localhost:8000/api/photos/1');
+      const allPhotos = res.data;
+
+      // Assuming the data contains an array with image types (gallery or featured)
+      this.galleryPhotos = allPhotos.filter(photo => photo.type === 'gallery').map(photo => photo.path);
+      this.featuredPhotos = allPhotos.filter(photo => photo.type === 'featured').map(photo => photo.path);
+    } catch (err) {
+      console.error("Error fetching user photos:", err);
+    }
+  },
+
+  // Handle featured photo add
+  async addFeaturedPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("user_id", 1); // Assuming user_id is 1
+    formData.append("type", "featured");
+
+    try {
+      const res = await axios.post(`http://localhost:8000/api/photos/upload`, formData);
+      this.featuredPhotos.push(res.data.path);
+    } catch (err) {
+      console.error("Error uploading featured photo:", err);
+    }
+  },
+
+  // Toggle image options for editing
+  selectFromLibrary() {
+    this.$refs.fileInput.click();
+  },
+
+  takePhoto() {
+    alert("Camera access not implemented.");
+  },
+
+  changeCoverPhoto() {
+    alert("You selected change cover.");
+  },
+
+  deleteProfileImage() {
+    this.profileImage = this.defaultImage;
+  },
+},
+
+}
 </script>
 
 <style scoped>
@@ -461,7 +490,7 @@ export default {
   position: absolute;
   bottom: -10px;
   left: 0;
-  width: 60%;
+  width: 100%;
   height: 3px;
   background-color: #398C5E;
   border-radius: 2px;
@@ -876,6 +905,8 @@ export default {
   gap: 12px;
   flex-wrap: wrap;
 }
+/* setting */
+
 .change-btn {
   padding: 6px 12px;
   background: #fff;
@@ -891,16 +922,6 @@ export default {
   background: #f1fdf7;
 }
 
-.add-email-btn {
-  padding: 6px 12px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  color: #111;
-  cursor: pointer;
-  white-space: nowrap;
-}
 /* Edit Pf */
 .profile-image-modal {
   position: absolute;

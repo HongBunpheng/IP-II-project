@@ -45,32 +45,49 @@ export default {
     };
   },
   methods: {
-    handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.form.image = file;
-        this.imagePreview = URL.createObjectURL(file);
-      }
-    },
-    submitPost() {
-      if (!this.form.title || !this.form.location || !this.form.date || !this.form.image) {
-        alert("Please fill out all fields and upload an image.");
-        return;
-      }
+    async createPost() {
+  const formData = new FormData();
+  formData.append("title", this.title);
+  formData.append("image", this.imageFile);
+  formData.append("location", this.location);
+  formData.append("date", this.date);
+  formData.append("user_id", 1);
 
-      console.log("Post created:", this.form);
-      alert("Post submitted successfully!");
-
-      this.form = {
-        title: '',
-        location: '',
-        date: '',
-        image: null
-      };
-      this.imagePreview = null;
-      this.$router.push('/profile');
-    }
+  try {
+    await axios.post(`/posts`, formData);
+    alert("Post created!");
+    this.$emit("close"); // close modal
+  } catch (err) {
+    console.error("Create post failed", err);
   }
+},
+
+//     handleImageUpload(event) {
+//       const file = event.target.files[0];
+//       if (file) {
+//         this.form.image = file;
+//         this.imagePreview = URL.createObjectURL(file);
+//       }
+//     },
+//     submitPost() {
+//       if (!this.form.title || !this.form.location || !this.form.date || !this.form.image) {
+//         alert("Please fill out all fields and upload an image.");
+//         return;
+//       }
+
+//       console.log("Post created:", this.form);
+//       alert("Post submitted successfully!");
+
+//       this.form = {
+//         title: '',
+//         location: '',
+//         date: '',
+//         image: null
+//       };
+//       this.imagePreview = null;
+//       this.$router.push('/profile');
+//     }
+ }
 };
 </script>
 
