@@ -1,187 +1,224 @@
 <template>
-  <div class="city-wrapperr">
-    <!-- Left: Description -->
-    <div class="city-left">
-      <h1>Siem Reap</h1>
-      <p>Siem Reap is a popular tourist city in <br>Cambodia, home to the famous Angkor <br>Wat temple.</p>
-      <button>more</button>
+  <div class="city-slider">
+    <!-- Current background -->
+    <div class="background" :style="{ backgroundImage: `url(${currentBackground})` }"></div>
+
+    <!-- Animated background -->
+    <div
+      v-if="animating"
+      class="background background-next"
+      :style="{ backgroundImage: `url(${nextBackground})` }"
+      @animationend="onAnimationEnd"
+    ></div>
+
+    <!-- Text and More Button -->
+    <div class="bg-content" :key="index">
+      <div class="name">{{ allItems[index].title }}</div>
+      <div class="des">{{ allItems[index].description }}</div>
+      <button class="button">More</button>
     </div>
 
-    <!-- Right: Scrollable image slider -->
-    <div class="city-right">
-      <div class="slider" ref="slider" @scroll="handleScroll">
+    <!-- Thumbnails -->
+    <div class="container">
+      <div class="slide">
         <div
-          class="slide-img"
-          v-for="(img, i) in images"
+          v-for="(item, i) in visibleItems.slice(1, 6)"
           :key="i"
-          :style="{ backgroundImage: `url(${getImage(img)})` }"
-          @mouseover="hoveredIndex = i"
-          @mouseleave="hoveredIndex = null"
+          class="item"
+          :style="getStyle(i)"
+          @click="goToSlide((index + i + 1) % allItems.length)"
         ></div>
-      </div>
-
-      <!-- Dot indicators -->
-      <div class="dots">
-        <span
-          v-for="(img, i) in images"
-          :key="i"
-          :class="{ active: i === hoveredIndex ?? activeIndex }"
-        ></span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 
-const images = [
-  'statue.jpg',
-  'lake.jpg',
-  'monument.jpg',
-  'kompot.png',
-  'pvh.jpg',
+const allItems = [
+  { title: 'Phnom Penh', description: 'The capital city.', image: new URL('../assets/a1.jpg', import.meta.url).href },
+  { title: 'Siem Reap', description: 'Angkor Wat temple.', image: new URL('../assets/a2.jpg', import.meta.url).href },
+  { title: 'Ratanakiri', description: 'Jungle & waterfalls.', image: new URL('../assets/a3.jpg', import.meta.url).href },
+  { title: 'Kampot', description: 'Riverside charm.', image: new URL('../assets/a4.jpg', import.meta.url).href },
+  { title: 'Kep', description: 'Seafood and sunsets.', image: new URL('../assets/a5.png', import.meta.url).href },
+  { title: 'Battambang', description: 'Colonial town.', image: new URL('../assets/a6.jpg', import.meta.url).href },
+  { title: 'Mondulkiri', description: 'Elephants and nature.', image: new URL('../assets/a7.jpg', import.meta.url).href },
 ]
 
-const slider = ref(null)
-const hoveredIndex = ref(null)
-const activeIndex = ref(0)
+const index = ref(0)
+const currentBackground = ref(allItems[0].image)
+const nextBackground = ref('')
+const animating = ref(false)
 
-const getImage = (img) =>
-  new URL(`../assets/${img}`, import.meta.url).href
+const visibleItems = computed(() => {
+  const result = []
+  for (let i = 0; i < 6; i++) {
+    result.push(allItems[(index.value + i) % allItems.length])
+  }
+  return result
+})
 
-const handleScroll = () => {
-  const el = slider.value
-  const itemWidth = el.children[0].offsetWidth + 16 // 16 = gap
-  const scrollLeft = el.scrollLeft
-  const index = Math.round(scrollLeft / itemWidth)
-  activeIndex.value = index
+const goToSlide = (target) => {
+  if (animating.value || target === index.value) return
+  index.value = target
+  nextBackground.value = allItems[target].image
+  animating.value = true
 }
 
-onMounted(() => {
-  nextTick(() => {
-    handleScroll()
-  })
-})
+const onAnimationEnd = () => {
+  currentBackground.value = nextBackground.value
+  animating.value = false
+}
+
+const getStyle = (i) => {
+  const gap = 240
+  return {
+    left: `calc(50% + ${i * gap}px)`,
+    backgroundImage: `url(${visibleItems.value[i + 1]?.image})`,
+  }
+}
 </script>
 
 <style scoped>
-.city-wrapperr {
-  display: flex;
+.city-slider {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+}
+
+.background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-image: url('../assets/background.jpg');
-  /* border-radius: 20px; */
-  overflow: hidden;
-  padding: 2rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  top: 0;
+  left: 0;
+  z-index: 0;
+  filter: brightness(0.9);
+}
+
+.background::after {
+  content: '';
+  position: absolute;
   width: 100%;
-  height: 47rem;
-  margin: 0 auto;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0));
+  z-index: 1;
+}
+
+.background-next {
+  z-index: 1;
+  animation: fadeInZoom 0.8s ease-in-out forwards;
+}
+
+@keyframes fadeInZoom {
+  from {
+    opacity: 0;
+    transform: scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bg-content {
+  position: absolute;
+  top: 50%;
+  left: 6%;
+  transform: translateY(-50%);
+  z-index: 2;
   color: white;
-  /* background-color: red; */
-
+  text-align: left;
+  max-width: 400px;
 }
 
-
-.city-left {
-  width: 40%;
-  padding: 20px;
-  display: flex;
-  margin-left: 30px;
-  margin-top: 4rem;
-  flex-direction: column;
-  justify-content: left;
-  align-items: start;
+.bg-content .name {
+  font-size: 48px;
+  font-weight: 800;
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 8px;
+  animation: fadeText 0.5s ease forwards;
 }
 
-.city-left h1 {
-  font-size: 4rem;
-  margin-top: 20px;
-  font-weight: bold;
-
-  
-}
-
-.city-left p {
-  margin-top: 5px;
-  font-size: 25px;
-  line-height: 1.5;
-  text-align: start;
-  justify-content: left;
-  /* align-items: start; */
-}
-
-.city-left button {
-  width: 16%;
-  height: 12%;
-  margin-top: 0.9rem;
-  background: fff;
-  color: black;
-  font-weight: bold;
+.bg-content .des {
   font-size: 16px;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
+  font-weight: 400;
+  line-height: 1.5;
+  opacity: 0.9;
+  animation: fadeText 0.5s ease 0.1s forwards;
 }
 
-.city-right {
-  width: 50%;
-  position: relative;
-}
-
-.slider {
-  display: flex;
-  margin-top: 6rem;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  gap: 1rem;
-  padding: 1rem 0;
-  scrollbar-width: none;
-  background-color: transparent;
-}
-
-.slider::-webkit-scrollbar {
-  display: none;
-}
-
-.slide-img {
-  flex: 0 0 auto;
-  width: 280px;
-  height: 430px;
-  border-radius: 20px;
-  background-position: center;
-  background-size: cover;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s;
-}
-
-.slide-img:hover {
-  transform: scale(1.05);
-}
-
-.dots {
-  display: flex;
-  gap: 8px;
-  margin-top: 3rem;
-  justify-content: start;
-  align-items: center;
-  justify-items: center;
-}
-
-.dots span {
-  width: 15px;
-  height: 15px;
-  background: #ccc;
-  border-radius: 50%;
-  transition: background 0.3s;
-  border: 1px solid black;
+.bg-content .button {
+  margin-top: 20px;
+  padding: 10px 20px;
   background-color: white;
+  color: #333;
+  border: none;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  animation: fadeText 0.5s ease 0.2s forwards;
+  transition: all 0.3s ease;
 }
 
-.dots span.active {
-  background: #00cc99;
+.bg-content .button:hover {
+  background-color: #0c9272;
+  color: white;
+}
+
+@keyframes fadeText {
+  from {
+    opacity: 1;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container {
+  position: relative;
+  z-index: 3;
+  width: 1400px;
+  height: 600px;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.slide {
+  position: relative;
+  width: 90%;
+  height: 100%;
+}
+
+.item {
+  width: 220px;
+  height: 350px;
+  position: absolute;
+  top: 50%;
+  gap: 20px;
+  transform: translate(0, -50%);
+  border-radius: 24px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.25);
+  transition: left 0.5s ease, transform 0.4s ease;
+  cursor: pointer;
+  backdrop-filter: blur(3px);
+  overflow: hidden;
+  margin-left: 10px;
 }
 </style>
+

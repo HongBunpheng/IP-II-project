@@ -40,9 +40,9 @@ import Province from '@/components/Province.vue'
 
     <!-- Image Cards -->
     <div class="card-container">
-      <Newplace image="new1.jpg" label="Mountain" />
-      <Newplace image="new2.jpg" label="Temple" />
-      <Newplace image="new3.jpg" label="SEA" />
+      <Newplace image="new1.jpg" label="" />
+      <Newplace image="new2.jpg" label="" />
+      <Newplace image="new3.jpg" label="" />
     </div>
 
     <!-- City Section Title + Slider with background -->
@@ -133,6 +133,7 @@ import Province from '@/components/Province.vue'
   color: white;
   text-decoration: none;
   position: relative;
+  text-shadow: 2px 4px 2px black;
 }
 
 .nav-links a::after {
@@ -160,7 +161,7 @@ import Province from '@/components/Province.vue'
   background: transparent;
   border: none;
   font-size: 1.5rem;
-  color: white;
+  color: black;
   cursor: pointer;
 }
 
@@ -172,6 +173,11 @@ import Province from '@/components/Province.vue'
   border-radius: 20px;
   padding: 6px 18px;
   cursor: pointer;
+  border: solid 2px #00cc99;
+}
+.login-btn:hover {
+  background: #00cc99;
+  color: white;
 }
 
 /* Hero Section */
@@ -185,7 +191,7 @@ import Province from '@/components/Province.vue'
 }
 
 .hero-text h1 {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   font-weight: bold;
 }
 
@@ -216,14 +222,14 @@ import Province from '@/components/Province.vue'
 }
 
 .city-section .title {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: bold;
 }
 
 .city-section .subtitle {
   color: #00cc99;
   font-family: 'Brush Script MT', cursive;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   margin-top: 0.5rem;
 }
 

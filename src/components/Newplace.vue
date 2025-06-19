@@ -3,7 +3,7 @@
     <img v-if="imageUrl" :src="imageUrl" :alt="label" class="place-image" />
     <div class="place-overlay">
       <span class="label">{{ label }}</span>
-      <span class="arrow"><i class="ri-arrow-right-line"></i></span>
+      <span class="arrow"></span>
     </div>
   </div>
 </template>
