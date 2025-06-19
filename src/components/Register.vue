@@ -4,7 +4,7 @@
       <div class="signup-container">
         <!-- Left Frame -->
         <div class="left-frame">
-          <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
+          <img src="@/assets/picture/logo.png" alt="TripTrek Logo" class="logo" />
           <h2 class="title">Hello User!</h2>
           <p class="subtitle">Enter below details to create an account</p>
 

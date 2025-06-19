@@ -10,7 +10,7 @@
         </div>
 
         <div class="right-frame">
-          <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
+          <img src="@/assets/picture/logo.png" alt="TripTrek Logo" class="logo" />
           <h2 class="title">Welcome Back</h2>
           <p class="subtitle">Enter your email and password to login</p>
 

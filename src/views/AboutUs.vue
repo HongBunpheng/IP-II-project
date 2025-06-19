@@ -2,7 +2,7 @@
   <div class="about">
     <!-- Hero Section -->
     <div class="about-header">
-      <img src="../assets/aboutus.png" alt="AboutUs Image" />
+      <img src="../assets/picture/aboutus.png" alt="AboutUs Image" />
     </div>
 
     <!-- Main About Page -->
@@ -14,7 +14,7 @@
           </p>
         </div>
         <div class="about-image">
-          <img src="@/assets/aboutus1.png" alt="Travelers" />
+          <img src="@/assets/picture/aboutus1.png" alt="Travelers" />
         </div>
       </div>
 
@@ -36,11 +36,11 @@
 </template>
 
 <script>
-import bunpheng from '@/assets/bunpheng.png'
-import dane from '@/assets/dane.png'
-import nita from '@/assets/nita.png'
-import kado from '@/assets/kado.png'
-import nimol from '@/assets/nimol.png'
+import bunpheng from '@/assets/picture/bunpheng.png'
+import dane from '@/assets/picture/dane.png'
+import nita from '@/assets/picture/nita.png'
+import kado from '@/assets/picture/kado.png'
+import nimol from '@/assets/picture/nimol.png'
 
 export default {
   data() {
@@ -63,19 +63,19 @@ export default {
   font-family: "Arial", sans-serif;
   
 }
-.about-header {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
 
-.about-header img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
+.about-header {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    .about-header img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
 
 .about-content {
   display: flex;
@@ -98,7 +98,7 @@ export default {
 .about-text p {
   font-size: 1.1rem;
   color: #444;
-  line-height: 2;
+  line-height: 2.3;
   text-align: justify;
   margin-bottom: 5rem;
 }
@@ -137,11 +137,11 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 3.2rem;
+  gap: 3.5rem;
 }
 
 .team-member {
-  width: 200px;
+  width: 250px;
   text-align: center;
 }
 

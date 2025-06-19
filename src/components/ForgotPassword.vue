@@ -11,7 +11,7 @@
         </div>
         <!-- Right Frame -->
         <div class="right-frame">
-          <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
+          <img src="@/assets/picture/logo.png" alt="TripTrek Logo" class="logo" />
           <h2 class="title">Forgot Password?</h2>
           <p class="subtitle">No worries, we will send you reset Instructions</p>
           <form @submit.prevent="handleSendCode">

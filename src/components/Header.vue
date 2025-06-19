@@ -7,7 +7,7 @@
       </div>
 
       <div class="logo">
-        <img src="@/assets/picture/logo.png" alt="TripTrek Logo" />
+        <img src="@/assets/picture/logo-white.png" alt="TripTrek Logo" />
       </div>
 
       <div class="other-links">
@@ -52,7 +52,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 30px;
+  padding: 15px 30px;
   background-color: #25d3b7;
   box-shadow: 0 4px 2px rgba(10, 10, 10, 0.196);
 }
@@ -91,7 +91,8 @@ export default {
 }
 
 .logo img {
-  width: 70px;
+  width: 100%;
+  padding: 10px;
 }
 
 .other-links {

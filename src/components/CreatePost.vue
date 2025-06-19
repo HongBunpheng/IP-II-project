@@ -128,8 +128,7 @@ const handleSubmit = async () => {
     }
 
     try {
-        const base = import.meta.env.VITE_API_BASE_URL
-        const res = await axios.post(`${base}/journals`, formData)
+        const res = await axios.post(`${baseApi}/api/journals`, formData)
 
         message.value = res.data.message || '✅ Journal saved!'
         title.value = ''

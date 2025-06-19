@@ -2,21 +2,24 @@
   import Header from './components/Header.vue'
   import Footer from './components/Footer.vue'
   import Auth from './components/Auth.vue';
+  import Province from './components/Province.vue';
 
   export default {
     name: 'App',
     components: {
       Header,
       Footer,
-      Auth
+      Auth,
+      Province
+
     }
   }
 </script>
 
 <template>
   <Header />
+
   <router-view />
-  <Auth />
 </template>
 
 <style>

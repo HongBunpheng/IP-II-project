@@ -12,7 +12,7 @@
 
         <!-- Right Frame -->
         <div class="right-frame">
-          <img src="@/assets/logo.png" alt="TripTrek Logo" class="logo" />
+          <img src="@/assets/picture/logo.png" alt="TripTrek Logo" class="logo" />
           <a href="#" class="back-btn" @click="$emit('go-back')">
             <font-awesome-icon :icon="['far', 'circle-left']" /> Back
           </a>
