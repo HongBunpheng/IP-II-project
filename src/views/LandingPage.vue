@@ -1,7 +1,9 @@
 <script setup>
 import Newplace from '@/components/Newplace.vue'
 import City from '@/components/City.vue'
-import Budget from '@/components/Budget.vue';
+import Budget from '@/components/Budget.vue'
+import Event from '@/components/Event.vue'
+import Province from '@/components/Province.vue'
 </script>
 
 <template>
@@ -38,9 +40,9 @@ import Budget from '@/components/Budget.vue';
 
     <!-- Image Cards -->
     <div class="card-container">
-      <Newplace image="mountain.png" label="Mountain" />
-      <Newplace image="temple.png" label="Temple" />
-      <Newplace image="sea.png" label="SEA" />
+      <Newplace image="new1.jpg" label="Mountain" />
+      <Newplace image="new2.jpg" label="Temple" />
+      <Newplace image="new3.jpg" label="SEA" />
     </div>
 
     <!-- City Section Title + Slider with background -->
@@ -51,6 +53,26 @@ import Budget from '@/components/Budget.vue';
         <div class="newcity-section">
           <City />
           <Budget />
+          <Event />
+          <!-- <Province /> -->
+           <div class="province-section">
+            <h2 class="province-title">Most visited province</h2>
+            <p class="province-subtitle">Here are some of the most visited places in 2025</p>
+
+            <div class="province-list">
+              <Province imageSrc="visit1.jpg" location="Koh Rong, Cambodia" name="Shihanoukville" />
+              <Province imageSrc="visit2.jpg" location="Angkor Wat, Cambodia" name="Siem Reap" />
+              <Province imageSrc="visit3.jpg" location="Kirirom, Cambodia" name="Kompong Speu" />
+            </div>
+
+            <!-- Optional arrows -->
+            <div class="province-arrows">
+              <button class="arrow-btn">←</button>
+              <button class="arrow-btn filled">→</button>
+            </div>
+          </div>
+
+
         </div>
       </div>
     </div>
@@ -96,16 +118,18 @@ import Budget from '@/components/Budget.vue';
 
 .nav-links {
   display: flex;
-  gap: 7.5rem;
+  gap: 7rem;
   font-size: 1.2rem;
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
+  /* background-color: red; */
+
 }
 
 .nav-links a {
   font-weight: bold;
-  font-size: 22px;
+  font-size: 20px;
   color: white;
   text-decoration: none;
   position: relative;
@@ -234,4 +258,59 @@ import Budget from '@/components/Budget.vue';
     gap: 1rem;
   }
 }
+
+/* province section */
+.province-section {
+  margin-top: 4rem;
+  text-align: center;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.province-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #111;
+}
+
+.province-subtitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.province-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.province-arrows {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.arrow-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ddd;
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.arrow-btn.filled {
+  background: #295943;
+}
+
+
+
 </style>

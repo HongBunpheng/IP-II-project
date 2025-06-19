@@ -71,13 +71,13 @@ onMounted(() => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-image: url('@/assets/angkor-bg.png');
+  background-image: url('../assets/background.jpg');
   /* border-radius: 20px; */
   overflow: hidden;
   padding: 2rem;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
   width: 100%;
-  height: 38rem;
+  height: 47rem;
   margin: 0 auto;
   color: white;
   /* background-color: red; */

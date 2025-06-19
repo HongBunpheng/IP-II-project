@@ -47,7 +47,6 @@ const getImage = (img) => new URL(`../assets/${img}`, import.meta.url).href
   padding: 4rem 2rem;
   background: white;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(to bottom, #fff, #e9fdf7);
 }
 
 .budget-header {
@@ -75,7 +74,7 @@ const getImage = (img) => new URL(`../assets/${img}`, import.meta.url).href
 
 .card {
   position: relative;
-  width: 250px;
+  width: 290px;
   height: 350px;
   border-radius: 16px;
   overflow: hidden;
@@ -84,6 +83,15 @@ const getImage = (img) => new URL(`../assets/${img}`, import.meta.url).href
   opacity: 0.4;
   filter: brightness(0.6);
   z-index: 1;
+  box-shadow:
+  rgba(41, 89, 67, 0.25) 0px 54px 55px,
+  rgba(41, 89, 67, 0.12) 0px -12px 30px,
+  rgba(41, 89, 67, 0.12) 0px 4px 6px,
+  rgba(41, 89, 67, 0.17) 0px 12px 13px,
+  rgba(41, 89, 67, 0.09) 0px -3px 5px;
+
+  /* background: linear-gradient(to bottom, #fff, #e9fdf7); */
+
 }
 
 .card.active {
