@@ -37,14 +37,43 @@
 import { ref, computed } from 'vue'
 
 const allItems = [
-  { title: 'Phnom Penh', description: 'The capital city.', image: new URL('../assets/a1.jpg', import.meta.url).href },
-  { title: 'Siem Reap', description: 'Angkor Wat temple.', image: new URL('../assets/a2.jpg', import.meta.url).href },
-  { title: 'Ratanakiri', description: 'Jungle & waterfalls.', image: new URL('../assets/a3.jpg', import.meta.url).href },
-  { title: 'Kampot', description: 'Riverside charm.', image: new URL('../assets/a4.jpg', import.meta.url).href },
-  { title: 'Kep', description: 'Seafood and sunsets.', image: new URL('../assets/a5.png', import.meta.url).href },
-  { title: 'Battambang', description: 'Colonial town.', image: new URL('../assets/a6.jpg', import.meta.url).href },
-  { title: 'Mondulkiri', description: 'Elephants and nature.', image: new URL('../assets/a7.jpg', import.meta.url).href },
-]
+  {
+    title: 'Angkor Wat Temple',
+    description: 'The world’s largest religious monument, a symbol of Cambodia’s history and culture.',
+    image: new URL('../assets/a1.jpg', import.meta.url).href
+  },
+  {
+    title: 'Royal Palace',
+    description: 'A stunning complex in Phnom Penh that serves as the royal residence of the King of Cambodia.',
+    image: new URL('../assets/a2.jpg', import.meta.url).href
+  },
+  {
+    title: 'Bokor National Park',
+    description: 'A lush escape in the mountains featuring cool weather, waterfalls, and colonial ruins.',
+    image: new URL('../assets/a3.jpg', import.meta.url).href
+  },
+  {
+    title: 'Preah Thorng Neang Neak Roundabout',
+    description: 'A symbolic statue depicting a famous Khmer legend, located in the heart of Kep.',
+    image: new URL('../assets/a4.jpg', import.meta.url).href
+  },
+  {
+    title: 'National Museum',
+    description: 'Home to thousands of ancient Khmer artifacts and rich Cambodian heritage.',
+    image: new URL('../assets/a5.png', import.meta.url).href
+  },
+  {
+    title: 'Preah Vihear Temple',
+    description: 'A breathtaking cliffside temple with panoramic views, rich in spiritual history.',
+    image: new URL('../assets/a6.jpg', import.meta.url).href
+  },
+  {
+    title: 'Koh Songsa',
+    description: 'A luxury private island in the Gulf of Thailand known for clear waters and tranquility.',
+    image: new URL('../assets/a7.jpg', import.meta.url).href
+  }
+];
+
 
 const index = ref(0)
 const currentBackground = ref(allItems[0].image)

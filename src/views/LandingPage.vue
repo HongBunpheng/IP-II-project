@@ -60,8 +60,8 @@ import Province from '@/components/Province.vue'
             <p class="province-subtitle">Here are some of the most visited places in 2025</p>
 
             <div class="province-list">
-              <Province imageSrc="visit1.jpg" location="Koh Rong, Cambodia" name="Shihanoukville" />
-              <Province imageSrc="visit2.jpg" location="Angkor Wat, Cambodia" name="Siem Reap" />
+              <Province imageSrc="3.jpg" location="Koh Rong, Cambodia" name="Shihanoukville" />
+              <Province imageSrc="angkor.jpg" location="Angkor Wat, Cambodia" name="Siem Reap" />
               <Province imageSrc="visit3.jpg" location="Kirirom, Cambodia" name="Kompong Speu" />
             </div>
 
