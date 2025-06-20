@@ -1,7 +1,9 @@
 <template>
   <div>
     <Header />
-    <router-view />
+    <div class="app-container">
+      <router-view />
+    </div>
     <Footer />
   </div>
 </template>
@@ -18,12 +20,11 @@ html, body, #app {
   padding: 0;
   min-height: 100vh;
 }
-
-
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  padding-top: 120px;
 }
 </style>
 

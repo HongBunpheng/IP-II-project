@@ -61,7 +61,7 @@ export default {
 <style scoped>
 .about {
   font-family: "Arial", sans-serif;
-  
+  z-index: 0;
 }
 
 .about-header {
