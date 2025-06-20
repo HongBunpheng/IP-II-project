@@ -23,10 +23,11 @@
 
         <!-- Rating + Price -->
         <div class="rating-price">
-            <span class="price-tag">price {{ hotel.price }}</span>
             <div class="stars">
                 <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= hotel.rating }">★</span>
             </div>
+            <span class="price-tag">price {{ hotel.price }}</span>
+            
         </div>
 
         <!-- Description -->
@@ -143,6 +144,7 @@ onMounted(async () => {
 .medium-image {
     flex: 1;
     height: 190px;
+    width: 285px;
     object-fit: cover;
     border-radius: 12px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
@@ -158,13 +160,15 @@ onMounted(async () => {
 
 .rating-price {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
     gap: 1rem;
-    margin: 1.5rem 0 1rem;
+    margin: 1rem auto;
     flex-wrap: wrap;
+    justify-content: flex-start;
+    max-width: 970px; /* match image area width */
     text-align: left;
 }
+
 
 .stars {
     display: flex;
@@ -192,14 +196,14 @@ onMounted(async () => {
     font-size: 15px;
     line-height: 1.6;
     color: #333;
-    max-width: 800px;
+    max-width: 990px;
     margin: 0 auto 1rem auto;
     text-align: left;
 }
 
 .book-button-wrapper {
     text-align: right;
-    max-width: 800px;
+    max-width: 990px;
     margin: 1rem auto 0 auto;
 }
 

@@ -11,6 +11,7 @@ import HotelPreview from "@/views/HotelPreview.vue";
 import Profile from "@/views/Profile.vue";
 import Budget from "@/views/Budget.vue";
 import PostCard from "@/views/PostCard.vue";
+import RestaurantSelect from '@/views/RestaurantSelect.vue'
 
 const routes = [
   {
@@ -72,6 +73,11 @@ const routes = [
     name: 'PostCard',
     component: PostCard
   },
+  {
+  path: '/restaurant-select',
+  name: 'RestaurantSelect',
+  component: () => import('@/views/RestaurantSelect.vue')
+},
 ];
 
 const router = createRouter({
