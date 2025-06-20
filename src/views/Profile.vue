@@ -8,7 +8,7 @@
         <!-- PROFILE -->
         <div class="profile-banner">
             <div class="profile-pic-wrapper">
-                <img :src="profileImage || defaultImage" alt="Profile" class="profile-pic" />
+                <img :src="`${baseURL}/${profileImage}`" alt="Profile" class="profile-pic" />
                 <span class="edit-icon" @click="showImageOptions = true">✏️</span>
 
                 <!-- Profile Image Options Modal -->
@@ -21,7 +21,7 @@
                     <input ref="fileInput" type="file" accept="image/*" @change="handleImageUpload" hidden />
                 </div>
             </div>
-            <h2 class="profile-name">Nikah</h2>
+            <h2 class="profile-name">{{ name }}</h2>
 
             <!--  3 BUTTONS the top -->
             <div class="tab-buttons">
@@ -38,10 +38,11 @@
                 </div>
                 <div class="tab-divider"></div>
                 <!-- Logout -->
-                <div class="tab-button" :class="{ active: currentTab === 'logout' }" @click="currentTab = 'logout'">
+                <div class="tab-button" :class="{ active: currentTab === 'logout' }" @click="handleLogout">
                     Logout
                     <div class="underline" v-if="currentTab === 'logout'"></div>
                 </div>
+
             </div>
 
             <!-- setting detail -->
@@ -60,15 +61,14 @@
                     </div>
 
                     <div class="button-column">
-                        <button v-if="editFields[field.label]" class="change-btn"
-                            @click="editFields[field.label] = false">
+                        <button v-if="editFields[field.label]" class="change-btn" @click="saveSetting(field)">
                             ✅ Save
                         </button>
                         <button v-else class="change-btn" @click="editFields[field.label] = true">
                             ✏️ Change
                         </button>
+                        <button class="change-btn" @click="deleteField(field.label)">🗑️ Delete</button>
                     </div>
-
                 </div>
             </div>
 
@@ -124,7 +124,8 @@
 
                     <div class="featured">
                         <div class="featured-images">
-                            <img v-for="(photo, index) in featuredPhotos" :key="index" :src="photo" alt="Featured" />
+                            <img v-for="(photo, index) in featuredPhotos" :key="index" :src="`${baseURL}/${photo}`"
+                                alt="Featured" />
                         </div>
                         <button class="gray-button" @click="showEditFeaturedModal = true">Edit Featured</button>
                     </div>
@@ -206,155 +207,241 @@
             </div>
         </div>
     </div>
-    <Footer />
 </template>
 
 <script>
-import Footer from '@/components/Footer.vue';
 import PostCard from '@/views/PostCard.vue';
 import axios from 'axios';
 
 export default {
     name: 'ProfilePage',
-    components: {
-        PostCard,
-        Footer,
-    },
+    components: { PostCard },
     data() {
         return {
-            currentTab: 'post', // Default tab
+            baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+            currentTab: 'post',
             viewMode: 'grid',
             showCreatePost: false,
             profileImage: null,
             defaultImage: "/src/assets/pf.png",
+            name: '',
             showImageOptions: false,
             showEditBioModal: false,
             newBioText: '',
-            bioText: "I'm a vlogger in Cambodia. I love traveling :)",
+            bioText: '',
             details: {
-                location: 'From Phnom Penh',
-                instagram: 'Nikah Official',
-                nickname: 'Nikah',
-            },
-            showEditDetailsModal: false,
-            newDetails: {
                 location: '',
                 instagram: '',
                 nickname: '',
             },
+            settings: [],
+            editFields: {},
             posts: [],
             galleryPhotos: [],
             featuredPhotos: [],
-            showEditFeaturedModal: false,
+            showEditDetailsModal: false,
+            newDetails: {
+                location: '',
+                instagram: '',
+                nickname: ''
+            }
         };
     },
     created() {
         this.fetchUserProfile();
         this.fetchUserPosts();
-        this.fetchUserPhotos();
     },
     methods: {
-        // user profile
-        // Fetch user profile data
+        getAuthHeader() {
+            return {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            };
+        },
+
         async fetchUserProfile() {
             try {
-                const res = await axios.get('http://localhost:8000/api/user/1'); // Assuming 1 is the user ID
-                const data = res.data;
-                this.bioText = data.bio || "I'm a vlogger in Cambodia. I love traveling :)";
-                this.profileImage = data.profile_image || this.defaultImage;
+                const res = await axios.get(`${this.baseURL}/api/profile`, this.getAuthHeader());
+                const user = res.data;
+
+                this.profileImage = user.profile_picture || this.defaultImage;
+                this.name = user.name || '';
+                this.bioText = user.bio || '';
                 this.details = {
-                    location: res.data.location,
-                    instagram: res.data.instagram,
-                    nickname: res.data.nickname,
+                    location: user.address || '',
+                    instagram: user.social_links?.instagram || '',
+                    nickname: user.nickname || '',
                 };
-            } catch (err) {
-                console.error("Error fetching user profile:", err);
-            }
-        },
 
-        // Update user profile details
-        async updateUserProfile() {
-            try {
-                const res = await axios.put(`http://localhost:8000/api/user/${this.userId}`, {
-                    name: this.details.name,
-                    location: this.details.location,
-                    instagram: this.details.instagram,
-                    nickname: this.details.nickname,
+                this.settings = [
+                    { label: 'Name', value: this.name },
+                    { label: 'Nickname', value: this.details.nickname },
+                    { label: 'Email', value: user.email || '' },
+                    { label: 'Location', value: this.details.location }
+                ];
+
+                this.settings.forEach(setting => {
+                    this.editFields[setting.label] = false;
                 });
-                this.userProfile = res.data;
-                alert("Profile updated!");
             } catch (err) {
-                console.error("Error updating user profile:", err);
+                console.error("Fetch profile failed:", err);
             }
         },
-        // Handle image upload
-        async handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const formData = new FormData();
-                formData.append("image", file);
-                formData.append("user_id", 1); // Assuming user_id is 1
 
-                try {
-                    const res = await axios.post(`http://localhost:8000/api/user/upload-profile`, formData, {
-                        headers: { "Content-Type": "multipart/form-data" }
-                    });
-                    this.profileImage = res.data.profile_image;
-                } catch (err) {
-                    console.error("Error uploading profile image:", err);
-                }
+        async updateUserProfile() {
+            const socialLinks = { instagram: this.details.instagram };
+            try {
+                await axios.put(`${this.baseURL}/api/profile`, {
+                    name: this.name,
+                    nickname: this.details.nickname,
+                    address: this.details.location,
+                    social_links: socialLinks,
+                    bio: this.bioText,
+                    featured_picture: this.featuredPhotos,
+                    profile_picture: this.profileImage
+                }, this.getAuthHeader());
+
+                alert("✅ Profile updated!");
+            } catch (err) {
+                console.error("❌ Update failed:", err);
             }
         },
-        // Handle bio update
-        saveBio() {
-            this.bioText = this.newBioText;
-            this.showEditBioModal = false;
+
+        async fetchUserPosts() {
+            try {
+                const res = await axios.get(`${this.baseURL}/api/journals`, this.getAuthHeader());
+                const userId = parseInt(localStorage.getItem('user_id'))
+
+                this.posts = res.data
+                    .filter(j => j.account_id === userId)
+                    .map(j => {
+                        const images = Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]')
+                        return {
+                            ...j,
+                            image: images.length ? `${this.baseURL}/${images[0]}` : '',
+                            date: new Date(j.created_at).toLocaleDateString()
+                        }
+                    });
+            } catch (err) {
+                console.error("❌ Failed to fetch posts", err)
+            }
+        },
+
+        deleteField(fieldLabel) {
+            switch (fieldLabel) {
+                case 'Name':
+                    this.name = '';
+                    break;
+                case 'Nickname':
+                    this.details.nickname = '';
+                    break;
+                case 'Email':
+                    alert("❌ Email cannot be deleted.");
+                    return;
+                case 'Location':
+                    this.details.location = '';
+                    break;
+                default:
+                    return;
+            }
             this.updateUserProfile();
         },
 
-        // Fetch user posts
-        async fetchUserPosts() {
+        async handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("image", file);
+
             try {
-                const res = await axios.get('http://localhost:8000/api/posts/1'); // Replace with actual API endpoint
-                this.posts = res.data;
+                const res = await axios.post(
+                    `${this.baseURL}/api/profile/upload-image`,
+                    formData,
+                    {
+                        headers: {
+                            ...this.getAuthHeader().headers,
+                            "Content-Type": "multipart/form-data"
+                        }
+                    }
+                );
+                this.profileImage = res.data.profile_picture;
             } catch (err) {
-                console.error("Error fetching user posts:", err);
+                console.error("Image upload failed:", err);
             }
         },
 
-        // Fetch user photos (Gallery and Featured)
-        async fetchUserPhotos() {
-            try {
-                const res = await axios.get('http://localhost:8000/api/photos/1');
-                const allPhotos = res.data;
-
-                // Assuming the data contains an array with image types (gallery or featured)
-                this.galleryPhotos = allPhotos.filter(photo => photo.type === 'gallery').map(photo => photo.path);
-                this.featuredPhotos = allPhotos.filter(photo => photo.type === 'featured').map(photo => photo.path);
-            } catch (err) {
-                console.error("Error fetching user photos:", err);
-            }
-        },
-
-        // Handle featured photo add
         async addFeaturedPhoto(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const formData = new FormData();
             formData.append("image", file);
-            formData.append("user_id", 1); // Assuming user_id is 1
-            formData.append("type", "featured");
 
             try {
-                const res = await axios.post(`http://localhost:8000/api/photos/upload`, formData);
+                const res = await axios.post(
+                    `${this.baseURL}/api/profile/featured-photo`,
+                    formData,
+                    {
+                        headers: {
+                            ...this.getAuthHeader().headers,
+                            "Content-Type": "multipart/form-data"
+                        }
+                    }
+                );
                 this.featuredPhotos.push(res.data.path);
             } catch (err) {
-                console.error("Error uploading featured photo:", err);
+                console.error("Add featured photo failed:", err);
             }
         },
 
-        // Toggle image options for editing
+        handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('user_id');
+            this.$router.push('/'); // or redirect to /auth or landing page
+        },
+
+        saveBio() {
+            if (this.newBioText) {
+                this.bioText = this.newBioText;
+                this.updateUserProfile();
+            }
+            this.showEditBioModal = false;
+        },
+
+        saveDetails() {
+            this.details = { ...this.newDetails };
+            this.showEditDetailsModal = false;
+            this.updateUserProfile();
+        },
+
+        saveSetting(field) {
+            const label = field.label;
+            const value = field.value;
+
+            if (label === 'Name') this.name = value;
+            else if (label === 'Nickname') this.details.nickname = value;
+            else if (label === 'Location') this.details.location = value;
+            // Email won't be updated (skip for now)
+
+            this.editFields[label] = false;
+            this.updateUserProfile().then(() => {
+                this.fetchUserProfile();  // 🔁 sync changes after save
+            });
+        },
+
+        openEditDetailsModal() {
+            this.newDetails = { ...this.details };
+            this.showEditDetailsModal = true;
+        },
+
+        openEditBioModal() {
+            this.newBioText = this.bioText;
+            this.showEditBioModal = true;
+        },
+
         selectFromLibrary() {
             this.$refs.fileInput.click();
         },
@@ -364,14 +451,19 @@ export default {
         },
 
         changeCoverPhoto() {
-            alert("You selected change cover.");
+            alert("Cover change not yet implemented.");
         },
 
         deleteProfileImage() {
             this.profileImage = this.defaultImage;
+            this.updateUserProfile();
         },
-    },
 
+        removeFeatured(index) {
+            this.featuredPhotos.splice(index, 1);
+            this.updateUserProfile();
+        }
+    }
 }
 </script>
 

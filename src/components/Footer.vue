@@ -1,7 +1,7 @@
 <template>
     <footer>
         <div class="logo">
-            <img src="@/assets/picture/logo.png" alt="TripTrek Logo" />
+            <img src="@/assets/picture/logo-white.png" alt="TripTrek Logo" />
         </div>
         <div class="footer-text">
             <p>© 2023 TripTrek. All rights reserved.</p>

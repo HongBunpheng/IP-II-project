@@ -73,7 +73,7 @@
 <script>
 import axios from 'axios'
 
-const baseURL = import.meta.env.VITE_API_URL
+const baseURL = import.meta.env.VITE_API_BASE_URL
 
 export default {
   emits: ['close'],
@@ -130,7 +130,7 @@ export default {
   width: 90%;
   max-width: 860px;
   height: 90vh;
-  background: url('../assets/register-bg.png') no-repeat center center;
+  background: url('../assets/picture/register-bg.png') no-repeat center center;
   background-size: cover;
   border-radius: 32px;
 }
@@ -308,7 +308,7 @@ form {
   position: relative;
 
   /* Background image */
-  background: url('../assets/register-bg.png') no-repeat center center;
+  background: url('../assets/picture/register-bg.png') no-repeat center center;
   background-size: cover;
 
   /* Only 3-side border */

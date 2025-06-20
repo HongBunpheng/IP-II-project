@@ -122,13 +122,19 @@ const handleSubmit = async () => {
     mentions.value.forEach((id, i) => formData.append(`mentions[${i}]`, id))
     files.value.forEach(file => formData.append('images[]', file))
 
-    console.log("📦 FormData Content:");
+    console.log("📦 FormData Content:")
     for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
+        console.log(pair[0], pair[1])
     }
 
     try {
-        const res = await axios.post(`${baseApi}/api/journals`, formData)
+        const token = localStorage.getItem('token')
+        const res = await axios.post(`${baseApi}/api/journals`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        })
 
         message.value = res.data.message || '✅ Journal saved!'
         title.value = ''
@@ -145,6 +151,44 @@ const handleSubmit = async () => {
         formError.value = err.response?.data?.message || 'Submission failed. Try again.'
     }
 }
+
+const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.")
+        return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const { latitude, longitude } = position.coords
+            location.value = `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`
+        },
+        (error) => {
+            console.error("Geolocation error:", error)
+            alert("Unable to retrieve your location.")
+        }
+    )
+}
+
+const searchLocations = () => {
+    const query = location.value.toLowerCase()
+    if (query.length > 1) {
+        locationSuggestions.value = [
+            `${query} City`,
+            `${query} Province`,
+            `${query} Beach`,
+            `${query} National Park`
+        ]
+    } else {
+        locationSuggestions.value = []
+    }
+}
+
+const selectLocation = (loc) => {
+    location.value = loc
+    locationSuggestions.value = []
+}
+
 </script>
 
 <style scoped>

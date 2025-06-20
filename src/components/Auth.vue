@@ -1,39 +1,20 @@
 <template>
   <div>
-    <Login
-      v-if="showLogin"
-      @show-register="toggleRegister(true)"
-      @show-forgot-password="showForgotPassword = true"
-    />
+    <Login v-if="showLogin" @show-register="toggleRegister(true)" @show-forgot-password="showForgotPassword = true" />
 
-    <Register
-      v-if="showRegister"
-      @close="toggleRegister(false)"
-      @show-login="showLogin = true; resetAllOtherViews();"
-    />
+    <Register v-if="showRegister" @close="toggleRegister(false)"
+      @show-login="showLogin = true; resetAllOtherViews();" />
 
-    <ForgotPassword
-      v-if="showForgotPassword"
-      @show-verify-code="toVerifyCode" 
-      @show-login="showLogin = true; resetAllOtherViews();"
-      @go-back="showForgotPassword = false; showLogin = true;"
-    />
+    <ForgotPassword v-if="showForgotPassword" @show-verify-code="toVerifyCode"
+      @show-login="showLogin = true; resetAllOtherViews();" @go-back="showForgotPassword = false; showLogin = true;" />
 
-    <VerifyCode
-      v-if="showVerifyCode"
-      :email="resetEmail" 
-      @show-reset-password="toResetPassword"
+    <VerifyCode v-if="showVerifyCode" :email="resetEmail" @show-reset-password="toResetPassword"
       @show-login="showLogin = true; resetAllOtherViews();"
-      @go-back="showVerifyCode = false; showForgotPassword = true;"
-    />
+      @go-back="showVerifyCode = false; showForgotPassword = true;" />
 
-    <ResetPassword
-      v-if="showResetPassword"
-      :email="resetEmail"
-      :code="resetCode"
+    <ResetPassword v-if="showResetPassword" :email="resetEmail" :code="resetCode"
       @show-login="showLogin = true; resetAllOtherViews();"
-      @go-back="showResetPassword = false; showVerifyCode = true;"
-    />
+      @go-back="showResetPassword = false; showVerifyCode = true;" />
   </div>
 </template>
 
@@ -65,8 +46,8 @@ export default {
   },
   methods: {
     toggleRegister(value) {
-      this.showRegister = value;
       this.resetAllOtherViews();
+      this.showRegister = value;
       this.showLogin = !value;
     },
     resetAllOtherViews() {

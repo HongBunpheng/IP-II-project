@@ -46,7 +46,7 @@
 
 <script>
 import axios from 'axios'
-const baseURL = import.meta.env.VITE_API_URL
+const baseURL = import.meta.env.VITE_API_BASE_URL
 
 export default {
   name: "Login",
@@ -69,7 +69,8 @@ export default {
         })
 
         alert(res.data.message)
-        localStorage.setItem('user', JSON.stringify(res.data.user))
+        localStorage.setItem('user', JSON.stringify(res.data.account))
+        localStorage.setItem('token', res.data.token)
         this.email = ''
         this.password = ''
       } catch (err) {
@@ -99,7 +100,7 @@ export default {
   width: 90%;
   max-width: 800px;
   height: 90vh;
-  background: url('../assets/login-bg.png') no-repeat center center;
+  background: url('../assets/picture/login-bg.png') no-repeat center center;
   background-size: cover;
   border-radius: 32px;
 }
@@ -138,7 +139,7 @@ export default {
   position: relative;
 
   /* Background image */
-  background: url('../assets/login-bg.png') no-repeat center center;
+  background: url('../assets/picture/login-bg.png') no-repeat center center;
   background-size: cover;
 
   /* Only 3-side border */

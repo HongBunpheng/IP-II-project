@@ -13,7 +13,12 @@
       <div class="other-links">
         <i class="bi bi-bell"></i>
         <i class="bi bi-moon-stars"></i>
-        <div class="user-account">Login</div>
+
+        <!-- 👇 Login / Profile switch -->
+        <div v-if="!isLoggedIn" class="user-account" @click="showAuthPopup = true">Login</div>
+        <div v-else class="user-account" @click="goToProfile">
+          <img :src="profileImage ? `${baseURL}/${profileImage}` : defaultImage" alt="Profile" class="avatar-circle" />
+        </div>
       </div>
     </div>
 
@@ -24,14 +29,69 @@
       <router-link to="/game" class="nav-link">Game</router-link>
       <router-link to="/about" class="nav-link">About us</router-link>
     </nav>
+
+    <!-- 👇 Popup Auth -->
+    <div class="popup-overlay" v-if="showAuthPopup">
+      <div class="popup-auth-box">
+        <Auth @loginSuccess="handleLoginSuccess" />
+        <button class="close-btn" @click="showAuthPopup = false">✖</button>
+      </div>
+    </div>
   </header>
 </template>
 
 <script>
+import Auth from '@/components/Auth.vue'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 export default {
   name: 'HeaderNavigationBar',
+  components: { Auth },
+  data() {
+    return {
+      baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+      showAuthPopup: false,
+      profileImage: '',
+      user: {},
+      isLoggedIn: false
+    }
+  },
+  created() {
+    const token = localStorage.getItem('token')
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (token && user && user.profile_picture) {
+      this.isLoggedIn = true
+      this.user = user
+      this.profileImage = user.profile_picture
+    }
+  },
+  methods: {
+    handleLoginSuccess(userData) {
+      localStorage.setItem('token', userData.token)
+      localStorage.setItem('user', JSON.stringify(userData.account))
+      this.user = userData.account
+      this.isLoggedIn = true
+      this.showAuthPopup = false
+    },
+
+    getProfileImage(imagePath) {
+      if (!imagePath) {
+        return new URL('@/assets/pf.png', import.meta.url).href;
+      }
+
+      // If it's already a full URL or starts with http(s), return it directly
+      if (imagePath.startsWith('http') || imagePath.startsWith('/images')) {
+        return `${this.baseURL}/${imagePath.replace(/^\/+/, '')}`;
+      }
+
+      // If it's a local fallback path
+      return new URL(`@/assets/${imagePath}`, import.meta.url).href;
+    },
+
+    goToProfile() {
+      this.$router.push('/profile')
+    }
+  }
 }
 </script>
 
@@ -45,6 +105,44 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+.pf-thumb {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-auth-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+  width: 400px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
 
 .top-header {
@@ -111,7 +209,8 @@ export default {
 
 .search-icon {
   font-size: 1rem;
-  color: #666; /* Medium gray works well on white background */
+  color: #666;
+  /* Medium gray works well on white background */
 }
 
 .user-account {

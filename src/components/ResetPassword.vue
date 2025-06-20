@@ -60,7 +60,7 @@
 
 <script>
 import axios from 'axios'
-const baseURL = import.meta.env.VITE_API_URL
+const baseURL = import.meta.env.VITE_API_BASE_URL
 
 export default {
   props: ['email', 'code'],
@@ -115,7 +115,7 @@ export default {
   width: 90%;
   max-width: 860px;
   height: 90vh;
-  background: url('../assets/resetpw-bg.png') no-repeat center center;
+  background: url('../assets/picture/resetpw-bg.png') no-repeat center center;
   background-size: cover;
   border-radius: 32px;
   }
@@ -153,7 +153,7 @@ export default {
   position: relative;
 
   /* Background image */
-  background: url('../assets/resetpw-bg.png') no-repeat center center;
+  background: url('../assets/picture/resetpw-bg.png') no-repeat center center;
   background-size: cover;
 
   /* Only 3-side border */

@@ -1,26 +1,16 @@
-  <script>
-  import Header from './components/Header.vue'
-  import Footer from './components/Footer.vue'
-  import Auth from './components/Auth.vue';
-  import Province from './components/Province.vue';
+<template>
+  <div>
+    <Header />
+    <router-view />
+    <Footer />
+  </div>
+</template>
 
-  export default {
-    name: 'App',
-    components: {
-      Header,
-      Footer,
-      Auth,
-      Province
-
-    }
-  }
+<script setup>
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 </script>
 
-<template>
-  <Header />
-
-  <router-view />
-</template>
 
 <style>
 html, body, #app {

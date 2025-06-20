@@ -9,7 +9,7 @@
             <!-- Author & Meta -->
             <div class="author-meta">
                 <div class="left">
-                    <img :src="journal.author_avatar || 'https://i.pravatar.cc/100?img=4'" class="avatar" />
+                    <img :src="getAvatarUrl(journal.author_avatar)" class="avatar" />
                     <div class="author-details">
                         <div class="name">{{ journal.author_name || 'Unknown' }}</div>
                         <div class="location">{{ journal.location }}</div>
@@ -72,6 +72,14 @@ function formatDate(dateStr) {
         day: 'numeric'
     })
 }
+function getAvatarUrl(path) {
+    if (!path || typeof path !== 'string') {
+        return 'https://i.pravatar.cc/100?img=4'
+    }
+    return `${baseApi}/${path}`
+}
+
+
 
 function formatTime(dateStr) {
     const date = new Date(dateStr)

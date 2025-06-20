@@ -51,7 +51,7 @@
 
 <script>
 import axios from 'axios'
-const baseURL = import.meta.env.VITE_API_URL
+const baseURL = import.meta.env.VITE_API_BASE_URL
 
 export default {
   emits: ['go-back', 'show-reset-password', 'show-login'],
@@ -113,7 +113,7 @@ export default {
   width: 90%;
   max-width: 860px;
   height: 90vh;
-  background: url('../assets/verifycode-bg.png') no-repeat center center;
+  background: url('../assets/picture/verifycode-bg.png') no-repeat center center;
   background-size: cover;
   border-radius: 32px;
 }
@@ -152,7 +152,7 @@ export default {
   position: relative;
 
   /* Background image */
-  background: url('../assets/verifycode-bg.png') no-repeat center center;
+  background: url('../assets/picture/verifycode-bg.png') no-repeat center center;
   background-size: cover;
 
   /* Only 3-side border */
