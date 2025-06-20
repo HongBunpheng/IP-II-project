@@ -9,14 +9,16 @@
     <div class="profile-banner">
     <div class="profile-pic-wrapper">
     <img :src="profileImage || defaultImage" alt="Profile" class="profile-pic" />
-    <span class="edit-icon" @click="showImageOptions = true">✏️</span>
+    <span class="edit-icon" @click="showImageOptions = true">
+      <img src="/src/assets/bpen.png" class="icon" alt="Edit" width="20" height="20" />
+    </span>
 
     <!-- Profile Image Options Modal -->
     <div class="profile-image-modal" v-if="showImageOptions">
-      <div class="modal-option" @click="selectFromLibrary">📷 Choose from library</div>
-      <div class="modal-option" @click="takePhoto">📸 Take photo</div>
-      <div class="modal-option" @click="changeCoverPhoto">🖼️ Change cover picture</div>
-      <div class="modal-option delete" @click="deleteProfileImage">🗑️ Delete</div>
+      <div class="modal-option" @click="selectFromLibrary">Choose from library</div>
+      <div class="modal-option" @click="takePhoto">Take photo</div>
+      <div class="modal-option" @click="changeCoverPhoto">Change cover picture</div>
+      <div class="modal-option delete" @click="deleteProfileImage">Delete</div>
       <div class="modal-option cancel" @click="showImageOptions = false">Cancel</div>
       <input ref="fileInput" type="file" accept="image/*" @change="handleImageUpload" hidden />
     </div>
@@ -43,6 +45,17 @@
       <div class="underline" v-if="currentTab === 'logout'"></div>
     </div>
   </div>
+  <!-- Logout Confirmation Modal -->
+  <div v-if="currentTab === 'logout'" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Are you sure you want to logout?</h3>
+      <div class="modal-actions">
+        <button class="cancel-btn" @click="currentTab = 'post'">Cancel</button>
+        <button class="save-btn" @click="handleLogout">Okay</button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- setting detail -->
   <div v-if="currentTab === 'settings'" class="settings-card">
@@ -61,10 +74,10 @@
 
 <div class="button-column">
   <button v-if="editFields[field.label]" class="change-btn" @click="editFields[field.label] = false">
-    ✅ Save
+    Save
   </button>
   <button v-else class="change-btn" @click="editFields[field.label] = true">
-    ✏️ Change
+    Change
   </button>
 </div>
 
@@ -92,9 +105,15 @@
 
 
       <ul class="info-list">
-      <li><span>📍</span> {{ details.location }}</li>
-      <li><span>✅</span> {{ details.instagram }}</li>
-      <li><span>💬</span> {{ details.nickname }}</li>
+      <li><span>
+        <img src="/src/assets/locat.png" class="icon" alt="Location" />
+      </span> {{ details.location }}</li> 
+      <li><span>
+        <img src="/src/assets/ig.png" class="icon" alt="Instagram" />
+      </span> {{ details.instagram }}</li>
+      <li><span>
+        <img src="/src/assets/world.png" class="icon" alt="Nickname" />
+      </span> {{ details.nickname }}</li>
     </ul>
 
     <button class="gray-button" @click="openEditDetailsModal">Edit Details</button>
@@ -103,14 +122,20 @@
       <div class="modal-content">
         <h3>Edit Your Details</h3>
 
-        <label class="modal-label">📍 Location</label>
+        <label class="modal-label">
+           <img src="/src/assets/locat.png" class="icon" alt="Location" />
+          Location</label>
         <input v-model="newDetails.location" class="modal-input" placeholder="Enter your location" />
 
-        <label class="modal-label">📸 Instagram</label>
-        <input v-model="newDetails.instagram" class="modal-input" placeholder="@your_instagram" />
+        <label class="modal-label">
+          <img src="/src/assets/ig.png" class="icon" alt="Instagram" />
+          Instagram</label>
+        <input v-model="newDetails.instagram" class="modal-input" placeholder="Instagram" />
 
-        <label class="modal-label">💬 Account Name</label>
-        <input v-model="newDetails.name" class="modal-input" placeholder="Your name" />
+        <label class="modal-label">
+          <img src="/src/assets/world.png" class="icon" alt="Nickname" />
+          Account Name</label>
+        <input v-model="newDetails.name" class="modal-input" placeholder="Account name" />
 
         <div class="modal-actions">
           <button class="save-btn" @click="saveDetails">Save</button>
@@ -165,7 +190,9 @@
     <div v-if="currentTab === 'post'" class="right-column">
       <div class="post-header">
         <h3>Post</h3>
-        <router-link to="/postCard" class="create-post-btn">➕ Create Post</router-link>
+        <router-link to="/postCard" class="create-post-btn">
+          <img src="/src/assets/pencil.png" class="icon" alt="Create Post" width="20" height="20" />
+          Create Post</router-link>
         <CreatePost v-if="showCreatePost" @close="showCreatePost = false" />
       </div>
 
@@ -308,6 +335,14 @@ created() {
       }
     }
   },
+
+  // Handle logout
+  handleLogout() {
+  localStorage.clear();
+  // Redirect to login or homepage
+  this.$router.push('/homeview');
+},
+
   // Handle bio update
   saveBio() {
     this.bioText = this.newBioText;

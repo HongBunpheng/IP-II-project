@@ -10,7 +10,7 @@
             <img :src="imagePreview" alt="Preview" />
           </div>
           <div class="image-placeholder" v-else>
-            <span>📷 Click to upload image</span>
+            <span>Click to upload image</span>
           </div>
         </label>
         <input id="file-input" type="file" @change="handleImageUpload" accept="image/*" hidden />
@@ -23,8 +23,10 @@
 
       <!-- Buttons -->
       <div class="button-row">
-        <button class="back-btn" @click="$router.go(-1)">⬅ Back</button>
-        <button class="submit-btn" @click="submitPost">✅ Submit Post</button>
+        <button class="back-btn" @click="$router.go(-1)">
+          <img src="/src/assets/back.png" alt="Back" class="icon" />
+          Back</button>
+        <button class="submit-btn" @click="submitPost">Submit</button>
       </div>
     </div>
   </div>
