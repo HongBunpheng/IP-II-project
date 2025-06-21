@@ -2,21 +2,23 @@
   <header class="header">
     <div class="top-header">
       <div class="search-bar">
-        <i class="bi bi-search-heart search-icon"></i>
+        <i class="bi bi-search-heart"></i>
         <input type="text" placeholder="Enter destination" class="searchBox" />
       </div>
 
       <div class="logo">
-        <img src="@/assets/picture/logo-white.png" alt="TripTrek Logo" />
+        <router-link to="/" class="logo">
+          <img src="@/assets/picture/logo-white.png" alt="TripTrek Logo" />
+        </router-link>
       </div>
 
       <div class="other-links">
         <i class="bi bi-bell"></i>
         <i class="bi bi-moon-stars"></i>
 
-        <!-- 👇 Login / Profile switch -->
+        <!-- Login / Profile switch -->
         <div v-if="!isLoggedIn" class="user-account" @click="showAuthPopup = true">Login</div>
-        <div v-else class="user-account" @click="goToProfile">
+        <div v-else @click="goToProfile">
           <img :src="profileImage ? `${baseURL}/${profileImage}` : defaultImage" alt="Profile" class="avatar-circle" />
         </div>
       </div>
@@ -30,11 +32,10 @@
       <router-link to="/about" class="nav-link">About us</router-link>
     </nav>
 
-    <!-- 👇 Popup Auth -->
-    <div class="popup-overlay" v-if="showAuthPopup">
+    <!-- Popup Auth -->
+    <div :class="['popup-overlay', { show: showAuthPopup }]" @click.self="showAuthPopup = false">
       <div class="popup-auth-box">
         <Auth @loginSuccess="handleLoginSuccess" />
-        <button class="close-btn" @click="showAuthPopup = false">✖</button>
       </div>
     </div>
   </header>
@@ -53,7 +54,8 @@ export default {
       showAuthPopup: false,
       profileImage: '',
       user: {},
-      isLoggedIn: false
+      isLoggedIn: false,
+      defaultImage: new URL('@/assets/pf.png', import.meta.url).href
     }
   },
   created() {
@@ -72,22 +74,8 @@ export default {
       this.user = userData.account
       this.isLoggedIn = true
       this.showAuthPopup = false
+      this.profileImage = userData.account.profile_picture
     },
-
-    getProfileImage(imagePath) {
-      if (!imagePath) {
-        return new URL('@/assets/pf.png', import.meta.url).href;
-      }
-
-      // If it's already a full URL or starts with http(s), return it directly
-      if (imagePath.startsWith('http') || imagePath.startsWith('/images')) {
-        return `${this.baseURL}/${imagePath.replace(/^\/+/, '')}`;
-      }
-
-      // If it's a local fallback path
-      return new URL(`@/assets/${imagePath}`, import.meta.url).href;
-    },
-
     goToProfile() {
       this.$router.push('/profile')
     }
@@ -96,61 +84,20 @@ export default {
 </script>
 
 <style scoped>
-* {
-  box-sizing: border-box;
-}
-
 .header {
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.pf-thumb {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.popup-auth-box {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  position: relative;
-  width: 400px;
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
+  right: 0;
+  z-index: 999;
+  background-color: white;
 }
 
 .top-header {
-  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
+  padding: 10px 30px;
   background-color: #25d3b7;
   box-shadow: 0 4px 2px rgba(10, 10, 10, 0.196);
 }
@@ -165,7 +112,6 @@ export default {
   margin-left: 10px;
   height: 35px;
   width: 230px;
-  z-index: 10;
 }
 
 .search-icon {
@@ -185,7 +131,6 @@ export default {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1;
 }
 
 .logo img {
@@ -198,19 +143,12 @@ export default {
   align-items: center;
   margin-right: 10px;
   gap: 15px;
-  z-index: 10;
 }
 
 .bi {
   font-size: 1.2rem;
   cursor: pointer;
   color: white;
-}
-
-.search-icon {
-  font-size: 1rem;
-  color: #666;
-  /* Medium gray works well on white background */
 }
 
 .user-account {
@@ -224,6 +162,14 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-circle {
+  margin-top: 9px;
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .nav-links {
@@ -246,5 +192,37 @@ export default {
   color: #2ad1ae;
   border-radius: 20px;
   padding: 5px 15px;
+}
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.popup-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.popup-auth-box {
+  padding: 2rem;
+  border-radius: 8px;
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.popup-overlay.show .popup-auth-box {
+  transform: scale(1);
 }
 </style>

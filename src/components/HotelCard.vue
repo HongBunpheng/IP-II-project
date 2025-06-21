@@ -1,6 +1,6 @@
 <template>
-    <div v-for="(hotel, index) in hotels" :key="hotel.id" class="hotel-card">
-        <!-- LEFT: Hotel Info -->
+    <div v-for="(hotel, index) in hotels" :key="hotel.id" class="hotel-card" :class="{ 'reverse': index % 2 !== 0 }">
+        <!-- Info Section -->
         <div class="hotel-info">
             <h2 class="hotel-title">{{ hotel.name }}</h2>
             <p class="hotel-description">{{ hotel.details }}</p>
@@ -12,14 +12,13 @@
             </div>
         </div>
 
-        <!-- RIGHT: Overlapping Images -->
+        <!-- Overlapping Images -->
         <div class="hotel-images" v-if="hotel.image?.length >= 2">
-            <img :src="hotel.image[1]" class="img back" alt="Hotel Image 2" />
-            <img :src="hotel.image[0]" class="img front" alt="Hotel Image 1" />
+            <img :src="hotel.image[1]" class="img back" />
+            <img :src="hotel.image[0]" class="img front" />
         </div>
     </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -39,7 +38,6 @@ onMounted(async () => {
             )
         }))
 
-        // Emit hotel names to parent
         const hotelNames = hotels.value.map(h => h.name)
         emit('hotelNamesLoaded', hotelNames)
     } catch (err) {
@@ -51,23 +49,33 @@ const goToDetail = (id) => {
     router.push(`/hotel/${id}`)
 }
 </script>
-
 <style scoped>
-/* styles same as yours */
 .hotel-card {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     background: #e3e3e3;
     border-radius: 20px;
     padding: 20px;
+    margin-bottom: 3rem;
     gap: 30px;
     max-width: 1000px;
     width: 90%;
     font-family: 'Arial', sans-serif;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     flex-wrap: wrap;
+    position: relative;
+    overflow: visible;
+    z-index: 0;
+
 }
 
+/* Reverse layout */
+.hotel-card.reverse {
+    flex-direction: row-reverse;
+}
+
+/* Text section */
 .hotel-info {
     flex: 1 1 300px;
     min-width: 0;
@@ -118,51 +126,71 @@ const goToDetail = (id) => {
     color: #f5b700;
 }
 
+/* Floating images above the card */
 .hotel-images {
-    position: relative;
-    width: 100px;
-    height: 280px;
-    flex-shrink: 0;
+    position: absolute;
+    top: -40px;
+    right: 30px;
+    width: 180px;
+    height: 330px;
+    z-index: 2;
+}
+
+.hotel-card.reverse .hotel-images {
+    left: 30px;
+    right: auto;
 }
 
 .img {
     position: absolute;
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    border-radius: 15px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    border-radius: 18px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease;
 }
 
+/* Back image: larger and behind */
 .back {
-    top: 20px;
-    left: 20px;
-    z-index: 1;
-    transform: scale(0.95);
-}
-
-.front {
+    width: 180px;
+    height: 330px;
     top: 0;
     left: 0;
+    z-index: 1;
+}
+
+/* Front image: smaller and overlaps from left */
+.front {
+    width: 140px;
+    height: 260px;
+    top: 40px;
+    left: -40px;
     z-index: 2;
 }
 
+/* Mobile responsive */
 @media (max-width: 768px) {
-    .hotel-card {
+
+    .hotel-card,
+    .hotel-card.reverse {
         flex-direction: column;
         text-align: center;
-        padding: 16px;
     }
 
     .hotel-images {
+        position: static;
         width: 90%;
-        height: 200px;
-        margin-top: 20px;
+        height: 220px;
+        margin: 1rem auto 0 auto;
     }
 
     .img {
+        position: absolute;
         width: 100%;
         height: 100%;
+    }
+
+    .hotel-footer {
+        justify-content: center;
     }
 }
 </style>

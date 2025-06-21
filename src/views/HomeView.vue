@@ -1,24 +1,60 @@
 <script setup>
-import { ref } from 'vue'
-import Newplace from '@/components/NewPlace.vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Header from '@/components/Header.vue'
-// import City from '@/components/City.vue'
-// import Budget from '@/components/Budget.vue'
+import City from '@/components/City.vue'
+import Budget from '@/components/Budget.vue'
 import Event from '@/components/Event.vue'
-import Footer from '@/components/Footer.vue'
 
 const showHeader = ref(false)
+
+const cards = [
+    { image: 'mountain.jpg' },
+    { image: 'temple.jpg' },
+    { image: 'sea.jpg' }
+]
+
+function getImageUrl(filename) {
+    return new URL(`../assets/picture/${filename}`, import.meta.url).href
+}
+
+function handleScroll() {
+    showHeader.value = window.scrollY > 100
+}
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll)
+})
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
     <div class="landing-page">
-        <Newplace @show-header="() => { console.log('🔥 header signal'); showHeader = true }" />
+        <Header :class="{ 'header-visible': showHeader }" />
 
+        <!-- Hero Section + Logo + Navigation -->
+        <div class="new-place-wrapper">
+            <!-- Hero Text -->
+            <div class="hero-text">
+                <h1>
+                    Discover New Places and Create<br />
+                    Unforgettable Memories<br />
+                    together
+                </h1>
+            </div>
 
-        <!-- Animated Header -->
-        <transition name="fade">
-            <Header v-if="showHeader" />
-        </transition>
+            <!-- Image Cards -->
+            <div class="card-container">
+                <div class="new-place-card" v-for="(card, index) in cards" :key="index">
+                    <img :src="getImageUrl(card.image)" :alt="card.label" class="place-image" />
+                    <div class="place-overlay">
+                        <span class="label">{{ card.label }}</span>
+                        <span class="arrow"><i class="ri-arrow-right-line"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- City Section -->
         <div class="city-wrapper">
@@ -27,39 +63,34 @@ const showHeader = ref(false)
                 <h2 class="subtitle">WHY HESITATING</h2>
                 <div class="newcity-section">
                     <City />
-                    <Budget />
                 </div>
             </div>
         </div>
 
-        <!-- Event Section -->
-            <Event />
+        <!-- Budget Section -->
+        <Budget />
 
-        <!-- Footer Section -->
-        <router-view />
-        <Footer />
+        <!-- Event Section -->
+        <Event />
     </div>
 </template>
 
 <style scoped>
 .landing-page {
-    width: 100%;
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
     color: white;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s;
+/* Hero / Newplace merged section */
+.new-place-wrapper {
+    position: relative;
+    height: 90vh;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-
-/* Logo */
 .logo {
     position: absolute;
     top: 20px;
@@ -75,7 +106,6 @@ const showHeader = ref(false)
     filter: brightness(0) invert(1);
 }
 
-/* Navigation */
 .nav-bar {
     position: absolute;
     top: 20px;
@@ -92,8 +122,6 @@ const showHeader = ref(false)
     display: flex;
     gap: 7.5rem;
     font-size: 1.2rem;
-    justify-content: space-between;
-    align-items: center;
     margin-top: 20px;
 }
 
@@ -144,7 +172,6 @@ const showHeader = ref(false)
     cursor: pointer;
 }
 
-/* Hero Section */
 .hero-text {
     position: absolute;
     width: 100%;
@@ -159,7 +186,7 @@ const showHeader = ref(false)
     font-weight: bold;
 }
 
-/* Image Cards */
+/* Card images */
 .card-container {
     display: flex;
     height: 100vh;
@@ -169,7 +196,45 @@ const showHeader = ref(false)
     flex: 1;
 }
 
-/* City Section with background image */
+.new-place-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.place-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.place-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.label {
+    position: relative;
+    bottom: 6rem;
+    color: white;
+    font-size: 2.8rem;
+}
+
+.arrow {
+    position: absolute;
+    left: 27rem;
+    bottom: 30px;
+    color: white;
+    font-size: 3rem;
+}
+
+/* City Section */
 .city-wrapper {
     background-image: url('/src/assets/Background.png');
     background-size: cover;
@@ -177,8 +242,6 @@ const showHeader = ref(false)
     background-position: center;
     padding: 3rem 1rem;
     color: black;
-    /* background-color: pink; */
-
 }
 
 .city-section {
@@ -200,32 +263,5 @@ const showHeader = ref(false)
 .newcity-section {
     margin-top: 2rem;
     padding: 2rem 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .hero-text h1 {
-        font-size: 1.8rem;
-    }
-
-    .card-container {
-        flex-direction: column;
-        height: auto;
-    }
-
-    .card-container>* {
-        height: 33vh;
-    }
-
-    .nav-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 1rem;
-    }
-
-    .nav-links {
-        flex-direction: column;
-        gap: 1rem;
-    }
 }
 </style>
