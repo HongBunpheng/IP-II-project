@@ -80,6 +80,7 @@
 import { ref, onMounted } from 'vue'
 import DetailHotel from '@/components/DetailHotel.vue'
 import DetailRestaurant from '@/components/DetailRestaurant.vue'
+import DetailTransportation from '@/components/DetailTransportation.vue'
 // import DetailTransportation from '@/components/DetailTransportation.vue'
 
 const trips = ref([])

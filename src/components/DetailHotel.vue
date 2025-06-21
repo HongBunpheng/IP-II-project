@@ -5,8 +5,7 @@
             <i class="bi bi-heart"></i>
         </div>
         <p class="description">
-            That is the most popular place we're highly<br />
-            recommend to your for visit it
+            Suggests a variety of hotel options curated for travelers.he card includes a brief description and a heart icon to favorite the section.
         </p>
         <p class="more" @click="goToHotelSelect">More</p>
     </div>

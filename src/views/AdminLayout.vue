@@ -203,6 +203,48 @@
                             class="data-image" />
                     </div>
                 </div>
+                <!-- Transportation Form -->
+                <div v-if="selectedType === 'Transportation'" class="form-container">
+                <h3>Form's Transportation Filling</h3>
+                <form class="hotel-form" @submit.prevent="submitTransportForm">
+                    <div class="form-row">
+                    <label>Time From</label>
+                    <input type="time" v-model="transport.departureTime" />
+
+                    <label>Time To</label>
+                    <input type="time" v-model="transport.arrivalTime" />
+                    </div>
+
+                    <div class="form-row">
+                    <label>Location From</label>
+                    <input type="text" v-model="transport.departureCity" />
+
+                    <label>Location To</label>
+                    <input type="text" v-model="transport.arrivalCity" />
+                    </div>
+
+                    <div class="form-row">
+                    <label>Distance</label>
+                    <input type="text" v-model="transport.distance" />
+
+                    <label>Travel Duration</label>
+                    <input type="text" v-model="transport.travelTime" />
+                    </div>
+
+                    <div class="form-row price-row">
+                        <div class="price-wrap">
+                            <label>Price</label>
+                            <input type="number" v-model="transport.price" class="short-input" />
+                        </div>
+                        </div>
+
+
+                    <div class="submit-row">
+                    <button type="submit">Done</button>
+                    </div>
+                </form>
+                </div>
+
             </div>
         </div>
     </div>
@@ -213,99 +255,145 @@ import { ref } from 'vue'
 import axios from 'axios'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
+
 const showDropdown = ref(false)
 const showCreateSection = ref(false)
 const selectedType = ref(null)
 const myPlaceData = ref([])
 const myPlaceType = ref('')
 
+// Hotel state
 const hotel = ref({
-    name: '', promotion: '', location: '', address: '',
-    contact: '', rating: '', price: '', details: '',
-    image: [], detail_image: []
+  name: '', promotion: '', location: '', address: '',
+  contact: '', rating: '', price: '', details: '',
+  image: [], detail_image: []
 })
 
+// Restaurant state
 const restaurant = ref({
-    name: '', promotion: '', location: '', address: '',
-    contact: '', rating: '', price: '', details: '',
-    image: [], detail_image: []
+  name: '', promotion: '', location: '', address: '',
+  contact: '', rating: '', price: '', details: '',
+  image: [], detail_image: []
 })
 
-const toggleDropdown = () => { showDropdown.value = !showDropdown.value }
+// Transportation state
+const transport = ref({
+  departureTime: '',
+  arrivalTime: '',
+  departureCity: '',
+  arrivalCity: '',
+  distance: '',
+  travelTime: '',
+  price: ''
+})
+
+// Toggle and selection
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value
+}
+
 const toggleCreateSection = () => {
-    showCreateSection.value = !showCreateSection.value
-    selectedType.value = null
-    showDropdown.value = false
-    myPlaceType.value = ''
-    myPlaceData.value = []
+  showCreateSection.value = !showCreateSection.value
+  selectedType.value = null
+  showDropdown.value = false
+  myPlaceType.value = ''
+  myPlaceData.value = []
 }
-const selectType = (type) => { selectedType.value = type }
 
+const selectType = (type) => {
+  selectedType.value = type
+}
+
+// Fetch data
 const loadData = async (type) => {
-    myPlaceType.value = type
-    showCreateSection.value = false
-    selectedType.value = null
-    showDropdown.value = false
+  myPlaceType.value = type
+  showCreateSection.value = false
+  selectedType.value = null
+  showDropdown.value = false
 
-    try {
-        const res = await axios.get(`${baseURL}/api/${type}s`)
-        myPlaceData.value = res.data
-    } catch (err) {
-        console.error(err)
-        alert(`❌ Failed to load ${type}s`)
-    }
+  try {
+    const res = await axios.get(`${baseURL}/api/${type}s`)
+    myPlaceData.value = res.data
+  } catch (err) {
+    console.error(err)
+    alert(`❌ Failed to load ${type}s`)
+  }
 }
 
+// File handling
 const handleFileChange = (e, field, type) => {
-    if (type === 'hotel') {
-        hotel.value[field] = Array.from(e.target.files)
-    } else if (type === 'restaurant') {
-        restaurant.value[field] = Array.from(e.target.files)
-    }
+  if (type === 'hotel') {
+    hotel.value[field] = Array.from(e.target.files)
+  } else if (type === 'restaurant') {
+    restaurant.value[field] = Array.from(e.target.files)
+  }
 }
 
+// Submit hotel
 const submitHotelForm = async () => {
-    const formData = new FormData()
-    for (const key in hotel.value) {
-        if (key === 'image' || key === 'detail_image') {
-            hotel.value[key].forEach(file => formData.append(`${key}[]`, file))
-        } else {
-            formData.append(key, hotel.value[key])
-        }
+  const formData = new FormData()
+  for (const key in hotel.value) {
+    if (key === 'image' || key === 'detail_image') {
+      hotel.value[key].forEach(file => formData.append(`${key}[]`, file))
+    } else {
+      formData.append(key, hotel.value[key])
     }
+  }
 
-    try {
-        await axios.post(`${baseURL}/api/hotels`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        })
-        alert('✅ Hotel submitted successfully!')
-    } catch (err) {
-        console.error(err)
-        alert('❌ Failed to submit hotel')
-    }
+  try {
+    await axios.post(`${baseURL}/api/hotels`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    alert('✅ Hotel submitted successfully!')
+  } catch (err) {
+    console.error(err)
+    alert('❌ Failed to submit hotel')
+  }
 }
 
+// Submit restaurant
 const submitRestaurantForm = async () => {
-    const formData = new FormData()
-    for (const key in restaurant.value) {
-        if (key === 'image' || key === 'detail_image') {
-            restaurant.value[key].forEach(file => formData.append(`${key}[]`, file))
-        } else {
-            formData.append(key, restaurant.value[key])
-        }
+  const formData = new FormData()
+  for (const key in restaurant.value) {
+    if (key === 'image' || key === 'detail_image') {
+      restaurant.value[key].forEach(file => formData.append(`${key}[]`, file))
+    } else {
+      formData.append(key, restaurant.value[key])
     }
+  }
 
-    try {
-        await axios.post(`${baseURL}/api/restaurants`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        })
-        alert('✅ Restaurant submitted successfully!')
-    } catch (err) {
-        console.error(err)
-        alert('❌ Failed to submit restaurant')
-    }
+  try {
+    await axios.post(`${baseURL}/api/restaurants`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    alert('✅ Restaurant submitted successfully!')
+  } catch (err) {
+    console.error(err)
+    alert('❌ Failed to submit restaurant')
+  }
 }
+
+// Submit transportation
+const submitTransportForm = async () => {
+  const formData = new FormData()
+  for (const key in transport.value) {
+    formData.append(key, transport.value[key])
+  }
+
+  try {
+    await axios.post(`${baseURL}/api/transportations`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    alert('✅ Transportation added!')
+    await loadData('transportation')
+  } catch (err) {
+    console.error(err)
+    alert('❌ Failed to add transportation')
+  }
+}
+
 </script>
+
 
 <style scoped>
 * {
@@ -486,6 +574,26 @@ h3 {
 .form-row {
     display: flex;
     gap: 15px;
+    /* display: flex; */
+    flex-direction: start;
+}
+.price-row {
+  justify-content: flex-start;
+  display: flex;
+}
+
+
+.price-wrap {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.short-input {
+  margin-left: 6.5rem;
+  width: 130px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
 .form-row label {
@@ -497,9 +605,12 @@ h3 {
 .form-row input,
 .form-row select,
 .form-row textarea {
-    flex: 3;
-    padding: 10px;
+    flex: 4;
+    padding: 5px;
     border: 1px solid #ccc;
+    font-size: 16px;
+    color: #333;
+
     border-radius: 6px;
     background: #fff;
 }
@@ -527,4 +638,6 @@ h3 {
     background: #4CAF50;
     color: white;
 }
+
+
 </style>

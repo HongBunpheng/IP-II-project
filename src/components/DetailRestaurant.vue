@@ -5,8 +5,7 @@
             <i class="bi bi-heart"></i>
         </div>
         <p class="description">
-            That is the most popular place we're highly<br />
-            recommend to your for visit it
+            Promotes handpicked restaurants for the best local dining experiences.Like the others, it includes a brief note and a "More" link for deeper exploration.
         </p>
         <p class="more" @click="goToHotelSelect">More</p>
     </div>

@@ -13,6 +13,8 @@ import Budget from "@/views/Budget.vue";
 import PostCard from "@/views/PostCard.vue";
 import Auth from "@/components/Auth.vue";
 import AdminLayout from "@/views/AdminLayout.vue";
+import Transportation from "@/components/Transportation.vue";
+import ChooseTransport from "@/views/ChooseTransport.vue";
 
 const routes = [
   { path: "/", name: "Home", component: HomeView },
@@ -28,6 +30,9 @@ const routes = [
   { path: "/profile", name: "Profile", component: Profile },
   { path: "/budget", name: "Budget", component: Budget },
   { path: "/postCard", name: "PostCard", component: PostCard },
+  { path: "/transportation", name: "Transportation", component: Transportation },
+  { path: "/choose-transport", name: "ChooseTransport", component: ChooseTransport },
+
 
   // Admin can stay separate if you want no header on it
   { path: "/admin", component: AdminLayout }
