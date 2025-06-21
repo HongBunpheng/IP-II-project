@@ -286,24 +286,26 @@ const submitHotelForm = async () => {
 }
 
 const submitRestaurantForm = async () => {
-    const formData = new FormData()
-    for (const key in restaurant.value) {
-        if (key === 'image' || key === 'detail_image') {
-            restaurant.value[key].forEach(file => formData.append(`${key}[]`, file))
-        } else {
-            formData.append(key, restaurant.value[key])
-        }
+  const formData = new FormData()
+  for (const key in restaurant.value) {
+    if (key === 'image' || key === 'detail_image') {
+      restaurant.value[key].forEach(file => formData.append(`${key}[]`, file))
+    } else {
+      formData.append(key, restaurant.value[key])
     }
+  }
 
-    try {
-        await axios.post(`${baseURL}/api/restaurants`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        })
-        alert('✅ Restaurant submitted successfully!')
-    } catch (err) {
-        console.error(err)
-        alert('❌ Failed to submit restaurant')
-    }
+  try {
+    await axios.post(`${baseURL}/api/restaurants`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    alert('✅ Restaurant submitted successfully!')
+  } catch (err) {
+    console.error(err)
+    alert('❌ Failed to submit restaurant')
+  }
+
+
 }
 </script>
 

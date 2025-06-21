@@ -6,15 +6,15 @@
     <!-- Navigation Bar -->
     <div class="nav-bar">
       <button class="back-button" @click="goBack">←</button>
-      <h2 class="page-title">Your Perfect Trip is Waiting For You</h2>
+      <h2 class="page-title">Your Perfect Dining Experience is Waiting For You</h2>
     </div>
 
-    <!-- Restaurant Cards (reusing HotelCard) -->
+    <!-- Restaurant Cards -->
     <div class="restaurant-list">
-      <HotelCard
+      <RestaurantCard
         v-for="(restaurant, index) in restaurants"
         :key="restaurant.id"
-        :hotel="restaurant"
+        :restaurant="restaurant"
         :index="index"
       />
     </div>
@@ -23,108 +23,86 @@
     <p v-if="error" class="error-message">{{ error }}</p>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import axios from 'axios'
-import HotelCard from '@/components/HotelCard.vue' // reused card
+import RestaurantCard from '@/components/RestaurantCard.vue'
 
 const restaurants = ref([])
 const error = ref('')
-const router = useRouter()
 
-const goBack = () => router.back()
+const goBack = () => history.back()
 
-// 🔽 Replace this block with debug version
 onMounted(async () => {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/restaurants`)
-    
-    // ✅ Debugging line
-    console.log('✅ API Response:', response.data)
-
-    restaurants.value = response.data.map(restaurant => ({
+    const res = await axios.get('http://localhost:8000/api/restaurants')
+    restaurants.value = res.data.map(restaurant => ({
       ...restaurant,
-      rating: Number(restaurant.rating),
-      image: Array.isArray(restaurant.image)
-        ? restaurant.image
-        : JSON.parse(restaurant.image || '[]')
+      image: restaurant.image.map(img =>
+        img.startsWith('http') ? img : `http://localhost:8000/storage/${img}`
+      )
     }))
   } catch (err) {
-    console.error('❌ Error loading restaurants:', err)
-    error.value = 'Could not load restaurant data. Please try again later.'
+    error.value = '❌ Failed to load restaurants.'
+    console.error(err)
   }
 })
 </script>
 
 <style scoped>
 .restaurant-select {
-  font-family: 'Urbanist', sans-serif;
-  background-color: white;
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero-image {
+  margin: 0 auto;
   width: 100%;
-  height: 100vh;
+  height: auto;
   object-fit: cover;
-  object-position: center;
   display: block;
+  margin-bottom: 20px;
 }
 
 .nav-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
   position: relative;
-  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 2rem;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .back-button {
   position: absolute;
   left: 1rem;
-  font-size: 2rem;
-  background: none;
+  background-color: transparent;
   border: none;
-  color: black;
+  font-size: 2rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .page-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
   text-align: center;
-  flex: 1;
 }
 
 .restaurant-list {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 1rem;
-  gap: 2rem;
 }
 
 .error-message {
-  text-align: center;
   color: red;
-  font-weight: 500;
   margin-top: 1rem;
-}
-
-@media (max-width: 768px) {
-  .page-title {
-    font-size: 1.1rem;
-  }
-
-  .hero-image {
-    max-height: 180px;
-  }
-
-  .back-button {
-    font-size: 1.6rem;
-  }
 }
 </style>

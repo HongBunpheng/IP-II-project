@@ -1,4 +1,6 @@
 <template>
+    <div>
+    </div>
     <div class="explore-page">
         <!-- Hero Image -->
         <div class="hero-section">
@@ -73,6 +75,7 @@
 
             <button class="see-more-btn">See More</button>
         </section>
+       
     </div>
 </template>
 
@@ -81,7 +84,7 @@ import { ref, onMounted } from 'vue'
 import DetailHotel from '@/components/DetailHotel.vue'
 import DetailRestaurant from '@/components/DetailRestaurant.vue'
 // import DetailTransportation from '@/components/DetailTransportation.vue'
-
+import Booking from '@/components/Booking.vue'
 const trips = ref([])
 
 onMounted(async () => {

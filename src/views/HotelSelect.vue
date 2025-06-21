@@ -1,120 +1,108 @@
 <template>
-    <div class="hotel-select">
-        <!-- Hero Image -->
-        <img src="@/assets/picture/phnom-penh.png" alt="Phnom Penh" class="hero-image" />
+  <div class="hotel-select">
+    <!-- Hero Image -->
+    <img src="@/assets/picture/phnom-penh.png" alt="Phnom Penh" class="hero-image" />
 
-        <!-- Navigation Bar -->
-        <div class="nav-bar">
-            <button class="back-button" @click="goBack">←</button>
-            <h2 class="page-title">Your Perfect Trip is Waiting For You</h2>
-        </div>
-
-        <!-- Hotel Cards -->
-        <div class="hotel-list">
-            <HotelCard v-for="(hotel, index) in hotels" :key="hotel.id" :hotel="hotel" :index="index" />
-        </div>
-
-        <!-- Error Message -->
-        <p v-if="error" class="error-message">{{ error }}</p>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <button class="back-button" @click="goBack">←</button>
+      <h2 class="page-title">Your Perfect Trip is Waiting For You</h2>
     </div>
+
+    <!-- Hotel Cards -->
+    <div class="hotel-list">
+      <HotelCard
+        v-for="(hotel, index) in hotels"
+        :key="hotel.id"
+        :hotel="hotel"
+        :index="index"
+      />
+    </div>
+
+    <!-- Error Message -->
+    <p v-if="error" class="error-message">{{ error }}</p>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import axios from 'axios'
 import HotelCard from '@/components/HotelCard.vue'
 
 const hotels = ref([])
 const error = ref('')
-const router = useRouter()
 
-const goBack = () => router.back()
+const goBack = () => history.back()
 
 onMounted(async () => {
-    try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/hotels`);
-        hotels.value = response.data.map(hotel => ({
-            ...hotel,
-            rating: Number(hotel.rating),
-            image: Array.isArray(hotel.image) ? hotel.image : JSON.parse(hotel.image || '[]')
-        }))
-    } catch (err) {
-        console.error('Error loading hotels:', err)
-        error.value = 'Could not load hotel data. Please try again later.'
-    }
+  try {
+    const res = await axios.get('http://localhost:8000/api/hotels')
+    hotels.value = res.data.map(hotel => ({
+      ...hotel,
+      image: hotel.image.map(img =>
+        img.startsWith('http') ? img : `http://localhost:8000/storage/${img}`
+      )
+    }))
+  } catch (err) {
+    error.value = '❌ Failed to load hotels.'
+    console.error(err)
+  }
 })
 </script>
 
 <style scoped>
 .hotel-select {
-    font-family: 'Urbanist', sans-serif;
-    background-color: white;
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero-image {
+    margin: 0 auto;
     width: 100%;
-    height: 100vh;
-    /* Fill the full viewport height */
+    height: auto;
     object-fit: cover;
-    object-position: center;
     display: block;
+    margin-bottom: 20px;
 }
 
 .nav-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 1rem;
-    position: relative;
-    flex-wrap: wrap;
+  position: relative;
+  width: 100%;
+  margin-bottom: 2rem;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .back-button {
-    position: absolute;
-    left: 1rem;
-    font-size: 2rem;
-    background: none;
-    border: none;
-    color: black;
-    cursor: pointer;
+  position: absolute;
+  left: 1rem;
+  background-color: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .page-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 0;
-    text-align: center;
-    flex: 1;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
 }
 
 .hotel-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 1rem;
-    gap: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .error-message {
-    text-align: center;
-    color: red;
-    font-weight: 500;
-    margin-top: 1rem;
-}
-
-@media (max-width: 768px) {
-    .page-title {
-        font-size: 1.1rem;
-    }
-
-    .hero-image {
-        max-height: 180px;
-    }
-
-    .back-button {
-        font-size: 1.6rem;
-    }
+  color: red;
+  margin-top: 1rem;
 }
 </style>
