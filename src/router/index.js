@@ -1,45 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AdminLayout from '@/views/AdminLayout.vue'
-
-// import Province from '@/components/Province.vue'
-// import ChooseTransport from '@/views/ChooseTransport.vue'
-// import Landingpage from '@/views/Landingpage.vue'
-import Landingpage from '@/views/LandingPage.vue'
-// import CityDestination from '@/views/CityDestination.vue'
-const routes = [
-  {
-    path: '/',
-    name: 'Landingpage',
-    component: Landingpage
-  },
-  {
-    path: '/admin',
-    name: 'Admin',
-    component: AdminLayout,
-  },
-
-  // {
-  //   path: '/province',
-  //   name: 'Province',
-  //   component: Province
-  // },
-  //  {
-  //   path: '/',
-  //   redirect: '/choose-transport'
-  // },
-  // {
-  //   path: '/choose-transport',
-  //   name: 'ChooseTransport',
-  //   component: ChooseTransport
-  // }
- 
-  
-]
+import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView,
+    },
+    {
+      path: '/about',
+      name: 'about',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/AboutView.vue'),
+    },
+  ],
 })
-// const activeIndex = ref(0)
 
 export default router
