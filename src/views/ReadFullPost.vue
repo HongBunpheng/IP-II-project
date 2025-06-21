@@ -1,54 +1,48 @@
 <template>
-    <div v-if="journal" class="read-post">
-
-        <!-- 📸 Header from assets -->
-        <div class="read-header">
-            <img src="../assets/picture/Readfullpost.png" alt="Read Image" />
-        </div>
-
-        <!-- 🧑 Author Section -->
-        <div class="author-box">
-            <img :src="journal.author_avatar || 'https://i.pravatar.cc/100?img=5'" class="avatar" />
-            <div class="info">
-                <h4>{{ journal.author_name || 'Unknown' }}</h4>
-                <p><i class="bi bi-geo-alt-fill"></i> {{ journal.location }}</p>
-            </div>
-        </div>
-
-        <!-- 📝 Title & Content -->
-        <h2 class="title">{{ journal.title || 'Untitled' }}</h2>
-        <p class="content">{{ journal.content || 'No content available.' }}</p>
-
-        <!-- 🖼️ Dynamic Image Collage -->
-        <!-- Only replace this part inside your current component -->
-        <div class="image-collage">
-            <!-- 1 image -->
-            <div v-if="journal.images.length === 1" class="one-image">
-                <img :src="getImageUrl(journal.images[0])" />
-            </div>
-
-            <!-- 2 images -->
-            <div v-else-if="journal.images.length === 2" class="two-images">
-                <img v-for="(img, i) in journal.images" :key="i" :src="getImageUrl(img)" />
-            </div>
-
-            <!-- 3+ and odd -->
-            <div v-else-if="journal.images.length % 2 === 1" class="odd-images">
-                <div class="left-column">
-                    <img :src="getImageUrl(journal.images[0])" />
-                </div>
-                <div class="right-column">
-                    <img v-for="(img, i) in journal.images.slice(1)" :key="i" :src="getImageUrl(img)" />
-                </div>
-            </div>
-
-            <!-- Even count (4, 6, etc.) -->
-            <div v-else class="even-grid">
-                <img v-for="(img, i) in journal.images" :key="i" :src="getImageUrl(img)" />
-            </div>
-        </div>
-
+  <div v-if="journal" class="read-post">
+    <!-- 📸 Header -->
+    <div class="read-header">
+      <img src="../assets/picture/Readfullpost.png" alt="Read Image" />
     </div>
+
+    <!-- 👤 Author Info -->
+    <div class="author-box">
+      <img
+        :src="authorAvatar ? `${baseApi}/${authorAvatar}` : defaultImage"
+        class="avatar"
+        alt="Author"
+      />
+      <div class="info">
+        <h4>{{ authorName }}</h4>
+        <p><i class="bi bi-geo-alt-fill"></i> {{ journal.location }}</p>
+      </div>
+    </div>
+
+    <!-- 📝 Title & Content -->
+    <h2 class="title">{{ journal.title || 'Untitled' }}</h2>
+    <p class="content">{{ journal.content || 'No content available.' }}</p>
+
+    <!-- 🖼️ Image Collage -->
+    <div class="image-collage">
+      <div v-if="journal.images.length === 1" class="one-image">
+        <img :src="getImageUrl(journal.images[0])" />
+      </div>
+      <div v-else-if="journal.images.length === 2" class="two-images">
+        <img v-for="(img, i) in journal.images" :key="i" :src="getImageUrl(img)" />
+      </div>
+      <div v-else-if="journal.images.length % 2 === 1" class="odd-images">
+        <div class="left-column">
+          <img :src="getImageUrl(journal.images[0])" />
+        </div>
+        <div class="right-column">
+          <img v-for="(img, i) in journal.images.slice(1)" :key="i" :src="getImageUrl(img)" />
+        </div>
+      </div>
+      <div v-else class="even-grid">
+        <img v-for="(img, i) in journal.images" :key="i" :src="getImageUrl(img)" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -57,31 +51,42 @@ import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 const route = useRoute()
+const baseApi = import.meta.env.VITE_API_BASE_URL
+const defaultImage = new URL('@/assets/pf.png', import.meta.url).href
+
 const journal = ref({
-    images: [],
-    author_name: '',
-    author_avatar: '',
-    location: '',
-    title: '',
-    content: ''
+  images: [],
+  mentions: [],
+  location: '',
+  title: '',
+  content: '',
+  account: {}
 })
 
-const baseApi = import.meta.env.VITE_API_BASE_URL
+const authorName = ref('Unknown')
+const authorAvatar = ref(null)
 
 function getImageUrl(path) {
-    return `${baseApi}/${path}`
+  return `${baseApi}/${path}`
 }
 
 onMounted(async () => {
-    const id = route.params.id
+  const id = route.params.id
+  try {
     const res = await axios.get(`${baseApi}/api/journals/${id}`)
     const j = res.data
 
     journal.value = {
-        ...j,
-        images: Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]'),
-        mentions: Array.isArray(j.mentions) ? j.mentions : JSON.parse(j.mentions || '[]')
+      ...j,
+      images: Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]'),
+      mentions: Array.isArray(j.mentions) ? j.mentions : JSON.parse(j.mentions || '[]'),
     }
+
+    authorName.value = j.account?.name || 'Unknown'
+    authorAvatar.value = j.account?.profile_picture || null
+  } catch (err) {
+    console.error('❌ Failed to load journal:', err)
+  }
 })
 </script>
 

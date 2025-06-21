@@ -1,101 +1,121 @@
 <template>
-    <div class="journal-grid">
-        <div v-for="journal in journals" :key="journal.id" class="journal-box">
-            <!-- Image -->
-            <div class="journal-image-wrapper">
-                <img :src="getImageUrl(journal.images[0])" class="journal-image" alt="Journal Cover" />
-            </div>
+  <div class="journal-grid">
+    <div v-for="journal in journals" :key="journal.id" class="journal-box">
+      <!-- Image -->
+      <div class="journal-image-wrapper">
+        <img :src="getImageUrl(journal.images[0])" class="journal-image" alt="Journal Cover" />
+      </div>
 
-            <!-- Author & Meta -->
-            <div class="author-meta">
-                <div class="left">
-                    <img :src="getAvatarUrl(journal.author_avatar)" class="avatar" />
-                    <div class="author-details">
-                        <div class="name">{{ journal.author_name || 'Unknown' }}</div>
-                        <div class="location">{{ journal.location }}</div>
-                    </div>
-                </div>
-                <div class="right">
-                    <span>{{ formatDate(journal.created_at) }}</span>
-                    <span class="dot">•</span>
-                    <span>{{ formatTime(journal.created_at) }}</span>
-                </div>
-            </div>
-
-            <!-- Title & Content -->
-            <div class="journal-body">
-                <h3 class="title">{{ journal.title }}</h3>
-                <p class="summary">{{ journal.content }}</p>
-                <router-link :to="`/journal/${journal.id}`" class="read-link">
-                    Read Full Post <i class="bi bi-box-arrow-up-right"></i>
-                </router-link>
-            </div>
+      <!-- Author & Meta -->
+      <div class="author-meta">
+        <div class="left">
+          <img
+            :src="journal.author_avatar ? `${baseApi}/${journal.author_avatar}` : defaultImage"
+            class="avatar"
+            alt="Author"
+          />
+          <div class="author-details">
+            <div class="name">{{ journal.author_name || 'Unknown' }}</div>
+            <div class="location">{{ journal.location }}</div>
+          </div>
         </div>
+        <div class="right">
+          <span>{{ formatDate(journal.created_at) }}</span>
+          <span class="dot">•</span>
+          <span>{{ formatTime(journal.created_at) }}</span>
+          <div class="more-wrapper">
+            <i class="material-icons" @click="toggleMenu(journal.id)">more_horiz</i>
+            <div v-if="showMenuFor === journal.id" class="popup-menu">
+              <div @click="emitEdit(journal)">Edit Post</div>
+              <div @click="emitDelete(journal.id)">Delete Post</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Title & Content -->
+      <div class="journal-body">
+        <h3 class="title">{{ journal.title }}</h3>
+        <p class="summary">{{ journal.content }}</p>
+        <router-link :to="`/journal/${journal.id}`" class="read-link">
+          Read Full Post <i class="bi bi-box-arrow-up-right"></i>
+        </router-link>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const baseApi = import.meta.env.VITE_API_BASE_URL
 const journals = ref([])
+const showMenuFor = ref(null)
+const defaultImage = new URL('@/assets/pf.png', import.meta.url).href
 
 const loadData = async (type) => {
-    try {
-        const res = await axios.get(`${baseApi}/api/${type}`)
-        journals.value = res.data.map(j => ({
-            ...j,
-            images: Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]'),
-            mentions: Array.isArray(j.mentions) ? j.mentions : JSON.parse(j.mentions || '[]'),
-            readTime: j.read_time || 'N/A'
-        }))
-    } catch (err) {
-        console.error(err)
-        alert(`❌ Failed to load ${type}`)
-    }
+  try {
+    const res = await axios.get(`${baseApi}/api/${type}`)
+    journals.value = res.data.map(j => ({
+      ...j,
+      images: Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]'),
+      mentions: Array.isArray(j.mentions) ? j.mentions : JSON.parse(j.mentions || '[]'),
+      readTime: j.read_time || 'N/A'
+    }))
+  } catch (err) {
+    console.error(err)
+    alert(`❌ Failed to load ${type}`)
+  }
 }
 
 onMounted(() => {
-    loadData('journals')
+  loadData('journals')
 })
 
 function getImageUrl(path) {
-    return `${baseApi}/${path}`
+  return `${baseApi}/${path}`
 }
 
 function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    })
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
 }
-function getAvatarUrl(path) {
-    if (!path || typeof path !== 'string') {
-        return 'https://i.pravatar.cc/100?img=4'
-    }
-    return `${baseApi}/${path}`
-}
-
-
 
 function formatTime(dateStr) {
-    const date = new Date(dateStr)
-    const now = new Date()
-    const diff = Math.floor((now - date) / 1000) // in seconds
+  const date = new Date(dateStr)
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+}
 
-    if (diff < 60) return `${diff} sec ago`
-    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`
-    if (diff < 86400) return `${Math.floor(diff / 3600)} hour${Math.floor(diff / 3600) === 1 ? '' : 's'} ago`
-    if (diff < 2592000) return `${Math.floor(diff / 86400)} day${Math.floor(diff / 86400) === 1 ? '' : 's'} ago`
-    if (diff < 31536000) return `${Math.floor(diff / 2592000)} month${Math.floor(diff / 2592000) === 1 ? '' : 's'} ago`
+function toggleMenu(id) {
+  showMenuFor.value = showMenuFor.value === id ? null : id
+}
 
-    return `${Math.floor(diff / 31536000)} year${Math.floor(diff / 31536000) === 1 ? '' : 's'} ago`
+function emitEdit(journal) {
+  router.push(`/create/${journal.id}`)
+}
+
+async function emitDelete(id) {
+  const confirmed = confirm('Are you sure you want to delete this post?')
+  if (!confirmed) return
+
+  try {
+    await axios.delete(`${baseApi}/api/journals/${id}`)
+    journals.value = journals.value.filter(j => j.id !== id)
+    alert('✅ Journal deleted')
+  } catch (err) {
+    console.error('❌ Delete error:', err.response?.data || err.message)
+    alert('❌ Failed to delete journal')
+  }
 }
 
 </script>
+
 <style scoped>
 .journal-grid {
     display: grid;
@@ -176,8 +196,9 @@ function formatTime(dateStr) {
 
 .location {
     color: #888;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.2;
+    width: 92%;
 }
 
 .right {
@@ -229,6 +250,42 @@ function formatTime(dateStr) {
     margin-left: 6px;
 }
 
+.more-wrapper {
+  position: relative;
+}
+
+.more-icon {
+  cursor: pointer;
+  font-size: 20px;
+  color: #555;
+}
+
+.popup-menu {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  z-index: 10;
+  padding: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 120px;
+}
+
+.popup-menu div {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.popup-menu div:hover {
+  background-color: #f2f2f2;
+}
+
 /* ✅ Responsive Design: 1 card per row on mobile */
 @media (max-width: 768px) {
     .journal-grid {
@@ -241,4 +298,5 @@ function formatTime(dateStr) {
         /* slightly taller on mobile */
     }
 }
+
 </style>

@@ -20,33 +20,7 @@
       <JournalBox :journals="journals" />
 
     </div>
-    <!-- 
-      <section class="journal-section">
-      <div class="journal-header">
-        <h2>Top Travel Journals</h2>
-        <p>Explore our latest stories from our active users</p>
-        <RouterLink to="/create" class="create-btn">+ Create Post</RouterLink>
-      </div>
 
-      <JournalBox :journals="journals" />
-    </section> -->
-
-    <!-- <div class="journal-grid">
-        <div v-for="(journal, index) in journals" :key="index" class="journal-box">
-          <img v-if="journal.images && journal.images.length" :src="journal.images[0]" class="journal-image" alt="Journal" />
-          <div class="journal-info">
-            <h3>{{ journal.title }}</h3>
-            <p class="meta">{{ journal.location }} · {{ journal.date }} · {{ journal.read_time }}</p>
-            <p>{{ journal.content.slice(0, 120) }}...</p>
-            <p class="author">Written by <strong>{{ journal.author }}</strong></p>
-            <div class="actions">
-              <router-link :to="`/readfullpost?index=${index}`" class="read-btn">Read Full Post</router-link>
-              <button @click="editJournal(index)">Edit</button>
-              <button @click="deleteJournal(index)">Delete</button>
-            </div>
-          </div>
-        </div>
-      </div> -->
   </div>
 </template>
 
