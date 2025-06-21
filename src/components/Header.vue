@@ -7,26 +7,18 @@
       </div>
 
       <div class="logo">
-<<<<<<< HEAD
-        <img src="@/assets/logo.png" alt="TripTrek Logo" />
-=======
         <img src="@/assets/picture/logo-white.png" alt="TripTrek Logo" />
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
       </div>
 
       <div class="other-links">
         <i class="bi bi-bell"></i>
         <i class="bi bi-moon-stars"></i>
-<<<<<<< HEAD
-        <div class="user-account">Login</div>
-=======
 
         <!-- 👇 Login / Profile switch -->
         <div v-if="!isLoggedIn" class="user-account" @click="showAuthPopup = true">Login</div>
         <div v-else class="user-account" @click="goToProfile">
           <img :src="profileImage ? `${baseURL}/${profileImage}` : defaultImage" alt="Profile" class="avatar-circle" />
         </div>
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
       </div>
     </div>
 
@@ -37,8 +29,6 @@
       <router-link to="/game" class="nav-link">Game</router-link>
       <router-link to="/about" class="nav-link">About us</router-link>
     </nav>
-<<<<<<< HEAD
-=======
 
     <!-- 👇 Popup Auth -->
     <div class="popup-overlay" v-if="showAuthPopup">
@@ -47,21 +37,15 @@
         <button class="close-btn" @click="showAuthPopup = false">✖</button>
       </div>
     </div>
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
   </header>
 </template>
 
 <script>
-<<<<<<< HEAD
-=======
 import Auth from '@/components/Auth.vue'
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 export default {
   name: 'HeaderNavigationBar',
-<<<<<<< HEAD
-=======
   components: { Auth },
   data() {
     return {
@@ -108,7 +92,6 @@ export default {
       this.$router.push('/profile')
     }
   }
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
 }
 </script>
 
@@ -124,8 +107,6 @@ export default {
   position: relative;
 }
 
-<<<<<<< HEAD
-=======
 .pf-thumb {
   width: 35px;
   height: 35px;
@@ -164,17 +145,12 @@ export default {
   cursor: pointer;
 }
 
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
 .top-header {
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-<<<<<<< HEAD
-  padding: 12px 30px;
-=======
   padding: 15px 30px;
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
   background-color: #25d3b7;
   box-shadow: 0 4px 2px rgba(10, 10, 10, 0.196);
 }
@@ -206,11 +182,6 @@ export default {
 }
 
 .logo {
-<<<<<<< HEAD
-  width: 100px;
-  height: auto;
-=======
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -218,12 +189,8 @@ export default {
 }
 
 .logo img {
-<<<<<<< HEAD
-  width: 70px;
-=======
   width: 100%;
   padding: 10px;
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
 }
 
 .other-links {
@@ -242,12 +209,8 @@ export default {
 
 .search-icon {
   font-size: 1rem;
-<<<<<<< HEAD
-  color: #666; /* Medium gray works well on white background */
-=======
   color: #666;
   /* Medium gray works well on white background */
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
 }
 
 .user-account {

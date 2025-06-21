@@ -1,3 +1,4 @@
+
 {
   "name": "ip-ii-project",
   "version": "0.0.0",
@@ -10,18 +11,12 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "bootstrap-icons": "^1.13.1",
-=======
     "@fortawesome/fontawesome-free": "^6.7.2",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
     "leaflet": "^1.9.4",
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
     "pinia": "^3.0.1",
-    "remixicon": "^4.6.0",
-    "swiper": "^11.2.7",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
