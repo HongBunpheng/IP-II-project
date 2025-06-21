@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import AdminLayout from '@/views/AdminLayout.vue'
 
 // import Province from '@/components/Province.vue'
 // import ChooseTransport from '@/views/ChooseTransport.vue'
@@ -10,7 +11,12 @@ const routes = [
     path: '/',
     name: 'Landingpage',
     component: Landingpage
-  }
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: AdminLayout,
+  },
 
   // {
   //   path: '/province',
