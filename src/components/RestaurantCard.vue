@@ -157,6 +157,16 @@ const goToDetail = (id) => {
   .restaurant-card.reverse {
     flex-direction: column;
     text-align: center;
+    position: relative;
+  }
+
+  .restaurant-info {
+    order: 2;
+    width: 100%;
+  }
+
+  .restaurant-card.reverse .restaurant-info {
+    order: 1;
   }
 
   .restaurant-images {
@@ -164,6 +174,11 @@ const goToDetail = (id) => {
     width: 90%;
     height: 220px;
     margin: 1rem auto 0 auto;
+    order: 1;
+  }
+
+  .restaurant-card.reverse .restaurant-images {
+    order: 2;
   }
 
   .img {

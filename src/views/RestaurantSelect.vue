@@ -6,7 +6,7 @@
     <!-- Navigation Bar -->
     <div class="nav-bar">
       <button class="back-button" @click="goBack">←</button>
-      <h2 class="page-title">Your Perfect Dining Experience is Waiting For You</h2>
+      <h2 class="page-title">Your Perfect Trip is Waiting For You</h2>
     </div>
 
     <!-- Restaurant Cards -->
@@ -37,12 +37,30 @@ const goBack = () => history.back()
 onMounted(async () => {
   try {
     const res = await axios.get('http://localhost:8000/api/restaurants')
-    restaurants.value = res.data.map(restaurant => ({
-      ...restaurant,
-      image: restaurant.image.map(img =>
+    restaurants.value = res.data.map(restaurant => {
+      let images = []
+
+      // Parse if stored as string, otherwise use array directly
+      if (typeof restaurant.image === 'string') {
+        try {
+          images = JSON.parse(restaurant.image)
+        } catch {
+          images = []
+        }
+      } else if (Array.isArray(restaurant.image)) {
+        images = restaurant.image
+      }
+
+      // Map to full URL
+      const fullImageURLs = images.map(img =>
         img.startsWith('http') ? img : `http://localhost:8000/storage/${img}`
       )
-    }))
+
+      return {
+        ...restaurant,
+        image: fullImageURLs
+      }
+    })
   } catch (err) {
     error.value = '❌ Failed to load restaurants.'
     console.error(err)

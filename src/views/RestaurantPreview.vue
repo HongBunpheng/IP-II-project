@@ -6,19 +6,35 @@
     <p class="comment">If you see my comment I really recommend you to try this restaurant it really good</p>
 
     <!-- IMAGE LAYOUT -->
-    <div class="image-wrapper">
-      <img :src="getImageUrl(restaurant.image[0])" class="big-image" v-if="restaurant.image[0]" />
+    <div class="image-wrapper" v-if="restaurant.image.length > 0">
+      <!-- Big Image -->
+      <img
+        :src="getImageUrl(restaurant.image[0])"
+        class="big-image"
+        alt="Main Image"
+      />
 
       <div class="right-grid">
+        <!-- Medium (2 images) -->
         <div class="top-row">
-          <template v-for="(img, i) in topImages" :key="'top-' + i">
-            <img v-if="img" :src="getImageUrl(img)" class="medium-image" />
-          </template>
+          <img
+            v-for="(img, i) in restaurant.image.slice(1, 3)"
+            :key="'medium-' + i"
+            :src="getImageUrl(img)"
+            class="medium-image"
+            alt="Medium Image"
+          />
         </div>
+
+        <!-- Small (3 images) -->
         <div class="bottom-row">
-          <template v-for="(img, i) in bottomImages" :key="'bottom-' + i">
-            <img v-if="img" :src="getImageUrl(img)" class="small-image" />
-          </template>
+          <img
+            v-for="(img, i) in restaurant.image.slice(3, 6)"
+            :key="'small-' + i"
+            :src="getImageUrl(img)"
+            class="small-image"
+            alt="Small Image"
+          />
         </div>
       </div>
     </div>
@@ -50,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import Map from '@/components/Map.vue'
@@ -62,36 +78,31 @@ const route = useRoute()
 const router = useRouter()
 const showBooking = ref(false)
 
-const fallbackImage = 'https://via.placeholder.com/150'
+// Use local fallback image instead of broken placeholder
+const fallbackImage = new URL('@/assets/picture/default.jpg', import.meta.url).href
 
 const getImageUrl = (imgPath) => {
   if (!imgPath) return fallbackImage
   const base = import.meta.env.VITE_API_BASE_URL.replace('/api', '')
   return imgPath.startsWith('http')
     ? imgPath
-    : `${base}/storage/${imgPath.replace(/^\/?uploads\//, 'uploads/')}`
+    : `${base}/storage/${imgPath}`
 }
-
-const topImages = computed(() =>
-  Array.isArray(restaurant.value?.image) ? restaurant.value.image.slice(1, 3) : []
-)
-
-const bottomImages = computed(() =>
-  Array.isArray(restaurant.value?.image) ? restaurant.value.image.slice(3, 6) : []
-)
 
 onMounted(async () => {
   try {
     const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/restaurants/${route.params.id}`)
-    console.log('📦 Restaurant data:', res.data)
+    const images = typeof res.data.image === 'string'
+      ? JSON.parse(res.data.image)
+      : res.data.image || []
 
     restaurant.value = {
       ...res.data,
-      image: Array.isArray(res.data.image)
-        ? res.data.image
-        : JSON.parse(res.data.image || '[]'),
+      image: Array.isArray(images) ? images : [],
       rating: Number(res.data.rating)
     }
+
+    console.log('✅ Restaurant image list:', restaurant.value.image)
   } catch (err) {
     console.error('❌ Failed to load restaurant:', err)
   }
