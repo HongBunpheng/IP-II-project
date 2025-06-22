@@ -171,17 +171,41 @@
                         <h3>Post</h3>
                         <router-link to="/create" class="create-post-btn">➕ Create Post</router-link>
                     </div>
-                    <!-- View Toggle -->
+
                     <div class="view-toggle">
-                        <div :class="['toggle-option', { active: viewMode === 'list' }]" @click="viewMode = 'list'">
+                        <!-- <div :class="['toggle-option', { active: viewMode === 'list' }]" @click="viewMode = 'list'">
                             <span class="icon">≡</span> List View
-                        </div>
+                        </div> -->
 
                         <div :class="['toggle-option', { active: viewMode === 'grid' }]" @click="viewMode = 'grid'">
                             <span class="icon">▦</span> Grid View
                         </div>
-            <!-- Journal Renderer -->
-            <JournalBox :posts="userPosts" :view-mode="viewMode" />                    </div>
+                    </div>
+
+<!-- Final JournalBox rendering -->
+  <div :class="['journal-wrapper', viewMode]">
+    <JournalBox :journals="userPosts" :view-mode="viewMode" />
+  </div>
+
+                    <!-- <div :class="['post-container', viewMode]">
+                        <div v-for="(post, index) in posts" :key="index" class="post-card">
+                            <img :src="post.image" :alt="post.title" class="post-img" />
+                            <div class="post-content" v-if="viewMode === 'grid'">
+                                <h4 class="post-title">{{ post.title }}</h4>
+                                <div class="meta-grid">
+                                    <span>{{ post.location }}</span>
+                                    <span>{{ post.date }}</span>
+                                </div>
+                            </div>
+                            <div class="post-content" v-if="viewMode === 'list'">
+                                <h4 class="post-title">{{ post.title }}</h4>
+                                <div class="meta-list">
+                                    <span>{{ post.location }}</span>
+                                    <span>{{ post.date }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -189,241 +213,292 @@
 </template>
 
 <script>
-import JournalBox from '@/components/JournalBox.vue'
-import axios from 'axios'
-
-const baseApi = import.meta.env.VITE_API_BASE_URL
+import CreatePost from '@/components/CreatePost.vue';
+import JournalBox from '@/components/JournalBox.vue';
+import axios from 'axios';
 
 export default {
-  name: 'ProfilePage',
-  components: { JournalBox },
-  data() {
-    return {
-      currentTab: 'post',
-      viewMode: 'grid',
-      userPosts: [],
-
-      showCreatePost: false,
-      profileImage: null,
-      defaultImage: "/src/assets/pf.png",
-      name: '',
-      showImageOptions: false,
-      showEditBioModal: false,
-      newBioText: '',
-      bioText: '',
-      details: {
-        location: '',
-        instagram: '',
-        nickname: '',
-      },
-      settings: [],
-      editFields: {},
-      galleryPhotos: [],
-      featuredPhotos: [],
-      showEditDetailsModal: false,
-      newDetails: {
-        location: '',
-        instagram: '',
-        nickname: ''
-      }
-    };
-  },
-  created() {
-    this.fetchUserProfile()
-    this.fetchUserPosts()
-  },
-  methods: {
-    getAuthHeader() {
-      return {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      }
-    },
-
-    async fetchUserProfile() {
-      try {
-        const res = await axios.get(`${baseApi}/api/profile`, this.getAuthHeader())
-        const user = res.data
-
-        this.profileImage = user.profile_picture || this.defaultImage
-        this.name = user.name || ''
-        this.bioText = user.bio || ''
-        this.details = {
-          location: user.address || '',
-          instagram: user.social_links?.instagram || '',
-          nickname: user.nickname || ''
-        }
-
-        this.settings = [
-          { label: 'Name', value: this.name },
-          { label: 'Nickname', value: this.details.nickname },
-          { label: 'Email', value: user.email || '' },
-          { label: 'Location', value: this.details.location }
-        ]
-
-        this.settings.forEach(setting => {
-          this.editFields[setting.label] = false
-        })
-      } catch (err) {
-        console.error("Fetch profile failed:", err)
-      }
-    },
-
-    async fetchUserPosts() {
-      try {
-        const res = await axios.get(`${baseApi}/api/journals`, this.getAuthHeader())
-        const user = JSON.parse(localStorage.getItem('user'))
-        const userId = user?.id
-
-        this.userPosts = res.data
-          .filter(post => post.account_id === userId)
-          .map(post => {
-            const images = Array.isArray(post.images)
-              ? post.images
-              : JSON.parse(post.images || '[]')
-            return {
-              ...post,
-              image: images.length ? `${baseApi}/${images[0]}` : '',
-              date: new Date(post.created_at).toLocaleDateString()
+    name: 'ProfilePage',
+    components: { CreatePost, JournalBox },
+    data() {
+        return {
+            baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+            currentTab: 'post',
+            viewMode: 'grid',
+            showCreatePost: false,
+            profileImage: null,
+            defaultImage: "/src/assets/pf.png",
+            name: '',
+            showImageOptions: false,
+            showEditBioModal: false,
+            newBioText: '',
+            bioText: '',
+            details: {
+                location: '',
+                instagram: '',
+                nickname: '',
+            },
+            settings: [],
+            editFields: {},
+            posts: [],
+            galleryPhotos: [],
+            featuredPhotos: [],
+            showEditDetailsModal: false,
+            newDetails: {
+                location: '',
+                instagram: '',
+                nickname: ''
             }
-          })
-      } catch (err) {
-        console.error("❌ Failed to fetch user posts:", err)
-      }
+        };
     },
-
-    deleteField(fieldLabel) {
-      switch (fieldLabel) {
-        case 'Name':
-          this.name = ''
-          break
-        case 'Nickname':
-          this.details.nickname = ''
-          break
-        case 'Email':
-          alert("❌ Email cannot be deleted.")
-          return
-        case 'Location':
-          this.details.location = ''
-          break
-        default:
-          return
-      }
-      this.updateUserProfile()
+    created() {
+        this.fetchUserProfile();
+        this.fetchUserPosts();
     },
+    methods: {
+        getAuthHeader() {
+            return {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            };
+        },
 
-    async handleImageUpload(event) {
-      const file = event.target.files[0]
-      if (!file) return
+        async fetchUserProfile() {
+            try {
+                const res = await axios.get(`${this.baseURL}/api/profile`, this.getAuthHeader());
+                const user = res.data;
 
-      const formData = new FormData()
-      formData.append("image", file)
+                this.profileImage = user.profile_picture || this.defaultImage;
+                this.name = user.name || '';
+                this.bioText = user.bio || '';
+                this.details = {
+                    location: user.address || '',
+                    instagram: user.social_links?.instagram || '',
+                    nickname: user.nickname || '',
+                };
 
-      try {
-        const res = await axios.post(`${baseApi}/api/profile/upload-image`, formData, {
-          headers: {
-            ...this.getAuthHeader().headers,
-            "Content-Type": "multipart/form-data"
-          }
-        })
-        this.profileImage = res.data.profile_picture
-      } catch (err) {
-        console.error("Image upload failed:", err)
-      }
-    },
+                this.settings = [
+                    { label: 'Name', value: this.name },
+                    { label: 'Nickname', value: this.details.nickname },
+                    { label: 'Email', value: user.email || '' },
+                    { label: 'Location', value: this.details.location }
+                ];
 
-    async addFeaturedPhoto(event) {
-      const file = event.target.files[0]
-      if (!file) return
+                this.settings.forEach(setting => {
+                    this.editFields[setting.label] = false;
+                });
+            } catch (err) {
+                console.error("Fetch profile failed:", err);
+            }
+        },
 
-      const formData = new FormData()
-      formData.append("image", file)
+        async updateUserProfile() {
+            const socialLinks = { instagram: this.details.instagram };
+            try {
+                await axios.put(`${this.baseURL}/api/profile`, {
+                    name: this.name,
+                    nickname: this.details.nickname,
+                    address: this.details.location,
+                    social_links: socialLinks,
+                    bio: this.bioText,
+                    featured_picture: this.featuredPhotos,
+                    profile_picture: this.profileImage
+                }, this.getAuthHeader());
 
-      try {
-        const res = await axios.post(`${baseApi}/api/profile/featured-photo`, formData, {
-          headers: {
-            ...this.getAuthHeader().headers,
-            "Content-Type": "multipart/form-data"
-          }
-        })
-        this.featuredPhotos.push(res.data.path)
-      } catch (err) {
-        console.error("Add featured photo failed:", err)
-      }
-    },
+                alert("✅ Profile updated!");
+            } catch (err) {
+                console.error("❌ Update failed:", err);
+            }
+        },
 
-    handleLogout() {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      localStorage.removeItem('user_id')
-      this.$router.push('/')
-    },
+        async fetchUserPosts() {
+            try {
+                const token = localStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('user'));
+                const userId = user?.id;
 
-    saveBio() {
-      if (this.newBioText) {
-        this.bioText = this.newBioText
-        this.updateUserProfile()
-      }
-      this.showEditBioModal = false
-    },
+                if (!token || !userId) {
+                console.error("❌ Missing token or user ID.");
+                return;
+                }
 
-    saveDetails() {
-      this.details = { ...this.newDetails }
-      this.showEditDetailsModal = false
-      this.updateUserProfile()
-    },
+                const res = await axios.get(`${baseApi}/api/journals`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+                });
 
-    saveSetting(field) {
-      const label = field.label
-      const value = field.value
+                this.userPosts = res.data
+                .filter(post => post.account_id === userId || post.author_id === userId || post.author_name === user.name) // ← safest fallback
+                .map(post => {
+                    const images = Array.isArray(post.images)
+                    ? post.images
+                    : JSON.parse(post.images || '[]');
 
-      if (label === 'Name') this.name = value
-      else if (label === 'Nickname') this.details.nickname = value
-      else if (label === 'Location') this.details.location = value
+                    return {
+                    ...post,
+                    image: images.length ? `${baseApi}/${images[0]}` : '',
+                    date: new Date(post.created_at).toLocaleDateString()
+                    };
+                });
+            } catch (err) {
+                console.error("❌ Failed to fetch posts", err)
+            }
+        },
 
-      this.editFields[label] = false
-      this.updateUserProfile().then(() => {
-        this.fetchUserProfile()
-      })
-    },
+        deleteField(fieldLabel) {
+            switch (fieldLabel) {
+                case 'Name':
+                    this.name = '';
+                    break;
+                case 'Nickname':
+                    this.details.nickname = '';
+                    break;
+                case 'Email':
+                    alert("❌ Email cannot be deleted.");
+                    return;
+                case 'Location':
+                    this.details.location = '';
+                    break;
+                default:
+                    return;
+            }
+            this.updateUserProfile();
+        },
 
-    openEditDetailsModal() {
-      this.newDetails = { ...this.details }
-      this.showEditDetailsModal = true
-    },
+        async handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-    openEditBioModal() {
-      this.newBioText = this.bioText
-      this.showEditBioModal = true
-    },
+            const formData = new FormData();
+            formData.append("image", file);
 
-    selectFromLibrary() {
-      this.$refs.fileInput.click()
-    },
+            try {
+                const res = await axios.post(
+                    `${this.baseURL}/api/profile/upload-image`,
+                    formData,
+                    {
+                        headers: {
+                            ...this.getAuthHeader().headers,
+                            "Content-Type": "multipart/form-data"
+                        }
+                    }
+                );
+                this.profileImage = res.data.profile_picture;
+            } catch (err) {
+                console.error("Image upload failed:", err);
+            }
+        },
 
-    takePhoto() {
-      alert("Camera access not implemented.")
-    },
+        async addFeaturedPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-    changeCoverPhoto() {
-      alert("Cover change not yet implemented.")
-    },
+            const formData = new FormData();
+            formData.append("image", file);
 
-    deleteProfileImage() {
-      this.profileImage = this.defaultImage
-      this.updateUserProfile()
-    },
+            try {
+                const res = await axios.post(
+                    `${this.baseURL}/api/profile/featured-photo`,
+                    formData,
+                    {
+                        headers: {
+                            ...this.getAuthHeader().headers,
+                            "Content-Type": "multipart/form-data"
+                        }
+                    }
+                );
+                this.featuredPhotos.push(res.data.path);
+            } catch (err) {
+                console.error("Add featured photo failed:", err);
+            }
+        },
 
-    removeFeatured(index) {
-      this.featuredPhotos.splice(index, 1)
-      this.updateUserProfile()
+        handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('user_id');
+            this.$router.push('/'); // or redirect to /auth or landing page
+        },
+
+        saveBio() {
+            if (this.newBioText) {
+                this.bioText = this.newBioText;
+                this.updateUserProfile();
+            }
+            this.showEditBioModal = false;
+        },
+
+        saveDetails() {
+            this.details = { ...this.newDetails };
+            this.showEditDetailsModal = false;
+            this.updateUserProfile();
+        },
+
+        saveSetting(field) {
+            const label = field.label;
+            const value = field.value;
+
+            if (label === 'Name') this.name = value;
+            else if (label === 'Nickname') this.details.nickname = value;
+            else if (label === 'Location') this.details.location = value;
+            // Email won't be updated (skip for now)
+
+            this.editFields[label] = false;
+            this.updateUserProfile().then(() => {
+                this.fetchUserProfile();  // 🔁 sync changes after save
+            });
+        },
+
+        openEditDetailsModal() {
+            this.newDetails = { ...this.details };
+            this.showEditDetailsModal = true;
+        },
+
+        openEditBioModal() {
+            this.newBioText = this.bioText;
+            this.showEditBioModal = true;
+        },
+
+        selectFromLibrary() {
+            this.$refs.fileInput.click();
+        },
+
+        takePhoto() {
+            alert("Camera access not implemented.");
+        },
+
+        changeCoverPhoto() {
+            alert("Cover change not yet implemented.");
+        },
+
+        deleteProfileImage() {
+            this.profileImage = this.defaultImage;
+            this.updateUserProfile();
+        },
+
+        removeFeatured(index) {
+            this.featuredPhotos.splice(index, 1);
+            this.updateUserProfile();
+        }
     }
-  }
 }
 </script>
 
 <style scoped>
+
+.journal-wrapper.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+.journal-wrapper.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 /* cover */
 .cover-photo img {
     width: 100%;
@@ -816,8 +891,9 @@ export default {
 /* GRID VIEW */
 .post-container.grid {
     display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.2rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    padding: 20px 0;
 }
 
 .post-container.grid .post-card {
@@ -869,8 +945,8 @@ export default {
 .post-container.list {
     display: flex;
     flex-direction: column;
-  gap: 2rem;
-
+    gap: 40px;
+    padding: 20px 0;
 }
 
 .post-container.list .post-card {
