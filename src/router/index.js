@@ -15,6 +15,7 @@ import Auth from "@/components/Auth.vue";
 import AdminLayout from "@/views/AdminLayout.vue";
 import Transportation from "@/components/Transportation.vue";
 import ChooseTransport from "@/views/ChooseTransport.vue";
+import SearchPlace from "@/views/SearchPlace.vue";
 
 const routes = [
   { path: "/", name: "Home", component: HomeView },
@@ -32,6 +33,7 @@ const routes = [
   { path: "/postCard", name: "PostCard", component: PostCard },
   { path: "/transportation", name: "Transportation", component: Transportation },
   { path: "/choose-transport", name: "ChooseTransport", component: ChooseTransport },
+  { path: '/search', name: 'SearchPlace', component:  SearchPlace  },
 
 
   // Admin can stay separate if you want no header on it
