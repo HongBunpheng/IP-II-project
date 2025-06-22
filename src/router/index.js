@@ -21,7 +21,6 @@ const routes = [
   { path: "/journal/:id", name: "ReadFullPost", component: ReadFullPost },
   { path: "/about", name: "AboutUs", component: About },
   { path: "/create", name: "CreatePost", component: CreatePost },
-  { path: '/create/:id?', name: 'CreatePost', component: CreatePost },
   { path: "/game", name: "Game", component: Game },
   { path: "/explore", name: "Explore", component: Explore },
   { path: "/hotel-select", name: "HotelSelect", component: HotelSelect },

@@ -225,6 +225,7 @@ export default {
             baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
             currentTab: 'post',
             viewMode: 'grid',
+            userPosts: [],
             showCreatePost: false,
             profileImage: null,
             defaultImage: "/src/assets/pf.png",
@@ -313,35 +314,42 @@ export default {
         },
 
         async fetchUserPosts() {
-            try {
-                const token = localStorage.getItem('token');
-                const user = JSON.parse(localStorage.getItem('user'));
-                const userId = user?.id;
+                try {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userId = user?.id || user?._id;
+    const userName = user?.name;
 
-                if (!token || !userId) {
-                console.error("❌ Missing token or user ID.");
-                return;
-                }
+    if (!token || !userId) {
+      console.error("❌ Missing token or user ID.");
+      return;
+    }
 
-                const res = await axios.get(`${baseApi}/api/journals`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-                });
+    const res = await axios.get(`${this.baseURL}/api/journals`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
-                this.userPosts = res.data
-                .filter(post => post.account_id === userId || post.author_id === userId || post.author_name === user.name) // ← safest fallback
-                .map(post => {
-                    const images = Array.isArray(post.images)
-                    ? post.images
-                    : JSON.parse(post.images || '[]');
+    // 👇 Filter by the correct field that matches the current user
+    this.userPosts = res.data.filter(post => {
+      return (
+        post.user_id === userId ||
+        post.account_id === userId ||
+        post.author_id === userId ||
+        post.author_name === userName // fallback by name
+      );
+    }).map(post => {
+      const images = Array.isArray(post.images)
+        ? post.images
+        : JSON.parse(post.images || '[]');
 
-                    return {
-                    ...post,
-                    image: images.length ? `${baseApi}/${images[0]}` : '',
-                    date: new Date(post.created_at).toLocaleDateString()
-                    };
-                });
+      return {
+        ...post,
+        image: images.length ? `${this.baseURL}/${images[0]}` : '',
+        date: new Date(post.created_at).toLocaleDateString()
+      };
+    });
             } catch (err) {
                 console.error("❌ Failed to fetch posts", err)
             }

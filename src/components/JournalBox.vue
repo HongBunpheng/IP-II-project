@@ -96,10 +96,6 @@ function toggleMenu(id) {
   showMenuFor.value = showMenuFor.value === id ? null : id
 }
 
-function emitEdit(journal) {
-  router.push(`/create/${journal.id}`)
-}
-
 async function emitDelete(id) {
   const confirmed = confirm('Are you sure you want to delete this post?')
   if (!confirmed) return

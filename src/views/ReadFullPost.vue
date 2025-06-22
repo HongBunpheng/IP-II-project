@@ -7,11 +7,12 @@
 
     <!-- 👤 Author Info -->
     <div class="author-box">
-      <img
-        :src="authorAvatar ? `${baseApi}/${authorAvatar}` : defaultImage"
-        class="avatar"
-        alt="Author"
-      />
+        <img
+      :src="authorAvatar || defaultImage"
+      class="avatar"
+      alt="Author"
+    />
+
       <div class="info">
         <h4>{{ authorName }}</h4>
         <p><i class="bi bi-geo-alt-fill"></i> {{ journal.location }}</p>
