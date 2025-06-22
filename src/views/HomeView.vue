@@ -2,9 +2,6 @@
     <div class="landing-page">
         <!-- === NewPlace Section === -->
         <div class="new-place-wrapper">
-            <div class="logo">
-                <img src="/src/assets/picture/logo.png" alt="TripTrek Logo" />
-            </div>
 
             <div class="hero-text">
                 <h1>
