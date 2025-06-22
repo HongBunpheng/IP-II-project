@@ -1,15 +1,16 @@
 <template>
-  <div class="hotel-card">
-    <div class="card-header">
-      <h3>Best Guide Restaurant</h3>
-      <i class="bi bi-heart"></i>
+    <div class="hotel-card">
+        <div class="card-header">
+            <h3>Enjoy Transportation</h3>
+            <i class="bi bi-heart"></i>
+        </div>
+        <p class="description">
+            Highlights transportation services available for a smooth journey. A consistent design with a short text and
+            an interactive "More" link is used.
+        </p>
+        <p class="more" @click="router.push('/choose-transport')">More</p>
+
     </div>
-    <p class="description">
-      That is the most popular place we're highly<br />
-      recommend to your for visit it
-    </p>
-    <p class="more" @click="goToRestaurantSelect">More</p>
-  </div>
 </template>
 
 <script setup>
@@ -17,11 +18,10 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-function goToRestaurantSelect() {
-  router.push('/restaurant-select')
+function goToTransportation() {
+    router.push('/transportation')
 }
 </script>
-
 
 <style scoped>
 .hotel-card {

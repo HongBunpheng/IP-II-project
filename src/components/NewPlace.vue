@@ -5,22 +5,6 @@
             <img src="/src/assets/picture/logo.png" alt="TripTrek Logo" />
         </div>
 
-        <!-- Navigation Bar -->
-        <header class="nav-bar">
-            <div class="nav-left">
-                <div class="nav-links">
-                    <a href="#">Explore</a>
-                    <a href="#">Journal</a>
-                    <a href="#">About us</a>
-                </div>
-            </div>
-            <div class="nav-right">
-                <button class="icon-btn" title="Toggle Theme"><i class="ri-moon-clear-line"></i></button>
-                <button class="icon-btn" title="Weather"><i class="ri-moon-cloudy-line"></i></button>
-                <button class="login-btn">Login</button>
-            </div>
-        </header>
-
         <!-- Hero Text -->
         <div class="hero-text">
             <h1>
@@ -44,34 +28,11 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
-const emit = defineEmits(['show-header'])
 const cards = [
     { image: 'mountain.jpg' },
     { image: 'temple.jpg' },
     { image: 'sea.jpg' }
 ];
-
-function handleScroll() {
-    const scrollBottom = window.innerHeight + window.scrollY;
-    const docHeight = document.documentElement.offsetHeight;
-
-    console.log(`Scroll Y: ${window.scrollY}, Total: ${scrollBottom} / ${docHeight}`); // ✅ log
-
-    if (scrollBottom >= docHeight - 10) {
-        console.log('✅ Bottom reached');
-        emit('show-header');
-    }
-}
-
-
-onMounted(() => {
-    window.addEventListener('scroll', handleScroll)
-})
-
-onBeforeUnmount(() => {
-    window.removeEventListener('scroll', handleScroll)
-})
 
 function getImageUrl(filename) {
     return new URL(`../assets/picture/${filename}`, import.meta.url).href;

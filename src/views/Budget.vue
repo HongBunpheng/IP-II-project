@@ -41,7 +41,8 @@
             <div v-if="currentTab === 'analyse'" class="result-section">
                 <h3 class="result-title">Result</h3>
 
-                <div v-if="filteredPlaces.length === 0 && budget" class="empty-state">
+                <div v-if="filteredPlaces.length === 0" class="empty-state">
+                    <!-- && Budget -->
                     <img src="@/assets/picture/empty-box.png" />
                     <p>No places found for this budget and province.</p>
                 </div>
@@ -91,7 +92,6 @@
             </div>
         </section>
     </div>
-
 </template>
 
 <script>
@@ -162,9 +162,6 @@ export default {
     },
 };
 </script>
-
-
-
 
 <style scoped>
 .budget-page {

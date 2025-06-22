@@ -3,70 +3,57 @@
         <div class="receipt-card">
             <!-- Header -->
             <div class="receipt-header">
-                <span class="header-title">Code</span>
+                <span class="header-title">Booking Code</span>
                 <span class="header-code">{{ booking.code }}</span>
             </div>
 
             <!-- Body -->
             <div class="receipt-body">
-                <!-- Left info -->
+                <!-- Left Info -->
                 <div class="info">
                     <div class="info-row">
-                        <span class="label">From </span>
-                        <span class="value">: </span>
+                        <span class="label">From</span>
                         <span class="value">{{ booking.from }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="labelTo">To</span>
-                        <span class="value">: </span>
+                        <span class="label">To</span>
                         <span class="value">{{ booking.to }}</span>
                     </div>
                     <div class="info-row datetime-row">
                         <div class="datetimelabel">
-                            <span class="label">Date &</span>
-                            <span class="label">Time</span>
+                            <span class="label">Date</span>
+                            <span class="value">{{ booking.date }}</span>
                         </div>
-                        <div class="datetime">
-                            <span class="date">{{ booking.date }}</span>
-                            <span class="time">{{ booking.time }}</span>
+                        <div class="datetimelabel">
+                            <span class="label">Time</span>
+                            <span class="value">{{ booking.time }}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right QR -->
+                <!-- QR Section -->
                 <div class="qr-section">
-                    <span class="label">Scan QR</span>
-                    <img :src="qrImage" alt="QR code" class="qr-code" />
+                    <span class="qr-label">Scan to Pay</span>
+                    <img :src="booking.qrImage" alt="QR code" class="qr-code" />
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="receipt-footer">
-                <button class="complete-btn">Complete success</button>
+                <button class="complete-btn" @click="$emit('done')">Complete Booking</button>
+                <button class="close-btn" @click="$emit('close')">×</button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import qr from '@/assets/picture/qr.png'  // replace with your actual QR file
-
 export default {
-    name: 'ReceiptCard',
+    name: 'Receipt',
     props: {
         booking: {
             type: Object,
-            default: () => ({
-                code: 'NN4648pp-sr',
-                from: 'Phnom Penh',
-                to: 'Siem Reap',
-                date: '25 Oct 2025',
-                time: '2:00 PM'
-            })
-        },
-        qrImage: {
-            type: String,
-            default: qr
+            required: true
         }
     }
 }
@@ -77,147 +64,172 @@ export default {
     display: flex;
     justify-content: center;
     padding: 20px;
+    background: linear-gradient(to right, #f9f9f9, #e9f7f6);
 }
 
 .receipt-card {
-    width: clamp(300px, 80vw, 500px);
-    height: min-content;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    width: clamp(300px, 80vw, 520px);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in-out;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
-/* --- Header --- */
 .receipt-header {
-    background-color: #25d3b7;
+    background: #14cba8;
+    color: white;
     text-align: center;
-    padding: 12px 0;
+    padding: 16px;
 }
 
 .header-title {
-    display: block;
-    color: black;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .header-code {
     display: block;
-    color: black;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: bold;
     margin-top: 4px;
 }
 
-/* --- Body --- */
 .receipt-body {
     display: flex;
     justify-content: space-between;
-    padding: 16px;
-}
-.value {
-    display: flex;
-    justify-content: flex-start;
+    gap: 12px;
+    padding: 20px;
+    flex-wrap: wrap;
 }
 
-.labelTo {
-    margin-right: 19px;
-}
-/* Left info column */
 .info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .info-row {
-    display: grid;
-    grid-template-columns: auto auto 1fr;
-    align-items: baseline;
-    column-gap: 5px;
-    margin-bottom: 8px;
-}
-
-.info-row.datetime-row {
     display: flex;
     flex-direction: column;
-
 }
 
-.info-row.datetime-row .datetimelabel {
-    grid-column: 1 / 2;
-    display: flex;
-    gap: 5px;
+.label {
+    font-weight: bold;
+    color: #444;
+    font-size: 14px;
 }
 
-.info-row.datetime-row .datetime {
-    grid-column: 2 / 4;
+.value {
+    font-size: 15px;
+    color: #222;
+    margin-top: 2px;
+}
+
+.datetime-row {
     display: flex;
+    flex-direction: column;
     gap: 8px;
 }
 
-.info-row.datetime-row .date,
-.info-row.datetime-row .time {
-    font-size: 9px;
-    color: #555;
-    line-height: 1.4;
+.datetimelabel {
+    display: flex;
+    flex-direction: column;
 }
 
-
-/* Right QR column */
 .qr-section {
-    flex: 0 0 120px;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    z-index: 1;
 }
 
-.qr-section .label {
+.qr-label {
+    font-size: 13px;
+    font-weight: 500;
     margin-bottom: 8px;
+    color: #333;
 }
 
 .qr-code {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
+    border: 2px solid #14cba8;
+    border-radius: 12px;
+    padding: 6px;
+    background: #f8f8f8;
     object-fit: contain;
 }
 
-/* --- Footer --- */
 .receipt-footer {
     padding: 16px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    background: #f5f5f5;
+    z-index: 2;
+    position: relative;
+    gap: 10px;
 }
 
-.complete-btn {
+.complete-btn,
+.close-btn {
     background-color: #ff8c00;
-    color: black;
+    color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px 24px;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: bold;
     cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.close-btn {
+    background-color: #ccc;
+    color: #000;
 }
 
 .complete-btn:hover {
-    background-color: #e07b00;
+    background-color: #e77c00;
 }
 
-/* Small-screen fallback */
-@media (max-width: 500px) {
+.close-btn:hover {
+    background-color: #999;
+}
+
+@media (max-width: 600px) {
     .receipt-body {
         flex-direction: column;
         align-items: center;
         text-align: center;
     }
 
-    .info {
-        width: 100%;
+    .qr-section {
+        margin-top: 20px;
     }
 
-    .qr-section {
-        margin-top: 12px;
+    .receipt-footer {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 </style>

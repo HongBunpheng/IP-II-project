@@ -1,21 +1,21 @@
 <template>
-    <div class="hotel-card" :class="{ reverse: index % 2 !== 0 }">
+    <div class="restaurant-card" :class="{ reverse: index % 2 !== 0 }">
         <!-- Info Section -->
-        <div class="hotel-info">
-            <h2 class="hotel-title">{{ hotel.name }}</h2>
-            <p class="hotel-description">{{ hotel.details }}</p>
-            <div class="hotel-footer">
-                <button class="details-btn" @click="goToDetail(hotel.id)">details</button>
+        <div class="restaurant-info">
+            <h2 class="restaurant-title">{{ restaurant.name }}</h2>
+            <p class="restaurant-description">{{ restaurant.details }}</p>
+            <div class="restaurant-footer">
+                <button class="details-btn" @click="goToDetail(restaurant.id)">details</button>
                 <div class="stars">
-                    <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= hotel.rating }">★</span>
+                    <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= restaurant.rating }">★</span>
                 </div>
             </div>
         </div>
 
         <!-- Overlapping Images -->
-        <div class="hotel-images" v-if="hotel.image?.length >= 2">
-            <img :src="hotel.image[1]" class="img back" />
-            <img :src="hotel.image[0]" class="img front" />
+        <div class="restaurant-images" v-if="restaurant.image?.length >= 2">
+            <img :src="restaurant.image[1]" class="img back" />
+            <img :src="restaurant.image[0]" class="img front" />
         </div>
     </div>
 </template>
@@ -24,19 +24,19 @@
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-    hotel: Object,
+    restaurant: Object,
     index: Number
 })
 
 const router = useRouter()
 
 const goToDetail = (id) => {
-    router.push(`/hotel/${id}`)
+    router.push(`/restaurant/${id}`)
 }
 </script>
 
 <style scoped>
-.hotel-card {
+.restaurant-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -55,30 +55,30 @@ const goToDetail = (id) => {
     z-index: 0;
 }
 
-.hotel-card.reverse {
+.restaurant-card.reverse {
     flex-direction: row-reverse;
 }
 
-.hotel-info {
+.restaurant-info {
     flex: 1 1 300px;
     min-width: 0;
 }
 
-.hotel-title {
+.restaurant-title {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 12px;
     color: #111;
 }
 
-.hotel-description {
+.restaurant-description {
     font-size: 14px;
     line-height: 1.6;
     margin-bottom: 16px;
     color: #333;
 }
 
-.hotel-footer {
+.restaurant-footer {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -109,7 +109,7 @@ const goToDetail = (id) => {
     color: #f5b700;
 }
 
-.hotel-images {
+.restaurant-images {
     position: absolute;
     top: -40px;
     right: 30px;
@@ -118,7 +118,7 @@ const goToDetail = (id) => {
     z-index: 2;
 }
 
-.hotel-card.reverse .hotel-images {
+.restaurant-card.reverse .restaurant-images {
     left: 30px;
     right: auto;
 }
@@ -149,17 +149,32 @@ const goToDetail = (id) => {
 
 @media (max-width: 768px) {
 
-    .hotel-card,
-    .hotel-card.reverse {
+    .restaurant-card,
+    .restaurant-card.reverse {
         flex-direction: column;
         text-align: center;
+        position: relative;
     }
 
-    .hotel-images {
+    .restaurant-info {
+        order: 2;
+        width: 100%;
+    }
+
+    .restaurant-card.reverse .restaurant-info {
+        order: 1;
+    }
+
+    .restaurant-images {
         position: static;
         width: 90%;
         height: 220px;
         margin: 1rem auto 0 auto;
+        order: 1;
+    }
+
+    .restaurant-card.reverse .restaurant-images {
+        order: 2;
     }
 
     .img {
@@ -168,7 +183,7 @@ const goToDetail = (id) => {
         height: 100%;
     }
 
-    .hotel-footer {
+    .restaurant-footer {
         justify-content: center;
     }
 }

@@ -169,22 +169,25 @@
                 <div v-if="currentTab === 'post'" class="right-column">
                     <div class="post-header">
                         <h3>Post</h3>
-                        <router-link to="/postCard" class="create-post-btn">➕ Create Post</router-link>
-                        <CreatePost v-if="showCreatePost" @close="showCreatePost = false" />
+                        <router-link to="/create" class="create-post-btn">➕ Create Post</router-link>
                     </div>
 
                     <div class="view-toggle">
-                        <div :class="['toggle-option', { active: viewMode === 'list' }]" @click="viewMode = 'list'">
+                        <!-- <div :class="['toggle-option', { active: viewMode === 'list' }]" @click="viewMode = 'list'">
                             <span class="icon">≡</span> List View
-                        </div>
+                        </div> -->
 
                         <div :class="['toggle-option', { active: viewMode === 'grid' }]" @click="viewMode = 'grid'">
                             <span class="icon">▦</span> Grid View
                         </div>
                     </div>
 
+                    <!-- Final JournalBox rendering -->
+                    <div :class="['journal-wrapper', viewMode]">
+                        <JournalBox :journals="userPosts" :view-mode="viewMode" />
+                    </div>
 
-                    <div :class="['post-container', viewMode]">
+                    <!-- <div :class="['post-container', viewMode]">
                         <div v-for="(post, index) in posts" :key="index" class="post-card">
                             <img :src="post.image" :alt="post.title" class="post-img" />
                             <div class="post-content" v-if="viewMode === 'grid'">
@@ -202,7 +205,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -210,17 +213,19 @@
 </template>
 
 <script>
-import PostCard from '@/views/PostCard.vue';
+import CreatePost from '@/components/CreatePost.vue';
+import JournalBox from '@/components/JournalBox.vue';
 import axios from 'axios';
 
 export default {
     name: 'ProfilePage',
-    components: { PostCard },
+    components: { CreatePost, JournalBox },
     data() {
         return {
             baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
             currentTab: 'post',
             viewMode: 'grid',
+            userPosts: [],
             showCreatePost: false,
             profileImage: null,
             defaultImage: "/src/assets/pf.png",
@@ -310,19 +315,41 @@ export default {
 
         async fetchUserPosts() {
             try {
-                const res = await axios.get(`${this.baseURL}/api/journals`, this.getAuthHeader());
-                const userId = parseInt(localStorage.getItem('user_id'))
+                const token = localStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('user'));
+                const userId = user?.id || user?._id;
+                const userName = user?.name;
 
-                this.posts = res.data
-                    .filter(j => j.account_id === userId)
-                    .map(j => {
-                        const images = Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]')
-                        return {
-                            ...j,
-                            image: images.length ? `${this.baseURL}/${images[0]}` : '',
-                            date: new Date(j.created_at).toLocaleDateString()
-                        }
-                    });
+                if (!token || !userId) {
+                    console.error("❌ Missing token or user ID.");
+                    return;
+                }
+
+                const res = await axios.get(`${this.baseURL}/api/journals`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                // 👇 Filter by the correct field that matches the current user
+                this.userPosts = res.data.filter(post => {
+                    return (
+                        post.user_id === userId ||
+                        post.account_id === userId ||
+                        post.author_id === userId ||
+                        post.author_name === userName // fallback by name
+                    );
+                }).map(post => {
+                    const images = Array.isArray(post.images)
+                        ? post.images
+                        : JSON.parse(post.images || '[]');
+
+                    return {
+                        ...post,
+                        image: images.length ? `${this.baseURL}/${images[0]}` : '',
+                        date: new Date(post.created_at).toLocaleDateString()
+                    };
+                });
             } catch (err) {
                 console.error("❌ Failed to fetch posts", err)
             }
@@ -468,6 +495,18 @@ export default {
 </script>
 
 <style scoped>
+.journal-wrapper.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.journal-wrapper.list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
 /* cover */
 .cover-photo img {
     width: 100%;

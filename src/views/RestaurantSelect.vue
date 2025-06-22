@@ -1,5 +1,5 @@
 <template>
-    <div class="hotel-select">
+    <div class="restaurant-select">
         <!-- Hero Image -->
         <img src="@/assets/picture/phnom-penh.png" alt="Phnom Penh" class="hero-image" />
 
@@ -9,9 +9,10 @@
             <h2 class="page-title">Your Perfect Trip is Waiting For You</h2>
         </div>
 
-        <!-- Hotel Cards -->
-        <div class="hotel-list">
-            <HotelCard v-for="(hotel, index) in hotels" :key="hotel.id" :hotel="hotel" :index="index" />
+        <!-- Restaurant Cards -->
+        <div class="restaurant-list">
+            <RestaurantCard v-for="(restaurant, index) in restaurants" :key="restaurant.id" :restaurant="restaurant"
+                :index="index" />
         </div>
 
         <!-- Error Message -->
@@ -22,31 +23,49 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import HotelCard from '@/components/HotelCard.vue'
+import RestaurantCard from '@/components/RestaurantCard.vue'
 
-const hotels = ref([])
+const restaurants = ref([])
 const error = ref('')
 
 const goBack = () => history.back()
 
 onMounted(async () => {
     try {
-        const res = await axios.get('http://localhost:8000/api/hotels')
-        hotels.value = res.data.map(hotel => ({
-            ...hotel,
-            image: hotel.image.map(img =>
+        const res = await axios.get('http://localhost:8000/api/restaurants')
+        restaurants.value = res.data.map(restaurant => {
+            let images = []
+
+            // Parse if stored as string, otherwise use array directly
+            if (typeof restaurant.image === 'string') {
+                try {
+                    images = JSON.parse(restaurant.image)
+                } catch {
+                    images = []
+                }
+            } else if (Array.isArray(restaurant.image)) {
+                images = restaurant.image
+            }
+
+            // Map to full URL
+            const fullImageURLs = images.map(img =>
                 img.startsWith('http') ? img : `http://localhost:8000/storage/${img}`
             )
-        }))
+
+            return {
+                ...restaurant,
+                image: fullImageURLs
+            }
+        })
     } catch (err) {
-        error.value = '❌ Failed to load hotels.'
+        error.value = '❌ Failed to load restaurants.'
         console.error(err)
     }
 })
 </script>
 
 <style scoped>
-.hotel-select {
+.restaurant-select {
     padding: 2rem 0;
     display: flex;
     flex-direction: column;
@@ -89,7 +108,7 @@ onMounted(async () => {
     text-align: center;
 }
 
-.hotel-list {
+.restaurant-list {
     width: 100%;
     display: flex;
     flex-direction: column;

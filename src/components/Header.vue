@@ -16,10 +16,11 @@
         <i class="bi bi-bell"></i>
         <i class="bi bi-moon-stars"></i>
 
-        <!-- Login / Profile switch -->
+        <!-- Login / Profile -->
         <div v-if="!isLoggedIn" class="user-account" @click="showAuthPopup = true">Login</div>
         <div v-else @click="goToProfile">
-          <img :src="profileImage ? `${baseURL}/${profileImage}` : defaultImage" alt="Profile" class="avatar-circle" />
+          <img :src="user.profile_picture ? `${baseApi}/${user.profile_picture}` : defaultImage" class="avatar-circle"
+            alt="Profile" />
         </div>
       </div>
     </div>
@@ -45,26 +46,26 @@
 import Auth from '@/components/Auth.vue'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
+const baseApi = import.meta.env.VITE_API_BASE_URL
+
 export default {
   name: 'HeaderNavigationBar',
   components: { Auth },
   data() {
     return {
-      baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
       showAuthPopup: false,
-      profileImage: '',
-      user: {},
       isLoggedIn: false,
+      user: {},
       defaultImage: new URL('@/assets/pf.png', import.meta.url).href
+
     }
   },
   created() {
     const token = localStorage.getItem('token')
     const user = JSON.parse(localStorage.getItem('user'))
-    if (token && user && user.profile_picture) {
-      this.isLoggedIn = true
+    if (token && user) {
       this.user = user
-      this.profileImage = user.profile_picture
+      this.isLoggedIn = true
     }
   },
   methods: {
@@ -74,7 +75,6 @@ export default {
       this.user = userData.account
       this.isLoggedIn = true
       this.showAuthPopup = false
-      this.profileImage = userData.account.profile_picture
     },
     goToProfile() {
       this.$router.push('/profile')

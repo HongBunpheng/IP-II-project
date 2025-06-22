@@ -1,22 +1,26 @@
 <template>
-    <div class="preview-page" v-if="hotel">
+    <div class="preview-page" v-if="restaurant">
         <button class="back-button" @click="router.back()">←</button>
 
-        <h1 class="hotel-name">{{ hotel.name }}</h1>
-        <p class="comment">If you see my comment I really recommend you to try this hotel it really good</p>
+        <h1 class="restaurant-name">{{ restaurant.name }}</h1>
+        <p class="comment">If you see my comment I really recommend you to try this restaurant it really good</p>
 
         <!-- IMAGE LAYOUT -->
-        <div class="image-wrapper">
-            <img :src="getImageUrl(hotel.image[0])" class="big-image" v-if="hotel.image[0]" />
+        <div class="image-wrapper" v-if="restaurant.image.length > 0">
+            <!-- Big Image -->
+            <img :src="getImageUrl(restaurant.image[0])" class="big-image" alt="Main Image" />
 
             <div class="right-grid">
+                <!-- Medium (2 images) -->
                 <div class="top-row">
-                    <img v-for="(img, i) in hotel.image.slice(1, 3)" :key="'top-' + i" :src="getImageUrl(img)"
-                        class="medium-image" />
+                    <img v-for="(img, i) in restaurant.image.slice(1, 3)" :key="'medium-' + i" :src="getImageUrl(img)"
+                        class="medium-image" alt="Medium Image" />
                 </div>
+
+                <!-- Small (3 images) -->
                 <div class="bottom-row">
-                    <img v-for="i in 3" :key="'bottom-' + i"
-                        :src="getImageUrl(hotel.image[3 + (i - 1)] || fallbackImage)" class="small-image" />
+                    <img v-for="(img, i) in restaurant.image.slice(3, 6)" :key="'small-' + i" :src="getImageUrl(img)"
+                        class="small-image" alt="Small Image" />
                 </div>
             </div>
         </div>
@@ -24,13 +28,13 @@
         <!-- Rating + Price -->
         <div class="rating-price">
             <div class="stars">
-                <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= hotel.rating }">★</span>
+                <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= restaurant.rating }">★</span>
             </div>
-            <span class="price-tag">price {{ hotel.price }}</span>
+            <span class="price-tag">price {{ restaurant.price }}</span>
         </div>
 
         <!-- Description -->
-        <p class="hotel-description">{{ hotel.details }}</p>
+        <p class="restaurant-description">{{ restaurant.details }}</p>
 
         <!-- Book Button Right -->
         <div class="book-button-wrapper">
@@ -42,7 +46,7 @@
     </div>
 
     <div class="review">
-        <Review :type="'hotel'" :id="hotel?.id" v-if="hotel" />
+        <Review />
         <Map />
     </div>
 </template>
@@ -55,33 +59,38 @@ import Map from '@/components/Map.vue'
 import Review from '@/components/Review.vue'
 import BookingPopup from '@/components/Booking.vue'
 
-const hotel = ref(null)
+const restaurant = ref(null)
 const route = useRoute()
 const router = useRouter()
 const showBooking = ref(false)
 
-const fallbackImage = 'https://via.placeholder.com/150'
+// Use local fallback image instead of broken placeholder
+const fallbackImage = new URL('@/assets/picture/default.jpg', import.meta.url).href
 
 const getImageUrl = (imgPath) => {
     if (!imgPath) return fallbackImage
     const base = import.meta.env.VITE_API_BASE_URL.replace('/api', '')
     return imgPath.startsWith('http')
         ? imgPath
-        : `${base}/storage/${imgPath.replace(/^\/?uploads\//, 'uploads/')}`
+        : `${base}/storage/${imgPath}`
 }
 
 onMounted(async () => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/hotels/${route.params.id}`)
-        hotel.value = {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/restaurants/${route.params.id}`)
+        const images = typeof res.data.image === 'string'
+            ? JSON.parse(res.data.image)
+            : res.data.image || []
+
+        restaurant.value = {
             ...res.data,
-            image: Array.isArray(res.data.image)
-                ? res.data.image
-                : JSON.parse(res.data.image || '[]'),
+            image: Array.isArray(images) ? images : [],
             rating: Number(res.data.rating)
         }
+
+        console.log('✅ Restaurant image list:', restaurant.value.image)
     } catch (err) {
-        console.error('❌ Failed to load hotel:', err)
+        console.error('❌ Failed to load restaurant:', err)
     }
 })
 </script>
@@ -105,7 +114,7 @@ onMounted(async () => {
     cursor: pointer;
 }
 
-.hotel-name {
+.restaurant-name {
     font-size: 28px;
     font-weight: bold;
     margin-bottom: 0.5rem;
@@ -197,7 +206,7 @@ onMounted(async () => {
     font-weight: bold;
 }
 
-.hotel-description {
+.restaurant-description {
     font-size: 15px;
     line-height: 1.6;
     color: #333;

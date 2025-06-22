@@ -37,14 +37,14 @@
             </div>
         </section>
 
-
         <!-- All Games Section -->
         <section class="all-games-section">
             <h2>All Games</h2>
             <p class="subtitle">Choose a game between our two game's mode</p>
 
             <div class="games-grid">
-                <div v-for="game in games" :key="game.name" class="game-card">
+                <div v-for="game in games" :key="game.name" class="game-card" @click="playGame(game.name)"
+                    style="cursor: pointer">
                     <div class="card-image-wrapper">
                         <img :src="game.image" :alt="game.name" />
                         <div class="overlay-label">
@@ -56,14 +56,14 @@
                     <h3>{{ game.name }}</h3>
                 </div>
             </div>
-
         </section>
-
-
     </div>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
 import hangmanImg from '@/assets/picture/hangman.png'
 import spinWheelImg from '@/assets/picture/spin-wheel.png'
 import diceImg from '@/assets/picture/dice-roller.png'
@@ -81,8 +81,10 @@ const games = [
 ]
 
 function playGame(gameName) {
-    alert(`Launching ${gameName}...`)
+    if (gameName === 'Spin wheel') router.push('/spin-wheel')
+    if (gameName === 'Aiming') router.push('/aiming')
 }
+
 </script>
 
 <style scoped>

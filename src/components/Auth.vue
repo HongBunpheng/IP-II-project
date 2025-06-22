@@ -66,7 +66,11 @@ export default {
       this.resetCode = code;             // ✅ capture code
       this.showVerifyCode = false;
       this.showResetPassword = true;
-    }
+    },
+    async handleLogin() {
+    // ... after successful login
+    this.$emit('loginSuccess', res.data)
+  }
   },
 };
 </script>

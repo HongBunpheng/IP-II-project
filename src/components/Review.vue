@@ -4,32 +4,20 @@
       <!-- LEFT SIDE: Recent Feedbacks -->
       <div class="feedbacks">
         <h3>Recent Feedbacks</h3>
-
         <template v-if="feedbackList.length > 0">
-          <div
-            v-for="(feedback, index) in feedbackList"
-            :key="index"
-            class="feedback-card"
-          >
+          <div v-for="(feedback, index) in feedbackList" :key="index" class="feedback-card">
             <img :src="feedback.avatar" class="avatar" />
-
             <div class="feedback-text">
               <div class="feedback-header">
                 <strong class="name">{{ feedback.name }}</strong>
                 <div class="stars">
-                  <span
-                    v-for="n in 5"
-                    :key="n"
-                    class="star"
-                    :class="{ filled: n <= feedback.rating }"
-                  >★</span>
+                  <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= feedback.rating }">★</span>
                 </div>
               </div>
               <p class="comment">{{ feedback.comment }}</p>
             </div>
           </div>
         </template>
-
         <p v-else class="no-feedback">
           No feedback yet. Be the first to review!
         </p>
@@ -41,27 +29,15 @@
 
         <label>Add Your Rating</label>
         <div class="rating-stars">
-          <span
-            v-for="n in 5"
-            :key="n"
-            class="star"
-            :class="{ filled: n <= (hoverRating || newRating) }"
-            @mouseover="hoverRating = n"
-            @mouseleave="hoverRating = 0"
-            @click="newRating = n"
-          >★</span>
+          <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= (hoverRating || newRating) }"
+            @mouseover="hoverRating = n" @mouseleave="hoverRating = 0" @click="newRating = n">★</span>
         </div>
 
         <label>Add Your Comment</label>
-        <textarea
-          v-model="newComment"
-          class="comment-box"
-          rows="4"
-          placeholder="Write your thoughts..."
-        ></textarea>
+        <textarea v-model="newComment" class="comment-box" rows="4" placeholder="Write your thoughts..."></textarea>
 
         <button class="submit-button" @click="submitReview">
-          submit
+          Submit
         </button>
       </div>
     </div>
@@ -69,36 +45,96 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Review",
+  props: {
+    type: {
+      type: String, // 'hotel' or 'restaurant'
+      required: true,
+    },
+    id: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
-      feedbackList: [
-        {
-          name: "Alex",
-          avatar: "https://i.pravatar.cc/60?img=5",
-          rating: 4,
-          comment:
-            "Had an amazing experience, the service was top-notch—definitely coming back!",
-        },
-      ],
+      feedbackList: [],
       newComment: "",
       newRating: 0,
       hoverRating: 0,
+      baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000",
     };
   },
+  mounted() {
+    this.loadReviews();
+  },
   methods: {
+    loadReviews() {
+      if (!this.type || !this.id) {
+        console.warn("Missing review type or ID", this.type, this.id);
+        return;
+      }
+
+      axios
+        .get(`${this.baseURL}/api/reviews`, {
+          params: {
+            type: this.type,
+            id: this.id,
+          },
+        })
+        .then((res) => {
+          this.feedbackList = res.data.map((r) => ({
+            name: r.account?.name || "Guest",
+            avatar: r.account?.profile_picture
+              ? `${this.baseURL}/${r.account.profile_picture}`
+              : "https://i.pravatar.cc/60",
+            rating: r.rating,
+            comment: r.comment,
+          }));
+        })
+        .catch((err) => {
+          console.error("❌ Failed to load reviews:", err);
+        });
+    },
     submitReview() {
       if (!this.newComment.trim() || this.newRating === 0) return;
-      this.feedbackList.push({
-        name: "Guest",
-        avatar: "https://i.pravatar.cc/60",
-        comment: this.newComment.trim(),
-        rating: this.newRating,
-      });
-      this.newComment = "";
-      this.newRating = 0;
-      this.hoverRating = 0;
+
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = localStorage.getItem("token");
+
+      if (!user || !token) {
+        alert("You must be logged in to submit a review.");
+        return;
+      }
+
+      axios
+        .post(
+          `${this.baseURL}/api/reviews`,
+          {
+            account_id: user.id,
+            reviewable_type: this.type,
+            reviewable_id: this.id,
+            rating: this.newRating,
+            comment: this.newComment.trim(),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then(() => {
+          this.newComment = "";
+          this.newRating = 0;
+          this.hoverRating = 0;
+          this.loadReviews();
+        })
+        .catch((err) => {
+          console.error("❌ Submit failed:", err);
+        });
     },
   },
 };
@@ -111,6 +147,7 @@ export default {
   width: 100vw;
   padding: 40px 20px;
 }
+
 .review-container {
   display: flex;
   flex-wrap: wrap;
@@ -179,7 +216,7 @@ export default {
   color: #333;
 }
 
-.comment{
+.comment {
   padding-left: 30px;
 }
 
@@ -221,7 +258,7 @@ export default {
 
 .rating-stars {
   display: flex;
-  
+
   gap: 5px;
 }
 
@@ -265,6 +302,7 @@ export default {
 }
 
 @media (max-width: 1000px) {
+
   .feedbacks,
   .review-form {
     flex: 1 1 100%;
