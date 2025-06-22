@@ -212,11 +212,11 @@ const getStyle = (i) => {
 
 const activeIndex = ref(2)
 const features = [
-    { image: 'budget1.jpg', title: 'Trip Planner', desc: 'Plan your trip in a smarter way' },
+    { image: 'budget4.jpg', title: 'Trip Planner', desc: 'Plan your trip in a smarter way' },
+    { image: 'budget2.jpg', title: 'Journal', desc: 'Capture your memory forever' },
     { image: 'budget.jpg', title: 'Budget Recom', desc: 'Analysis and recommend the best place with your budget' },
-    { image: 'budget2.jpg', title: 'Smart Filter', desc: 'Filter destinations by preferences and affordability' },
-    { image: 'budget1.jpg', title: 'Nearby Explore', desc: 'Find the nearest places worth seeing' },
-    { image: 'budget2.jpg', title: 'Custom Path', desc: 'Customize your journey like a pro' }
+    { image: 'budget1.jpg', title: 'Game page', desc: 'trip and fun along the way' },
+    { image: 'budget3.jpg', title: 'Explore', desc: 'Customize your journey like a pro' }
 ]
 const getBudgetImage = (img) => new URL(`../assets/picture/${img}`, import.meta.url).href
 

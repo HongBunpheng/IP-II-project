@@ -2,7 +2,6 @@
   <header class="header">
     <div class="top-header">
       <div class="search-bar">
-        <i class="bi bi-search-heart"></i>
         <input type="text" placeholder="Enter destination" class="searchBox" />
       </div>
 
@@ -13,8 +12,8 @@
       </div>
 
       <div class="other-links">
-        <i class="bi bi-bell"></i>
-        <i class="bi bi-moon-stars"></i>
+        <i class="bi bi-bell" @click="toggleNotification"></i>
+        <i class="bi bi-moon-stars" @click="toggleWeather"></i>
 
         <!-- Login / Profile -->
         <div v-if="!isLoggedIn" class="user-account" @click="showAuthPopup = true">Login</div>
@@ -45,19 +44,21 @@
 <script>
 import Auth from '@/components/Auth.vue'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-
-const baseApi = import.meta.env.VITE_API_BASE_URL
+import Notification from '@/components/Notification.vue'
+import Weather from '@/components/Weather.vue'
 
 export default {
   name: 'HeaderNavigationBar',
-  components: { Auth },
+  components: { Auth, Notification, Weather },
   data() {
     return {
+      baseApi: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
       showAuthPopup: false,
       isLoggedIn: false,
+      showNotification: false,
+      showWeather: false,
       user: {},
       defaultImage: new URL('@/assets/pf.png', import.meta.url).href
-
     }
   },
   created() {
@@ -75,9 +76,17 @@ export default {
       this.user = userData.account
       this.isLoggedIn = true
       this.showAuthPopup = false
+
+      window.location.reload()
     },
     goToProfile() {
       this.$router.push('/profile')
+    },
+    toggleNotification() {
+      this.showNotification = !this.showNotification;
+    },
+    toggleWeather() {
+      this.showWeather = !this.showWeather;
     }
   }
 }
@@ -111,7 +120,7 @@ export default {
   gap: 10px;
   margin-left: 10px;
   height: 35px;
-  width: 230px;
+  width: 150px;
 }
 
 .search-icon {
@@ -131,11 +140,18 @@ export default {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  z-index: 1;
 }
 
 .logo img {
-  width: 100%;
-  padding: 10px;
+  width: 100px;
+  height: 90px;
+  padding: 5px 0;
+  object-fit: contain;
 }
 
 .other-links {
@@ -170,6 +186,7 @@ export default {
   height: 32px;
   object-fit: cover;
   border-radius: 50%;
+  background-color: #ccc;
 }
 
 .nav-links {
