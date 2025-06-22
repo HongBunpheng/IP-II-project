@@ -120,7 +120,7 @@ defineProps({
 
 <style scoped>
 .transport-card {
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
+
     max-width: 720px;
     width: 100%;
     background: #fff;
