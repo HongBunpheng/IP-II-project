@@ -43,11 +43,12 @@
 
 <script>
 import Auth from '@/components/Auth.vue'
+import Search from '@/components/search.vue'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 export default {
   name: 'HeaderNavigationBar',
-  components: { Auth },
+  components: { Auth, Search },
   data() {
     return {
       baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
