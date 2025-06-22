@@ -64,12 +64,12 @@
         <section class="perfect-trip">
             <h2 class="title">Your Perfect Trip is Waiting For You</h2>
 
-            <div class="trip-grid">
+            <!-- <div class="trip-grid">
                 <div class="trip-card" v-for="(place, index) in trips" :key="index">
                     <img :src="place.image" :alt="place.name" class="trip-image" />
                     <p class="trip-name">{{ place.name }}</p>
                 </div>
-            </div>
+            </div> -->
 
             <button class="see-more-btn">See More</button>
         </section>
@@ -81,18 +81,6 @@ import { ref, onMounted } from 'vue'
 import DetailHotel from '@/components/DetailHotel.vue'
 import DetailRestaurant from '@/components/DetailRestaurant.vue'
 import DetailTransportation from '@/components/DetailTransportation.vue'
-
-const trips = ref([])
-
-onMounted(async () => {
-    try {
-        const res = await fetch('http://localhost:8000/api/destinations')
-        const data = await res.json()
-        trips.value = data
-    } catch (error) {
-        console.error('Failed to load destinations:', error)
-    }
-})
 </script>
 
 
