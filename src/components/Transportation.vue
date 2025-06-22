@@ -1,6 +1,5 @@
 <template>
     <div class="transport-card">
-<<<<<<< HEAD
       <!-- TOP ROW -->
       <div class="top">
         <div class="trip-info">
@@ -48,76 +47,16 @@
   
   <script setup>
   defineProps({
-    departureTime: { type: String, required: true },  // “11:00 PM”
-    departureCity: { type: String, required: true },  // “Phnom Penh”
-    arrivalTime:   { type: String, required: true },  // “3:00 AM”
-    arrivalCity:   { type: String, required: true },  // “Siem Reap”
-    price:         { type: [Number,String], required: true }, // 11
-    distance:      { type: String, default: '' },     // “700km”
-    travelTime:    { type: String, default: '' }      // “6h”
+    departureTime: { type: String, required: true }, 
+    departureCity: { type: String, required: true },  
+    arrivalTime:   { type: String, required: true },  
+    arrivalCity:   { type: String, required: true },  
+    price:         { type: [Number,String], required: true },
+    distance:      { type: String, default: '' },    
+    travelTime:    { type: String, default: '' }     
   })
   </script>
   
-  <style scoped>
-  .transport-card {
-=======
-        <!-- TOP ROW -->
-        <div class="top">
-            <div class="trip-info">
-                <!-- Times -->
-                <div class="times">
-                    <div class="time">{{ departureTime }}</div>
-                    <div class="time">{{ arrivalTime }}</div>
-                </div>
-
-                <!-- Vertical line + dot -->
-                <div class="timeline">
-                    <span class="line"></span>
-                    <span class="dot"></span>
-                </div>
-
-                <!-- Cities -->
-                <div class="cities">
-                    <div class="city">{{ departureCity }}</div>
-                    <div class="city">{{ arrivalCity }}</div>
-                </div>
-            </div>
-
-            <!-- Book now + price -->
-            <div class="action">
-                <button class="book-btn">Book Now</button>
-                <div class="price">
-                    <span class="label">price</span>
-                    <span class="amount">${{ price }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- BOTTOM ROW -->
-        <div class="bottom">
-            <div class="distance">
-                <span class="icon">🌐</span>{{ distance }}
-
-            </div>
-            <div class="travel-time">
-                <span class="icon">⏱️</span>Travel Time {{ travelTime }}
-            </div>
-        </div>
-    </div>
-</template>
-
-<script setup>
-defineProps({
-    departureTime: { type: String, required: true },  // “11:00 PM”
-    departureCity: { type: String, required: true },  // “Phnom Penh”
-    arrivalTime: { type: String, required: true },  // “3:00 AM”
-    arrivalCity: { type: String, required: true },  // “Siem Reap”
-    price: { type: [Number, String], required: true }, // 11
-    distance: { type: String, default: '' },     // “700km”
-    travelTime: { type: String, default: '' }      // “6h”
-})
-</script>
-
 <style scoped>
 .transport-card {
 
@@ -131,8 +70,6 @@ defineProps({
     display: flex;
     flex-direction: column;
     font-family: sans-serif;
-<<<<<<< HEAD
-  }
   
   .top {
     display: flex;
@@ -160,7 +97,7 @@ defineProps({
   
   /* TIMELINE */
   .timeline {
-=======
+
 }
 
 .top {
@@ -191,14 +128,13 @@ defineProps({
 
 /* TIMELINE */
 .timeline {
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
     position: relative;
     width: 16px;
     display: flex;
     justify-content: center;
     margin-right: 12px;
     height: 48px;
-<<<<<<< HEAD
+
   }
   .timeline .line {
     position: absolute;
@@ -208,7 +144,6 @@ defineProps({
     background: #3bd296;
   }
   .timeline .dot {
-=======
 }
 
 .timeline .line {
@@ -221,29 +156,24 @@ defineProps({
 }
 
 .timeline .dot {
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
     position: absolute;
     bottom: 0;
     width: 8px;
     height: 8px;
     background: #3bd296;
     border-radius: 50%;
-<<<<<<< HEAD
   }
   
   /* CITIES */
   .cities {
-=======
 }
 
 /* CITIES */
 .cities {
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 48px;
-<<<<<<< HEAD
   }
   .city {
     font-size: 18px;
@@ -258,7 +188,6 @@ defineProps({
     align-items: flex-end;
   }
   .book-btn {
-=======
 }
 
 .city {
@@ -275,7 +204,6 @@ defineProps({
 }
 
 .book-btn {
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
     background: #3bd296;
     color: #000;
     border: none;
@@ -284,19 +212,15 @@ defineProps({
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-<<<<<<< HEAD
   }
   .price {
-=======
 }
 
 .price {
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
     margin-top: 8px;
     font-size: 14px;
     display: flex;
     align-items: center;
-<<<<<<< HEAD
   }
   .price .label {
     color: #666;
@@ -309,7 +233,6 @@ defineProps({
   
   /* BOTTOM ROW */
   .bottom {
-=======
 }
 
 .price .label {
@@ -324,14 +247,12 @@ defineProps({
 
 /* BOTTOM ROW */
 .bottom {
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 16px;
     font-size: 14px;
     color: #666;
-<<<<<<< HEAD
   }
   .bottom .distance,
   .bottom .travel-time {
@@ -340,15 +261,13 @@ defineProps({
   }
   .icon {
     margin-right: 6px;
-    font-size: 16px;
+      font-size: 16px;
   }
-  </style>
    
-=======
 }
 
 .bottom .distance,
-.bottom .travel-time {
+.bottom .travel-time
     display: flex;
     align-items: center;
 }
@@ -358,4 +277,3 @@ defineProps({
     font-size: 16px;
 }
 </style>
->>>>>>> 19f6938513923e8e2a6dace98c7d7e9cbd2fdf87
