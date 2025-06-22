@@ -267,7 +267,7 @@
 }
 
 .bottom .distance,
-.bottom .travel-time
+.bottom .travel-time {
     display: flex;
     align-items: center;
 }
