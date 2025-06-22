@@ -299,7 +299,7 @@ transition: transform 0.3s ease; */
 }
 
 .top-destination {
-    background: url('@/assets/destination-bg.png') center/cover no-repeat;
+    /* background: url('@/assets/destination-bg.png') center/cover no-repeat; */
     border-radius: 20px;
     padding: 3rem 2rem 5rem;
     margin: 3rem 8vw 5rem;
