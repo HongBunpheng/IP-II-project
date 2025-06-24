@@ -46,7 +46,7 @@
     </div>
 
     <div class="review">
-        <Review />
+        <Review :type="'restaurant'" :id="restaurant?.id" v-if="restaurant" />
         <Map />
     </div>
 </template>

@@ -42,53 +42,21 @@
                 <h3 class="result-title">Result</h3>
 
                 <div v-if="filteredPlaces.length === 0" class="empty-state">
-                    <!-- && Budget -->
                     <img src="@/assets/picture/empty-box.png" />
-                    <p>No places found for this budget and province.</p>
+                    <p>No hotels found for this budget and province.</p>
                 </div>
 
-                <div v-for="(place, index) in filteredPlaces" :key="place.id" class="place-card"
-                    :class="{ reverse: index % 2 !== 0 }">
-                    <div class="card-images">
-                        <img v-for="(img, i) in place.images" :key="i"
-                            :src="`http://localhost:8000${img} ? img : '/' + img}`" class="place-image" />
-                    </div>
-                    <div class="card-text">
-                        <h4 class="place-name">{{ place.name }}</h4>
-                        <p class="place-desc">{{ place.description }}</p>
-                        <div class="place-actions">
-                            <button class="details-btn">details</button>
-                            <button class="save-btn" :class="{ saved: isSaved(place.id) }"
-                                @click="toggleSave(place.id)">
-                                {{ isSaved(place.id) ? 'Saved' : 'Save' }}
-                            </button>
-                            <div class="stars"><span v-for="n in place.rating" :key="n">⭐</span></div>
-                        </div>
-                    </div>
-                </div>
+                <HotelCard v-for="(hotel, index) in filteredPlaces" :key="hotel.id" :hotel="hotel" :index="index"
+                    :isSaved="isSaved(hotel.id)" @saveToggle="toggleSave" />
             </div>
 
             <!-- Saved -->
             <div v-if="currentTab === 'saved'" class="saved-section">
-                <h3 class="result-title">Saved Places</h3>
-                <p v-if="savedPlaces.length === 0" class="result-subtitle">No saved places yet.</p>
+                <h3 class="result-title">Saved Hotels</h3>
+                <p v-if="savedHotels.length === 0" class="result-subtitle">No saved hotels yet.</p>
 
-                <div v-for="(place, index) in savedPlaces" :key="'saved-' + place.id" class="place-card"
-                    :class="{ reverse: index % 2 !== 0 }">
-                    <div class="card-images">
-                        <img v-for="(img, i) in place.images" :key="i" :src="`http://localhost:8000${img}`"
-                            class="place-image" />
-                    </div>
-                    <div class="card-text">
-                        <h4 class="place-name">{{ place.name }}</h4>
-                        <p class="place-desc">{{ place.description }}</p>
-                        <div class="place-actions">
-                            <button class="details-btn">details</button>
-                            <button class="save-btn saved" @click="removeSaved(place.id)">Remove</button>
-                            <div class="stars"><span v-for="n in place.rating" :key="n">⭐</span></div>
-                        </div>
-                    </div>
-                </div>
+                <HotelCard v-for="(hotel, index) in savedHotels" :key="'saved-' + hotel.id" :hotel="hotel"
+                    :index="index" :isSaved="true" @saveToggle="toggleSave" />
             </div>
         </section>
     </div>
@@ -96,11 +64,13 @@
 
 <script>
 import axios from 'axios';
+import HotelCard from '@/components/HotelCard.vue';
 import Footer from '@/components/Footer.vue';
 
 export default {
     name: 'BudgetPage',
     components: {
+        HotelCard,
         Footer,
     },
     data() {
@@ -110,60 +80,84 @@ export default {
             budget: '',
             filteredPlaces: [],
             savedPlaceIds: [],
+            savedData: [],
+            accountId: 1, // replace with actual auth user ID from localStorage if needed
         };
     },
     computed: {
-        // Saved places filtered from available (filtered or all) places
-        savedPlaces() {
-            return this.filteredPlaces.filter(place =>
-                this.savedPlaceIds.includes(place.id)
-            );
-        }
+        savedHotels() {
+            return this.savedData.filter(item => item.saveable_type === 'App\\Models\\Hotel')
+                .map(item => item.saveable);
+        },
     },
     methods: {
         async handleGo() {
             if (!this.budget) return alert('Please enter a budget.');
             try {
-                const res = await axios.get('http://localhost:8000/api/places', {
-                    params: { province: this.province, budget: this.budget },
+                const res = await axios.get('http://localhost:8000/api/hotels', {
+                    params: {
+                        province: this.province,
+                        budget: this.budget
+                    }
                 });
-                this.filteredPlaces = res.data;
-            } catch (err) {
-                console.error('Error fetching places:', err);
+                this.filteredPlaces = res.data.map(hotel => ({
+                    ...hotel,
+                    details: hotel.description,
+                    image: hotel.images
+                }));
+            } catch (error) {
+                console.error('Error fetching hotels:', error);
             }
         },
 
-        toggleSave(placeId) {
-            if (!this.savedPlaceIds.includes(placeId)) {
-                this.savedPlaceIds.push(placeId);
-            } else {
-                this.savedPlaceIds = this.savedPlaceIds.filter(id => id !== placeId);
+        async fetchSavedPlaces() {
+            try {
+                const res = await axios.get(`http://localhost:8000/api/saved-places/user/${this.accountId}`);
+                this.savedData = res.data;
+                this.savedPlaceIds = res.data
+                    .filter(item => item.saveable_type === 'App\\Models\\Hotel')
+                    .map(item => item.saveable_id);
+            } catch (error) {
+                console.error('Error fetching saved places:', error);
             }
-
-            // Save locally
-            localStorage.setItem('savedPlaceIds', JSON.stringify(this.savedPlaceIds));
         },
 
-        removeSaved(placeId) {
-            this.savedPlaceIds = this.savedPlaceIds.filter(id => id !== placeId);
-            localStorage.setItem('savedPlaceIds', JSON.stringify(this.savedPlaceIds));
+        isSaved(hotelId) {
+            return this.savedPlaceIds.includes(hotelId);
         },
 
-        isSaved(placeId) {
-            return this.savedPlaceIds.includes(placeId);
+        async toggleSave(hotel) {
+            const isAlreadySaved = this.isSaved(hotel.id);
+            const payload = {
+                account_id: this.accountId,
+                saveable_id: hotel.id,
+                saveable_type: 'App\\Models\\Hotel'
+            };
+
+            try {
+                if (isAlreadySaved) {
+                    const encodedType = encodeURIComponent('App\\Models\\Hotel');
+                    await axios.delete(`http://localhost:8000/api/saved-places/${hotel.id}/${encodedType}`);
+                    this.savedPlaceIds = this.savedPlaceIds.filter(id => id !== hotel.id);
+                    this.savedData = this.savedData.filter(item => item.saveable_id !== hotel.id);
+                } else {
+                    const res = await axios.post('http://localhost:8000/api/saved-places', payload);
+                    this.savedPlaceIds.push(hotel.id);
+                    this.savedData.push(res.data);
+                }
+            } catch (error) {
+                console.error('Error saving/unsaving:', error);
+            }
         },
     },
-
     created() {
-        const saved = localStorage.getItem('savedPlaceIds');
-        if (saved) {
-            this.savedPlaceIds = JSON.parse(saved);
-        }
-    },
+        this.fetchSavedPlaces();
+    }
 };
 </script>
 
 <style scoped>
+/* Your styles remain unchanged from your previous version */
 .budget-page {
     font-family: 'Poppins', sans-serif;
     color: #222;
@@ -195,15 +189,6 @@ export default {
 .recommendation {
     text-align: center;
     padding: 2rem 1rem;
-}
-
-.recommendation h2 {
-    font-weight: 600;
-}
-
-.recommendation p {
-    color: #555;
-    margin-bottom: 1.5rem;
 }
 
 .tabs {
@@ -279,8 +264,8 @@ button {
     font-size: 1rem;
 }
 
-/* Result Cards */
-.result-section {
+.result-section,
+.saved-section {
     text-align: center;
     margin-top: 2rem;
 }
@@ -293,133 +278,5 @@ button {
 .result-subtitle {
     color: #666;
     margin-bottom: 2rem;
-}
-
-.place-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #eeeeee;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-.place-card.reverse {
-    flex-direction: row-reverse;
-}
-
-.card-images {
-    position: relative;
-    width: 180px;
-    height: 350px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0;
-}
-
-.place-image {
-    position: absolute;
-    width: 150px;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    transition: transform 0.3s;
-}
-
-/* First image (top) */
-.place-image:nth-child(1) {
-    top: 0;
-    left: 20px;
-    z-index: 2;
-}
-
-/* Second image (bottom) */
-.place-image:nth-child(2) {
-    bottom: 0;
-    left: 0;
-    z-index: 1;
-}
-
-/*  Hover animations */
-.card-images:hover .place-image:nth-child(1) {
-    transform: translateY(-10px) scale(1.05) rotate(-2deg);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-}
-
-.card-images:hover .place-image:nth-child(2) {
-    transform: translateY(-6px) scale(1.03) rotate(3deg);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
-}
-
-.card-text {
-    flex: 1;
-    min-width: 250px;
-    text-align: left;
-}
-
-.place-name {
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-}
-
-.place-desc {
-    color: #333;
-    margin-bottom: 1rem;
-    line-height: 1.5;
-}
-
-.place-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.details-btn {
-    background-color: #00c4a7;
-    border: none;
-    color: white;
-    font-weight: 600;
-    padding: 0.4rem 1.5rem;
-    border-radius: 24px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.details-btn:hover {
-    background-color: #009e87;
-}
-
-.stars {
-    color: gold;
-    font-size: 1rem;
-}
-
-.save-btn {
-    background-color: #f1f1f1;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 0.4rem 1.2rem;
-    border-radius: 24px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.save-btn:hover {
-    background-color: #00c4a7;
-    color: white;
-}
-
-.save-btn.saved {
-    background-color: #00c4a7;
-    color: white;
-    border-color: #00c4a7;
 }
 </style>

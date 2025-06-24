@@ -18,7 +18,7 @@
         <!-- Login / Profile -->
         <div v-if="!isLoggedIn" class="user-account" @click="showAuthPopup = true">Login</div>
         <div v-else @click="goToProfile">
-          <img :src="user.profile_picture ? `${baseApi}/${user.profile_picture}` : defaultImage" class="avatar-circle"
+          <img :src="user.profile_picture ? `${baseURL}${user.profile_picture}` : defaultImage" class="avatar-circle"
             alt="Profile" />
         </div>
       </div>
@@ -43,50 +43,58 @@
 
 <script>
 import Auth from '@/components/Auth.vue'
+import axios from 'axios'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import Notification from '@/components/Notification.vue'
-import Weather from '@/components/Weather.vue'
 
 export default {
   name: 'HeaderNavigationBar',
-  components: { Auth, Notification, Weather },
+  components: { Auth },
   data() {
     return {
-      baseApi: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+      baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
       showAuthPopup: false,
       isLoggedIn: false,
       showNotification: false,
       showWeather: false,
       user: {},
-      defaultImage: new URL('@/assets/pf.png', import.meta.url).href
+      defaultImage: '/src/assets/pf.png'
     }
   },
   created() {
     const token = localStorage.getItem('token')
-    const user = JSON.parse(localStorage.getItem('user'))
-    if (token && user) {
-      this.user = user
-      this.isLoggedIn = true
+    if (token) {
+      this.fetchUserProfile()
     }
   },
   methods: {
+    async fetchUserProfile() {
+      try {
+        const res = await axios.get(`${this.baseURL}/api/profile`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+        this.user = res.data
+        this.isLoggedIn = true
+      } catch (err) {
+        console.error("Failed to load profile in header:", err)
+      }
+    },
     handleLoginSuccess(userData) {
       localStorage.setItem('token', userData.token)
-      localStorage.setItem('user', JSON.stringify(userData.account))
       this.user = userData.account
       this.isLoggedIn = true
       this.showAuthPopup = false
-
-      window.location.reload()
+      this.fetchUserProfile()
     },
     goToProfile() {
       this.$router.push('/profile')
     },
     toggleNotification() {
-      this.showNotification = !this.showNotification;
+      this.showNotification = !this.showNotification
     },
     toggleWeather() {
-      this.showWeather = !this.showWeather;
+      this.showWeather = !this.showWeather
     }
   }
 }
@@ -123,11 +131,6 @@ export default {
   width: 150px;
 }
 
-.search-icon {
-  font-size: 1rem;
-  color: #666;
-}
-
 .searchBox {
   border: none;
   outline: none;
@@ -143,7 +146,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
   z-index: 1;
 }
 

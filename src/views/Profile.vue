@@ -8,7 +8,7 @@
         <!-- PROFILE -->
         <div class="profile-banner">
             <div class="profile-pic-wrapper">
-                <img :src="`${baseURL}/${profileImage}`" alt="Profile" class="profile-pic" />
+                <img :src="`${baseURL}${profileImage}`" alt="Profile" class="profile-pic" />
                 <span class="edit-icon" @click="showImageOptions = true">✏️</span>
 
                 <!-- Profile Image Options Modal -->

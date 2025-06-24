@@ -3,6 +3,7 @@
         <!-- Image Upload Section -->
         <div class="image-upload">
             <input type="file" multiple @change="handleFiles" ref="fileInput" hidden />
+
             <label class="upload-box" v-if="!previews.length" @click="triggerFilePicker">
                 <i class="bi bi-camera" style="font-size: 2rem;"></i>
                 <p>Click to upload photos</p>
@@ -25,27 +26,45 @@
             <label>Your review</label>
             <textarea v-model="content" placeholder="A detailed review of your Travel Journey." required></textarea>
 
-            <!-- Location -->
-            <label>Location</label>
-            <div class="location-input-group">
-                <input v-model="location" type="text" placeholder="Enter a location" class="location-input"
-                    @input="searchLocations" />
-                <button type="button" class="use-location-btn" @click="getCurrentLocation">📍 Use My Location</button>
+            <!-- Location Input -->
+            <div class="location-block">
+                <div class="location-header">
+                    <span class="location-title">Location</span>
+                    <button class="use-location-btn" @click="getCurrentLocation">📍 Use My Location</button>
+                </div>
+                <div class="location-input-wrapper">
+                    <input v-model="location" type="text" placeholder="Search for location..."
+                        @input="fetchLocationSuggestions" autocomplete="off" class="location-input" />
+
+                    <div class="location-suggestions" v-if="locationSuggestions.length">
+                        <div v-for="(item, i) in locationSuggestions" :key="i" class="suggestion-item"
+                            @click="selectLocation(item.display_name)">
+                            <i :class="getIconClass(item)" class="result-icon"></i>
+                            <div class="suggestion-text-block">
+                                <div class="suggestion-title">{{ item.display_name }}</div>
+                                <div class="suggestion-sub">{{ item.address?.state }}, {{ item.address?.country }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <ul v-if="locationSuggestions.length" class="suggestion-dropdown">
-                <li v-for="loc in locationSuggestions" :key="loc" @click="selectLocation(loc)">
-                    {{ loc }}
-                </li>
-            </ul>
 
             <!-- Mentions -->
             <label>Tag a friend in this journal</label>
             <input v-model="mention" type="text" placeholder="Type friend's name" @input="searchUsers" />
+
             <ul v-if="mentionSuggestions.length" class="suggestion-dropdown">
                 <li v-for="user in mentionSuggestions" :key="user.id" @click="addMention(user)">
                     {{ user.name }}
                 </li>
             </ul>
+
+            <div v-if="mentions.length" class="mention-list">
+                <span class="mention-tag" v-for="(user, index) in mentions" :key="user.id">
+                    @{{ user.name }}
+                    <button @click="removeMention(index)">x</button>
+                </span>
+            </div>
 
             <!-- Agreement -->
             <div class="terms">
@@ -56,15 +75,16 @@
             </div>
 
             <button type="submit" class="submit-btn" :disabled="!agreed">Submit Review</button>
-            <p class="error-msg" v-if="formError">{{ formError }}</p>
-            <p class="success-msg" v-if="message">{{ message }}</p>
+            <p v-if="formError" class="error">{{ formError }}</p>
+            <p v-if="message" class="success">{{ message }}</p>
+
         </div>
     </form>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 const baseApi = import.meta.env.VITE_API_BASE_URL
@@ -72,6 +92,7 @@ const baseApi = import.meta.env.VITE_API_BASE_URL
 const title = ref('')
 const content = ref('')
 const location = ref('')
+const readTime = ref('')
 const mention = ref('')
 const mentions = ref([])
 const files = ref([])
@@ -82,7 +103,9 @@ const agreed = ref(false)
 const message = ref('')
 const formError = ref('')
 const fileInput = ref(null)
-const router = useRouter()
+// const isEditMode = ref(false)
+const route = useRoute();
+// const journalId = route.params.id;
 
 const handleFiles = (e) => {
     const newFiles = Array.from(e.target.files)
@@ -100,94 +123,159 @@ const removeImage = i => {
     files.value.splice(i, 1)
 }
 
-const addMention = (user) => {
-    if (!mentions.value.includes(user.id)) mentions.value.push(user.id)
-    mention.value = ''
-    mentionSuggestions.value = []
+const fetchLocationSuggestions = async () => {
+    if (!location.value) return
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(location.value)} Cambodia`)
+        const data = await res.json()
+        locationSuggestions.value = data.filter(item => item.display_name.includes('Cambodia'))
+    } catch (err) {
+        console.error('Failed to fetch locations', err)
+    }
 }
 
-const handleSubmit = async () => {
-    formError.value = ''
-    message.value = ''
-
-    if (!title.value || !content.value || !location.value || !agreed.value) {
-        formError.value = '❌ Please fill all required fields.'
-        return
-    }
-
-    const formData = new FormData()
-    formData.append('title', title.value)
-    formData.append('content', content.value)
-    formData.append('location', location.value)
-    mentions.value.forEach((id, i) => formData.append(`mentions[${i}]`, id))
-    files.value.forEach(file => formData.append('images[]', file))
-
-    console.log("📦 FormData Content:")
-    for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1])
-    }
-
-    try {
-        const token = localStorage.getItem('token')
-        const res = await axios.post(`${baseApi}/api/journals`, formData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-
-        message.value = res.data.message || '✅ Journal saved!'
-        title.value = ''
-        content.value = ''
-        location.value = ''
-        mention.value = ''
-        mentions.value = []
-        files.value = []
-        previews.value = []
-        agreed.value = false
-
-        setTimeout(() => router.push('/journal'), 1000)
-    } catch (err) {
-        formError.value = err.response?.data?.message || 'Submission failed. Try again.'
-    }
+const selectLocation = (value) => {
+    location.value = value
+    locationSuggestions.value = []
 }
 
 const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.")
+        alert("Geolocation not supported")
         return
     }
-
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            const { latitude, longitude } = position.coords
-            location.value = `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`
-        },
-        (error) => {
-            console.error("Geolocation error:", error)
-            alert("Unable to retrieve your location.")
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+            const data = await res.json()
+            location.value = data.display_name
+        } catch (err) {
+            alert("Failed to fetch location name")
         }
-    )
+    })
 }
 
-const searchLocations = () => {
-    const query = location.value.toLowerCase()
-    if (query.length > 1) {
-        locationSuggestions.value = [
-            `${query} City`,
-            `${query} Province`,
-            `${query} Beach`,
-            `${query} National Park`
-        ]
-    } else {
-        locationSuggestions.value = []
+const getIconClass = (item) => {
+    if (item.type.includes('museum')) return 'bi bi-bank'
+    if (item.type.includes('restaurant')) return 'bi bi-egg-fried'
+    if (item.type.includes('hotel')) return 'bi bi-house-door'
+    if (item.type.includes('clothing')) return 'bi bi-bag'
+    if (item.type.includes('province') || item.type.includes('administrative')) return 'bi bi-flag'
+    return 'bi bi-geo-alt-fill'
+}
+
+function addMention(user) {
+    mentions.value.push(user)
+    mention.value = ''
+    mentionSuggestions.value = []
+}
+
+function removeMention(index) {
+    mentions.value.splice(index, 1)
+}
+
+const handleSubmit = async () => {
+    // Clear previous messages
+    formError.value = ''
+    message.value = ''
+
+    try {
+        const formData = new FormData()
+        formData.append('location', location.value)
+        formData.append('title', title.value)
+        formData.append('content', content.value)
+        formData.append('read_time', readTime.value)
+
+        // Attach uploaded images
+        files.value.forEach((file, i) => {
+            formData.append(`images[${i}]`, file)
+        })
+
+        // 🔐 Load token
+        const token = localStorage.getItem('token')
+        if (!token) {
+            formError.value = 'User is not authenticated.'
+            return
+        }
+
+        // ✅ Send POST to Laravel backend
+        const response = await axios.post(`${baseApi}/api/journals`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        })
+
+        console.log('✅ Submission response:', response)
+        message.value = 'Journal submitted successfully!'
+    } catch (err) {
+        console.error('❌ Axios error submitting journal:', err)
+        if (err.response?.status === 401) {
+            formError.value = 'Unauthenticated: Please log in again.'
+        } else if (err.response?.data?.message) {
+            formError.value = err.response.data.message
+        } else {
+            formError.value = 'Submission failed. Please try again.'
+        }
     }
 }
 
-const selectLocation = (loc) => {
-    location.value = loc
-    locationSuggestions.value = []
-}
+// onMounted(async () => {
+//   if (journalId) {
+//     try {
+//       const response = await axios.get(`${baseApi}/api/journals/${journalId}`);
+//       const journal = response.data;
+
+//       // preload form data
+//       caption.value = journal.caption;
+//       location.value = journal.location;
+//       mentions.value = journal.mentions;
+//       selectedImages.value = journal.images; // check if this format matches
+
+//     } catch (error) {
+//       console.error("❌ Failed to load journal data for editing", error);
+//     }
+//   }
+// });
+
+onMounted(async () => {
+    const id = route.params.id
+    if (id) {
+        try {
+            const res = await axios.get(`${baseApi}/api/journals/${id}`)
+            const data = res.data
+
+            form.value = {
+                title: data.title,
+                content: data.content,
+                location: data.location,
+                mentions: JSON.parse(data.mentions || '[]'),
+                images: JSON.parse(data.images || '[]'),
+                // Add others if needed
+            }
+        } catch (err) {
+            console.error('❌ Load journal failed:', err.response?.data || err.message)
+            alert('❌ Failed to load journal data')
+        }
+    }
+})
+
+// async function fetchJournal(id) {
+//   try {
+//     const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/journals/${id}`)
+//     const journal = res.data
+
+//     title.value = journal.title
+//     content.value = journal.content
+//     location.value = journal.location
+//     images.value = Array.isArray(journal.images) ? journal.images : JSON.parse(journal.images || '[]')
+//     readTime.value = journal.read_time
+//   } catch (err) {
+//     console.error(err)
+//     alert('❌ Failed to load journal data for editing')
+//   }
+// }
 
 </script>
 
@@ -304,58 +392,100 @@ textarea {
     resize: vertical;
 }
 
-.location-label {
-    display: block;
-    font-weight: 500;
+.location-block {
+    margin-bottom: 1.5rem;
 }
 
-.location-input-group {
+.location-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
-    margin-top: 0.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.location-input-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .location-input {
-    flex: 1;
     padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    border-radius: 8px;
     font-size: 1rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
 }
 
 .use-location-btn {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    padding: 8px 10px;
-    border-radius: 6px;
-    cursor: pointer;
+    margin-bottom: 0.5rem;
+    padding: 6px 12px;
     font-size: 0.9rem;
+    border-radius: 6px;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
 .use-location-btn:hover {
-    background-color: #e2e2e2;
+    background: #e6e6e6;
 }
 
-.suggestion-dropdown {
+.location-suggestions {
     background: white;
     border: 1px solid #ccc;
-    border-radius: 6px;
-    max-height: 150px;
+    border-radius: 12px;
+    max-height: 300px;
     overflow-y: auto;
-    list-style: none;
-    padding: 0;
-    margin: 0.5rem 0 0;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: calc(100% + 50px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
-.suggestion-dropdown li {
-    padding: 10px;
+.suggestion-item {
+    padding: 12px;
+    font-size: 0.95rem;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.suggestion-dropdown li:hover {
+.suggestion-item:hover {
     background-color: #f9f9f9;
+}
+
+.suggestion-text-block {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.suggestion-title {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.suggestion-sub {
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-icon {
+    font-size: 1.4rem;
+    color: #444;
+    flex-shrink: 0;
 }
 
 .terms {

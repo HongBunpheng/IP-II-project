@@ -1,27 +1,28 @@
 <template>
     <div v-if="journal" class="read-post">
-
-        <!-- 📸 Header from assets -->
+        <!-- Cover Header Image -->
         <div class="read-header">
             <img src="../assets/picture/Readfullpost.png" alt="Read Image" />
         </div>
 
-        <!-- 🧑 Author Section -->
+        <!-- Author Section -->
         <div class="author-box">
-            <img :src="journal.author_avatar || 'https://i.pravatar.cc/100?img=5'" class="avatar" />
+            <img :src="journal.account?.profile_picture || defaultImage" class="avatar" />
             <div class="info">
-                <h4>{{ journal.author_name || 'Unknown' }}</h4>
+                <h4>{{ journal.account?.name || 'Unknown' }}</h4>
                 <p><i class="bi bi-geo-alt-fill"></i> {{ journal.location }}</p>
+                <p class="meta">
+                    {{ formatDate(journal.created_at) }} <span class="dot">•</span> {{ formatTime(journal.created_at) }}
+                </p>
             </div>
         </div>
 
-        <!-- 📝 Title & Content -->
+        <!-- Title & Content -->
         <h2 class="title">{{ journal.title || 'Untitled' }}</h2>
         <p class="content">{{ journal.content || 'No content available.' }}</p>
 
-        <!-- 🖼️ Dynamic Image Collage -->
-        <!-- Only replace this part inside your current component -->
-        <div class="image-collage">
+        <!-- Image Collage -->
+        <div class="image-collage" v-if="journal.images.length">
             <!-- 1 image -->
             <div v-if="journal.images.length === 1" class="one-image">
                 <img :src="getImageUrl(journal.images[0])" />
@@ -32,7 +33,7 @@
                 <img v-for="(img, i) in journal.images" :key="i" :src="getImageUrl(img)" />
             </div>
 
-            <!-- 3+ and odd -->
+            <!-- Odd -->
             <div v-else-if="journal.images.length % 2 === 1" class="odd-images">
                 <div class="left-column">
                     <img :src="getImageUrl(journal.images[0])" />
@@ -42,12 +43,11 @@
                 </div>
             </div>
 
-            <!-- Even count (4, 6, etc.) -->
+            <!-- Even -->
             <div v-else class="even-grid">
                 <img v-for="(img, i) in journal.images" :key="i" :src="getImageUrl(img)" />
             </div>
         </div>
-
     </div>
 </template>
 
@@ -57,30 +57,40 @@ import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 const route = useRoute()
-const journal = ref({
-    images: [],
-    author_name: '',
-    author_avatar: '',
-    location: '',
-    title: '',
-    content: ''
-})
+const journal = ref(null)
 
 const baseApi = import.meta.env.VITE_API_BASE_URL
+const defaultImage = new URL('@/assets/pf.png', import.meta.url).href
 
 function getImageUrl(path) {
     return `${baseApi}/${path}`
 }
 
+function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    })
+}
+
+function formatTime(dateStr) {
+    const date = new Date(dateStr)
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+}
+
 onMounted(async () => {
     const id = route.params.id
-    const res = await axios.get(`${baseApi}/api/journals/${id}`)
-    const j = res.data
-
-    journal.value = {
-        ...j,
-        images: Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]'),
-        mentions: Array.isArray(j.mentions) ? j.mentions : JSON.parse(j.mentions || '[]')
+    try {
+        const res = await axios.get(`${baseApi}/api/journals/${id}`)
+        const j = res.data
+        journal.value = {
+            ...j,
+            images: Array.isArray(j.images) ? j.images : JSON.parse(j.images || '[]'),
+            mentions: Array.isArray(j.mentions) ? j.mentions : JSON.parse(j.mentions || '[]')
+        }
+    } catch (err) {
+        console.error('❌ Failed to load post:', err)
     }
 })
 </script>
@@ -95,9 +105,7 @@ onMounted(async () => {
 
 .read-header {
     width: 100vw;
-    /* ✅ full browser width */
     height: 100%;
-    /* ✅ fixed height */
     overflow: hidden;
     position: relative;
     left: 50%;
@@ -126,6 +134,7 @@ onMounted(async () => {
     height: 85px;
     object-fit: cover;
     border-radius: 50%;
+    background-color: #ccc;
 }
 
 .info h4 {
@@ -137,6 +146,10 @@ onMounted(async () => {
     font-size: 14px;
     color: #666;
     margin: 2px 0 0;
+}
+
+.dot {
+    margin: 0 6px;
 }
 
 .title {
@@ -158,7 +171,6 @@ onMounted(async () => {
     gap: 12px;
 }
 
-/* 1 image: centered */
 .one-image {
     display: flex;
     justify-content: center;
@@ -170,7 +182,6 @@ onMounted(async () => {
     border-radius: 12px;
 }
 
-/* 2 images: side by side */
 .two-images {
     display: flex;
     gap: 12px;
@@ -183,7 +194,6 @@ onMounted(async () => {
     border-radius: 12px;
 }
 
-/* 3 images: left full, right stacked */
 .odd-images {
     display: flex;
     gap: 12px;
@@ -191,7 +201,6 @@ onMounted(async () => {
 
 .left-column {
     flex: 1.3;
-    /* slightly larger than right */
 }
 
 .left-column img {
@@ -215,7 +224,6 @@ onMounted(async () => {
     border-radius: 12px;
 }
 
-/* 4+ images: grid 2 column */
 .even-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -229,7 +237,6 @@ onMounted(async () => {
     border-radius: 12px;
 }
 
-/* Optional Responsive Handling */
 @media (max-width: 768px) {
 
     .one-image img,

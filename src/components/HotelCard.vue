@@ -6,6 +6,11 @@
             <p class="hotel-description">{{ hotel.details }}</p>
             <div class="hotel-footer">
                 <button class="details-btn" @click="goToDetail(hotel.id)">details</button>
+
+                <button class="save-btn" :class="{ saved: isSaved }" @click="emitSave">
+                    {{ isSaved ? 'Saved' : 'Save' }}
+                </button>
+
                 <div class="stars">
                     <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= hotel.rating }">★</span>
                 </div>
@@ -14,8 +19,8 @@
 
         <!-- Overlapping Images -->
         <div class="hotel-images" v-if="hotel.image?.length >= 2">
-            <img :src="hotel.image[1]" class="img back" />
-            <img :src="hotel.image[0]" class="img front" />
+            <img :src="imageUrl(hotel.image[1])" class="img back" />
+            <img :src="imageUrl(hotel.image[0])" class="img front" />
         </div>
     </div>
 </template>
@@ -23,15 +28,27 @@
 <script setup>
 import { useRouter } from 'vue-router'
 
-const props = defineProps({
+// ✅ Destructure props
+const { hotel, index, isSaved } = defineProps({
     hotel: Object,
-    index: Number
+    index: Number,
+    isSaved: Boolean
 })
+
+const emit = defineEmits(['saveToggle'])
 
 const router = useRouter()
 
 const goToDetail = (id) => {
     router.push(`/hotel/${id}`)
+}
+
+const emitSave = () => {
+    emit('saveToggle', hotel)
+}
+
+const imageUrl = (img) => {
+    return img.startsWith('http') ? img : `http://localhost:8000${img}`
 }
 </script>
 
@@ -145,6 +162,28 @@ const goToDetail = (id) => {
     top: 40px;
     left: -40px;
     z-index: 2;
+}
+
+.save-btn {
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 0.4rem 1.2rem;
+    border-radius: 24px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #00c4a7;
+    color: white;
+}
+
+.save-btn.saved {
+    background-color: #00c4a7;
+    color: white;
+    border-color: #00c4a7;
 }
 
 @media (max-width: 768px) {

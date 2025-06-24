@@ -65,7 +65,7 @@ export default {
       newComment: "",
       newRating: 0,
       hoverRating: 0,
-      baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000",
+      baseURL: import.meta.env.VITE_API_BASE_URL || "http://192.168.20.198:8000",
     };
   },
   mounted() {
@@ -89,7 +89,7 @@ export default {
           this.feedbackList = res.data.map((r) => ({
             name: r.account?.name || "Guest",
             avatar: r.account?.profile_picture
-              ? `${this.baseURL}/${r.account.profile_picture}`
+              ? `${this.baseURL}${r.account.profile_picture.startsWith('/') ? '' : '/'}${r.account.profile_picture}`
               : "https://i.pravatar.cc/60",
             rating: r.rating,
             comment: r.comment,
