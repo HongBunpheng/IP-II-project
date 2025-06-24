@@ -236,8 +236,15 @@
 }
 
 .price .label {
+<<<<<<< Updated upstream
     color: #666;
     margin-right: 4px;
+=======
+  color: #000000;
+  margin: auto;
+  margin-right: 4px;
+  font-size: 20px;
+>>>>>>> Stashed changes
 }
 
 .price .amount {

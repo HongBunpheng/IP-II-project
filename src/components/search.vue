@@ -75,7 +75,11 @@ export default {
                 alert('Please select a destination');
                 return;
             }
-            console.log('Search for:', this.searchQuery, 'in', this.destination);
+            // console.log('Search for:', this.searchQuery, 'in', this.destination);
+             this.$emit('search-submitted', {
+            destination: this.destination,
+            query: this.searchQuery || ''
+      })
         }
     }
 };
