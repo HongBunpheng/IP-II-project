@@ -72,7 +72,7 @@ export default {
     }
     .about-header img {
         width: 100%;
-        height: 100%;
+        height: 70vh;
         object-fit: cover;
         display: block;
     }
@@ -137,11 +137,11 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 3.5rem;
+  gap: 2rem;
 }
 
 .team-member {
-  width: 250px;
+  width: 200px;
   text-align: center;
 }
 

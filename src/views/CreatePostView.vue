@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import CreatePost from '@/components/CreatePost.vue'
+import CreatePost from '@/components/Journalpage/CreatePost.vue'
 
 export default {
   components: {

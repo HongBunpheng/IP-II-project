@@ -97,7 +97,7 @@ function playGame(gameName) {
 .hero-section {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 70vh;
     overflow: hidden;
     background-color: black;
 }

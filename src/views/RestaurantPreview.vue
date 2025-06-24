@@ -55,9 +55,9 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
-import Map from '@/components/Map.vue'
-import Review from '@/components/Review.vue'
-import BookingPopup from '@/components/Booking.vue'
+import Map from '@/components/Explorepage/Map.vue'
+import Review from '@/components/Explorepage/Review.vue'
+import BookingPopup from '@/components/Explorepage/Booking.vue'
 
 const restaurant = ref(null)
 const route = useRoute()

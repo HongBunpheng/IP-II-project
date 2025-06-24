@@ -2,7 +2,7 @@
     <div class="explore-page">
         <!-- Hero Image -->
         <div class="hero-section">
-            <img src="@/assets/picture/hero-angkor.png" alt="Angkor Wat" />
+            <img src="@/assets/picture/pvh.JPG" alt="Angkor Wat" />
         </div>
 
         <!-- Recommendation Section -->
@@ -78,9 +78,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import DetailHotel from '@/components/DetailHotel.vue'
-import DetailRestaurant from '@/components/DetailRestaurant.vue'
-import DetailTransportation from '@/components/DetailTransportation.vue'
+import DetailHotel from '@/components/Explorepage/DetailHotel.vue'
+import DetailRestaurant from '@/components/Explorepage/DetailRestaurant.vue'
+import DetailTransportation from '@/components/Explorepage/DetailTransportation.vue'
 </script>
 
 
@@ -202,7 +202,7 @@ import DetailTransportation from '@/components/DetailTransportation.vue'
 /* Hero Section */
 .hero-section img {
     width: 100%;
-    height: auto;
+    height: 70vh;
     object-fit: cover;
     display: block;
 }

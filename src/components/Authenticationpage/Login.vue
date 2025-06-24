@@ -100,7 +100,7 @@ export default {
   width: 90%;
   max-width: 800px;
   height: 90vh;
-  background: url('../assets/picture/login-bg.png') no-repeat center center;
+  background: url('@/assets/picture/login-bg.png') no-repeat center center;
   background-size: cover;
   border-radius: 32px;
 }
@@ -139,7 +139,7 @@ export default {
   position: relative;
 
   /* Background image */
-  background: url('../assets/picture/login-bg.png') no-repeat center center;
+  background: url('@/assets/picture/login-bg.png') no-repeat center center;
   background-size: cover;
 
   /* Only 3-side border */
@@ -180,9 +180,10 @@ export default {
 
 /* Logo */
 .logo {
-  width: 78px;
+  width: 110px;
+  height: auto;
   /* smaller logo */
-  margin-bottom: 0.5rem;
+  margin-bottom: 2.5rem;
 }
 
 /* Welcome titles */

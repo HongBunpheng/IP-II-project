@@ -65,7 +65,7 @@ export default {
       newComment: "",
       newRating: 0,
       hoverRating: 0,
-      baseURL: import.meta.env.VITE_API_BASE_URL || "http://192.168.20.198:8000",
+      baseURL: import.meta.env.VITE_API_BASE_URL,
     };
   },
   mounted() {

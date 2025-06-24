@@ -38,156 +38,166 @@
                 </div>
                 <div class="tab-divider"></div>
                 <!-- Logout -->
-                <div class="tab-button" :class="{ active: currentTab === 'logout' }" @click="handleLogout">
+                <div class="tab-button" :class="{ active: currentTab === 'logout' }" @click="currentTab = 'logout'">
                     Logout
                     <div class="underline" v-if="currentTab === 'logout'"></div>
                 </div>
-
             </div>
-
-            <!-- setting detail -->
-            <div v-if="currentTab === 'settings'" class="settings-card">
-                <div class="setting-row" v-for="(field, index) in settings" :key="index">
-                    <div class="setting-info">
-                        <div class="field-label">{{ field.label }}</div>
-                        <div class="field-value-group">
-                            <div v-if="editFields[field.label]">
-                                <input v-model="field.value" class="modal-input" />
-                            </div>
-                            <div v-else>
-                                <div class="field-value">{{ field.value }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="button-column">
-                        <button v-if="editFields[field.label]" class="change-btn" @click="saveSetting(field)">
-                            ✅ Save
-                        </button>
-                        <button v-else class="change-btn" @click="editFields[field.label] = true">
-                            ✏️ Change
-                        </button>
-                        <button class="change-btn" @click="deleteField(field.label)">🗑️ Delete</button>
+            <!-- Logout Confirmation Modal -->
+            <div v-if="currentTab === 'logout'" class="modal-overlay">
+                <div class="modal-content">
+                    <h3>Are you sure you want to logout?</h3>
+                    <div class="modal-actions">
+                        <button class="cancel-btn" @click="currentTab = 'post'">Cancel</button>
+                        <button class="save-btn" @click="handleLogout">Okay</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="main-layout">
-                <!-- LEFT COLUMN -->
-                <div v-if="currentTab === 'post'" class="left-column">
-                    <h3 class="section-title">Intro</h3>
-                    <p class="bio-text">{{ bioText }}</p>
-                    <button class="gray-button" @click="openEditBioModal">Edit Bio</button>
+        </div>
 
-                    <!-- Edit Bio Modal -->
-                    <div v-if="showEditBioModal" class="modal-overlay">
-                        <div class="modal-content">
-                            <h3>Edit Bio</h3>
-                            <textarea v-model="newBioText" class="bio-textarea"></textarea>
-                            <div class="modal-actions">
-                                <button class="save-btn" @click="saveBio">Save</button>
-                                <button class="cancel-btn" @click="showEditBioModal = false">Cancel</button>
-                            </div>
+        <!-- setting detail -->
+        <div v-if="currentTab === 'settings'" class="settings-card">
+            <div class="setting-row" v-for="(field, index) in settings" :key="index">
+                <div class="setting-info">
+                    <div class="field-label">{{ field.label }}</div>
+                    <div class="field-value-group">
+                        <div v-if="editFields[field.label]">
+                            <input v-model="field.value" class="modal-input" />
+                        </div>
+                        <div v-else>
+                            <div class="field-value">{{ field.value }}</div>
                         </div>
                     </div>
-
-
-                    <ul class="info-list">
-                        <li><span>📍</span> {{ details.location }}</li>
-                        <li><span>✅</span> {{ details.instagram }}</li>
-                        <li><span>💬</span> {{ details.nickname }}</li>
-                    </ul>
-
-                    <button class="gray-button" @click="openEditDetailsModal">Edit Details</button>
-                    <!-- Edit Details Modal -->
-                    <div v-if="showEditDetailsModal" class="modal-overlay">
-                        <div class="modal-content">
-                            <h3>Edit Your Details</h3>
-
-                            <label class="modal-label">📍 Location</label>
-                            <input v-model="newDetails.location" class="modal-input"
-                                placeholder="Enter your location" />
-
-                            <label class="modal-label">📸 Instagram</label>
-                            <input v-model="newDetails.instagram" class="modal-input" placeholder="@your_instagram" />
-
-                            <label class="modal-label">💬 Account Name</label>
-                            <input v-model="newDetails.name" class="modal-input" placeholder="Your name" />
-
-                            <div class="modal-actions">
-                                <button class="save-btn" @click="saveDetails">Save</button>
-                                <button class="cancel-btn" @click="showEditDetailsModal = false">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="featured">
-                        <div class="featured-images">
-                            <img v-for="(photo, index) in featuredPhotos" :key="index" :src="`${baseURL}/${photo}`"
-                                alt="Featured" />
-                        </div>
-                        <button class="gray-button" @click="showEditFeaturedModal = true">Edit Featured</button>
-                    </div>
-                    <!-- Edit Featured Photos Modal -->
-                    <div v-if="showEditFeaturedModal" class="modal-overlay">
-                        <div class="modal-content">
-                            <h3>Edit Featured Photos</h3>
-
-                            <!-- Current Images -->
-                            <div class="edit-featured-grid">
-                                <div v-for="(photo, index) in featuredPhotos" :key="index" class="featured-item">
-                                    <img :src="photo" />
-                                    <button class="remove-btn" @click="removeFeatured(index)">✖</button>
-                                </div>
-                            </div>
-
-                            <!-- Add Photo -->
-                            <input type="file" accept="image/*" @change="addFeaturedPhoto" class="upload-input" />
-
-                            <div class="modal-actions">
-                                <button class="save-btn" @click="showEditFeaturedModal = false">Done</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Photo Gallery Section -->
-                    <div class="photo-gallery">
-                        <div class="gallery-header">
-                            <h3>Photos</h3>
-                            <a href="#" class="see-all">See All Photos</a>
-                        </div>
-                        <div class="gallery-grid">
-                            <img v-for="(photo, index) in galleryPhotos" :key="index" :src="photo"
-                                class="gallery-img" />
-                        </div>
-                    </div>
-
                 </div>
 
-                <!-- RIGHT COLUMN -->
-                <div v-if="currentTab === 'post'" class="right-column">
-                    <div class="post-header">
-                        <h3>Post</h3>
-                        <router-link to="/create" class="create-post-btn">➕ Create Post</router-link>
-                    </div>
+                <div class="button-column">
+                    <button v-if="editFields[field.label]" class="change-btn" @click="saveSetting(field)">
+                        ✅ Save
+                    </button>
+                    <button v-else class="change-btn" @click="editFields[field.label] = true">
+                        ✏️ Change
+                    </button>
+                    <button class="change-btn" @click="deleteField(field.label)">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
 
-                    <div class="view-toggle">
-                        <!-- <div :class="['toggle-option', { active: viewMode === 'list' }]" @click="viewMode = 'list'">
+        <div class="main-layout">
+            <!-- LEFT COLUMN -->
+            <div v-if="currentTab === 'post'" class="left-column">
+                <h3 class="section-title">Intro</h3>
+                <p class="bio-text">{{ bioText }}</p>
+                <button class="gray-button" @click="openEditBioModal">Edit Bio</button>
+
+                <!-- Edit Bio Modal -->
+                <div v-if="showEditBioModal" class="modal-overlay">
+                    <div class="modal-content">
+                        <h3>Edit Bio</h3>
+                        <textarea v-model="newBioText" class="bio-textarea"></textarea>
+                        <div class="modal-actions">
+                            <button class="save-btn" @click="saveBio">Save</button>
+                            <button class="cancel-btn" @click="showEditBioModal = false">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <ul class="info-list">
+                    <li><span>📍</span> {{ details.location }}</li>
+                    <li><span>✅</span> {{ details.instagram }}</li>
+                    <li><span>💬</span> {{ details.nickname }}</li>
+                </ul>
+
+                <button class="gray-button" @click="openEditDetailsModal">Edit Details</button>
+                <!-- Edit Details Modal -->
+                <div v-if="showEditDetailsModal" class="modal-overlay">
+                    <div class="modal-content">
+                        <h3>Edit Your Details</h3>
+
+                        <label class="modal-label">📍 Location</label>
+                        <input v-model="newDetails.location" class="modal-input" placeholder="Enter your location" />
+
+                        <label class="modal-label">📸 Instagram</label>
+                        <input v-model="newDetails.instagram" class="modal-input" placeholder="@your_instagram" />
+
+                        <label class="modal-label">💬 Account Name</label>
+                        <input v-model="newDetails.name" class="modal-input" placeholder="Your name" />
+
+                        <div class="modal-actions">
+                            <button class="save-btn" @click="saveDetails">Save</button>
+                            <button class="cancel-btn" @click="showEditDetailsModal = false">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="featured">
+                    <div class="featured-images">
+                        <img v-for="(photo, index) in featuredPhotos" :key="index" :src="`${baseURL}/${photo}`"
+                            alt="Featured" />
+                    </div>
+                    <button class="gray-button" @click="showEditFeaturedModal = true">Edit Featured</button>
+                </div>
+                <!-- Edit Featured Photos Modal -->
+                <div v-if="showEditFeaturedModal" class="modal-overlay">
+                    <div class="modal-content">
+                        <h3>Edit Featured Photos</h3>
+
+                        <!-- Current Images -->
+                        <div class="edit-featured-grid">
+                            <div v-for="(photo, index) in featuredPhotos" :key="index" class="featured-item">
+                                <img :src="photo" />
+                                <button class="remove-btn" @click="removeFeatured(index)">✖</button>
+                            </div>
+                        </div>
+
+                        <!-- Add Photo -->
+                        <input type="file" accept="image/*" @change="addFeaturedPhoto" class="upload-input" />
+
+                        <div class="modal-actions">
+                            <button class="save-btn" @click="showEditFeaturedModal = false">Done</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo Gallery Section -->
+                <div class="photo-gallery">
+                    <div class="gallery-header">
+                        <h3>Photos</h3>
+                        <a href="#" class="see-all">See All Photos</a>
+                    </div>
+                    <div class="gallery-grid">
+                        <img v-for="(photo, index) in galleryPhotos" :key="index" :src="photo" class="gallery-img" />
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div v-if="currentTab === 'post'" class="right-column">
+                <div class="post-header">
+                    <h3>Post</h3>
+                    <router-link to="/create" class="create-post-btn">➕ Create Post</router-link>
+                </div>
+
+                <div class="view-toggle">
+                    <!-- <div :class="['toggle-option', { active: viewMode === 'list' }]" @click="viewMode = 'list'">
                             <span class="icon">≡</span> List View
                         </div> -->
 
-                        <div :class="['toggle-option', { active: viewMode === 'grid' }]" @click="viewMode = 'grid'">
-                            <span class="icon">▦</span> Grid View
-                        </div>
+                    <div :class="['toggle-option', { active: viewMode === 'grid' }]" @click="viewMode = 'grid'">
+                        <span class="icon">▦</span> Grid View
                     </div>
+                </div>
 
-                    <!-- Final JournalBox rendering -->
-                    <div :class="['journal-wrapper', viewMode]">
-                        <JournalBox :journals="userPosts" :view-mode="viewMode" />
-                    </div>
+                <!-- Final JournalBox rendering -->
+                <div :class="['journal-wrapper', viewMode]">
+                    <JournalBox :journals="userPosts" :view-mode="viewMode" />
+                </div>
 
-                    <!-- <div :class="['post-container', viewMode]">
+                <!-- <div :class="['post-container', viewMode]">
                         <div v-for="(post, index) in posts" :key="index" class="post-card">
                             <img :src="post.image" :alt="post.title" class="post-img" />
                             <div class="post-content" v-if="viewMode === 'grid'">
@@ -206,15 +216,13 @@
                             </div>
                         </div>
                     </div> -->
-                </div>
             </div>
         </div>
-    </div>
 </template>
 
 <script>
-import CreatePost from '@/components/CreatePost.vue';
-import JournalBox from '@/components/JournalBox.vue';
+import CreatePost from '@/components/Journalpage/CreatePost.vue';
+import JournalBox from '@/components/Journalpage/JournalBox.vue';
 import axios from 'axios';
 
 export default {
@@ -222,7 +230,7 @@ export default {
     components: { CreatePost, JournalBox },
     data() {
         return {
-            baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+            baseURL: import.meta.env.VITE_API_BASE_URL,
             currentTab: 'post',
             viewMode: 'grid',
             userPosts: [],

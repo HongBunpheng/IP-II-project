@@ -115,7 +115,7 @@ export default {
   width: 90%;
   max-width: 860px;
   height: 90vh;
-  background: url('../assets/picture/resetpw-bg.png') no-repeat center center;
+  background: url('@/assets/picture/resetpw-bg.png') no-repeat center center;
   background-size: cover;
   border-radius: 32px;
   }
@@ -153,7 +153,7 @@ export default {
   position: relative;
 
   /* Background image */
-  background: url('../assets/picture/resetpw-bg.png') no-repeat center center;
+  background: url('@/assets/picture/resetpw-bg.png') no-repeat center center;
   background-size: cover;
 
   /* Only 3-side border */
@@ -194,8 +194,9 @@ export default {
   
   /* Logo */
   .logo {
-    width: 78px; /* smaller logo */
-    margin-bottom: 0.6rem;
+    width: 110px; /* smaller logo */
+    height: auto;
+    margin-bottom: 1.6rem;
   }
   
   /* Welcome titles */

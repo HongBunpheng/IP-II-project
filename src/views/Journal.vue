@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import JournalBox from '@/components/JournalBox.vue';
+import JournalBox from '@/components/Journalpage/JournalBox.vue';
 
 export default {
   components: {
@@ -75,7 +75,7 @@ export default {
 
 .journal-header img {
   width: 100%;
-  height: 100%;
+  height: 70vh;
   object-fit: cover;
   display: block;
 }
@@ -85,13 +85,11 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 1000px;
-  width: 90%;
   padding: 0 1rem;
   text-align: center;
   color: white;
   text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.6);
-  font-size: clamp(1rem, 3vw, 2rem);
+  font-size: 60px;
   line-height: 1.5;
 }
 

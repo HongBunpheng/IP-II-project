@@ -2,7 +2,7 @@
     <div class="budget-page">
         <!-- Hero Section -->
         <div class="hero">
-            <img src="@/assets/picture/cover1.png" alt="Cover" class="cover-img" />
+            <img src="@/assets/picture/m5.jpg" alt="Cover" class="cover-img" />
             <h1 class="hero-title">On Budget is not the problem anymore</h1>
         </div>
 
@@ -64,14 +64,14 @@
 
 <script>
 import axios from 'axios';
-import HotelCard from '@/components/HotelCard.vue';
-import Footer from '@/components/Footer.vue';
+import HotelCard from '@/components/Explorepage/HotelCard.vue';
+
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 export default {
     name: 'BudgetPage',
     components: {
         HotelCard,
-        Footer,
     },
     data() {
         return {
@@ -94,7 +94,7 @@ export default {
         async handleGo() {
             if (!this.budget) return alert('Please enter a budget.');
             try {
-                const res = await axios.get('http://localhost:8000/api/hotels', {
+                const res = await axios.get(`${baseURL}/api/hotels`, {
                     params: {
                         province: this.province,
                         budget: this.budget
@@ -112,7 +112,7 @@ export default {
 
         async fetchSavedPlaces() {
             try {
-                const res = await axios.get(`http://localhost:8000/api/saved-places/user/${this.accountId}`);
+                const res = await axios.get(`${baseURL}/api/saved-places/user/${this.accountId}`);
                 this.savedData = res.data;
                 this.savedPlaceIds = res.data
                     .filter(item => item.saveable_type === 'App\\Models\\Hotel')
@@ -137,11 +137,11 @@ export default {
             try {
                 if (isAlreadySaved) {
                     const encodedType = encodeURIComponent('App\\Models\\Hotel');
-                    await axios.delete(`http://localhost:8000/api/saved-places/${hotel.id}/${encodedType}`);
+                    await axios.delete(`${baseURL}/api/saved-places/${hotel.id}/${encodedType}`);
                     this.savedPlaceIds = this.savedPlaceIds.filter(id => id !== hotel.id);
                     this.savedData = this.savedData.filter(item => item.saveable_id !== hotel.id);
                 } else {
-                    const res = await axios.post('http://localhost:8000/api/saved-places', payload);
+                    const res = await axios.post(`${baseURL}/api/saved-places`, payload);
                     this.savedPlaceIds.push(hotel.id);
                     this.savedData.push(res.data);
                 }
@@ -170,7 +170,7 @@ export default {
 
 .cover-img {
     width: 100%;
-    height: auto;
+    height: 70vh;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -180,10 +180,14 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 2.5rem;
-    font-weight: bold;
+    max-width: 1000px;
+    width: 70%;
+    padding: 0 1rem;
+    text-align: center;
     color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.6);
+    font-size: 60px;
+    line-height: 1.5;
 }
 
 .recommendation {

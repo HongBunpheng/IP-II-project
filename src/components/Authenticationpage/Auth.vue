@@ -70,7 +70,7 @@ export default {
     async handleLogin() {
     // ... after successful login
     this.$emit('loginSuccess', res.data)
-    window.location.reload();
+    this.$router.go(0)
   }
   },
 };

@@ -1,32 +1,16 @@
 <template>
-  <div>
-    <Header />
-    <div class="app-container">
-      <router-view />
-    </div>
-    <Footer />
-  </div>
+  <router-view />
 </template>
 
 <script setup>
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
+// nothing else needed here
 </script>
-
 
 <style>
 html, body, #app {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
-}
-.app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  padding-top: 120px;
+  height: 100%;
+  font-family: 'Inter', sans-serif;
 }
 </style>
-
-
-

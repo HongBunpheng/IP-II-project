@@ -130,7 +130,7 @@ export default {
   width: 90%;
   max-width: 860px;
   height: 90vh;
-  background: url('../assets/picture/register-bg.png') no-repeat center center;
+  background: url('@/assets/picture/register-bg.png') no-repeat center center;
   background-size: cover;
   border-radius: 32px;
 }
@@ -170,8 +170,9 @@ export default {
 }
 
 .logo {
-  width: 78px;
-  margin-bottom: 0.2rem;
+  width: 110px;
+  height: auto;
+  margin-bottom: 1.2rem;
 }
 
 .title {
@@ -308,7 +309,7 @@ form {
   position: relative;
 
   /* Background image */
-  background: url('../assets/picture/register-bg.png') no-repeat center center;
+  background: url('@/assets/picture/register-bg.png') no-repeat center center;
   background-size: cover;
 
   /* Only 3-side border */

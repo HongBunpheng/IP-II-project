@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import Auth from '@/components/Auth.vue'
+import Auth from '@/components/Authenticationpage/Auth.vue'
 import axios from 'axios'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
@@ -51,7 +51,7 @@ export default {
   components: { Auth },
   data() {
     return {
-      baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+      baseURL: import.meta.env.VITE_API_BASE_URL,
       showAuthPopup: false,
       isLoggedIn: false,
       showNotification: false,

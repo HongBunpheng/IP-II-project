@@ -1,7 +1,7 @@
 <template>
     <div class="restaurant-select">
         <!-- Hero Image -->
-        <img src="@/assets/picture/phnom-penh.png" alt="Phnom Penh" class="hero-image" />
+        <img src="@/assets/picture/m6.jpg" alt="Phnom Penh" class="hero-image" />
 
         <!-- Navigation Bar -->
         <div class="nav-bar">
@@ -23,7 +23,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import RestaurantCard from '@/components/RestaurantCard.vue'
+import RestaurantCard from '@/components/Explorepage/RestaurantCard.vue'
+
+const baseURL = import.meta.env.VITE_API_BASE_URL
 
 const restaurants = ref([])
 const error = ref('')
@@ -32,7 +34,7 @@ const goBack = () => history.back()
 
 onMounted(async () => {
     try {
-        const res = await axios.get('http://localhost:8000/api/restaurants')
+        const res = await axios.get(`${baseURL}/api/restaurants`)
         restaurants.value = res.data.map(restaurant => {
             let images = []
 
@@ -49,7 +51,7 @@ onMounted(async () => {
 
             // Map to full URL
             const fullImageURLs = images.map(img =>
-                img.startsWith('http') ? img : `http://localhost:8000/storage/${img}`
+                img.startsWith('http') ? img : `${baseURL}/storage/${img}`
             )
 
             return {
@@ -75,7 +77,7 @@ onMounted(async () => {
 .hero-image {
     margin: 0 auto;
     width: 100%;
-    height: auto;
+    height: 70vh;
     object-fit: cover;
     display: block;
     margin-bottom: 20px;

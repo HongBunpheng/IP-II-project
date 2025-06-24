@@ -1,7 +1,7 @@
 <template>
-  <div class="forgotpw-background">
-    <div class="forgotpw-popup">
-      <div class="forgotpw-container">
+  <div class="verify-background">
+    <div class="verify-popup">
+      <div class="verify-container">
         <!-- Left Frame -->
         <div class="left-frame">
           <div class="overlay">
@@ -12,16 +12,17 @@
         <!-- Right Frame -->
         <div class="right-frame">
           <img src="@/assets/picture/logo.png" alt="TripTrek Logo" class="logo" />
-          <h2 class="title">Forgot Password?</h2>
-          <p class="subtitle">No worries, we will send you reset Instructions</p>
-          <form @submit.prevent="handleSendCode">
-            <label>Email</label>
-            <input type="email" placeholder="Enter your email" v-model="email" />
-            <div v-if="loginError.email" class="error-message">{{ loginError.email }}</div>
+          <a href="#" class="back-btn" @click="$emit('go-back')">
+            <font-awesome-icon :icon="['far', 'circle-left']" /> Back</a>
 
-            <button type="submit" class="sendcode-btn">Send Code</button>
-            <button type="button" class="back-btn" @click="$emit('go-back')"><font-awesome-icon
-                :icon="['far', 'circle-left']" />Back to Login</button>
+          <h2 class="title">Verify Code</h2>
+          <p class="subtitle">An authentication code has been sent to your email.</p>
+          <form @submit.prevent="handleVerifyCode">
+            <label>Enter Code</label>
+            <input type="text" v-model="input" placeholder="Enter Verification Code" />
+
+            <button type="submit" class="verify-btn">Verify</button>
+            <button type="button" class="resendcode-btn" @click="handleResendCode">Resend Code</button>
           </form>
 
           <div class="divider"><span>Or</span></div>
@@ -53,14 +54,36 @@ import axios from 'axios'
 const baseURL = import.meta.env.VITE_API_BASE_URL
 
 export default {
-  emits: ['go-back', 'show-verify-code'],
+  emits: ['go-back', 'show-reset-password', 'show-login'],
+  props: ['email'], // receive from ForgotPassword.vue
   data() {
     return {
-      email: "",
-      loginError: {},
+      input: "",
+      error: "",
     };
   },
   methods: {
+    async handleVerifyCode() {
+      this.error = "";
+
+      try {
+        const res = await axios.post(`${baseURL}/api/verify-code`, {
+          email: this.email,
+          code: this.input,
+        });
+
+        alert(res.data.message);
+        this.$emit("show-reset-password", { email: this.email, code: this.input });
+      } catch (err) {
+        this.error = err.response?.data?.message || "Invalid or expired code";
+        console.log("Verifying with:", {
+          email: this.email,
+          code: this.input,
+        });
+
+      }
+    },
+
     async handleSendCode() {
       this.loginError = {};
 
@@ -82,7 +105,7 @@ export default {
 
 <style scoped>
 /* Background for the entire screen */
-.forgotpw-background {
+.verify-background {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -90,13 +113,13 @@ export default {
   width: 90%;
   max-width: 860px;
   height: 90vh;
-  background: url('../assets/picture/forgotpw-bg.png') no-repeat center center;
+  background: url('@/assets/picture/verifycode-bg.png') no-repeat center center;
   background-size: cover;
   border-radius: 32px;
 }
 
 /* Center popup on screen */
-.forgotpw-popup {
+.verify-popup {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -115,7 +138,7 @@ export default {
 }
 
 /* Flex container splits into two frames */
-.forgotpw-container {
+.verify-container {
   display: flex;
   width: 100%;
   height: 100%;
@@ -129,7 +152,7 @@ export default {
   position: relative;
 
   /* Background image */
-  background: url('../assets/picture/forgotpw-bg.png') no-repeat center center;
+  background: url('@/assets/picture/verifycode-bg.png') no-repeat center center;
   background-size: cover;
 
   /* Only 3-side border */
@@ -167,13 +190,15 @@ export default {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  overflow: hidden;
 }
 
 /* Logo */
 .logo {
-  width: 78px;
+  width: 110px;
+  height: auto;
   /* smaller logo */
-  margin-bottom: 1rem;
+  margin-bottom: 1.6rem;
 }
 
 /* Welcome titles */
@@ -181,7 +206,7 @@ export default {
   font-size: 1.5rem;
   /* slightly smaller */
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   font-family: 'Prata', serif;
 }
 
@@ -206,7 +231,7 @@ form label {
   font-weight: 500;
 }
 
-form input[type="email"] {
+form input[type="text"] {
   width: 100%;
   padding: 0.7rem;
   background: #e3e8e5;
@@ -217,7 +242,7 @@ form input[type="email"] {
 }
 
 /* Send Code button */
-.sendcode-btn {
+.verify-btn {
   width: 100%;
   padding: 0.6rem;
   background: #2f7a4f;
@@ -231,10 +256,7 @@ form input[type="email"] {
   transition: background 0.3s;
 }
 
-.back-btn {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  /* Icon column and text column */
+.resendcode-btn {
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -248,6 +270,26 @@ form input[type="email"] {
   cursor: pointer;
   margin-bottom: 1.5rem;
   transition: background 0.3s;
+}
+
+.back-btn {
+  display: flex;
+  /* Use flexbox instead of grid */
+  align-items: center;
+  /* Center items vertically */
+  gap: 0.5rem;
+  /* Adjust gap between icon and text */
+  background-color: white;
+  width: 100%;
+  max-width: 280px;
+  padding: 0.28rem;
+  /* Adjust padding for better spacing */
+  margin: 0.2rem auto;
+  font-size: 1rem;
+  font-weight: 500;
+  color: black;
+  text-decoration: none;
+  /* Remove underline from link */
 }
 
 .sendcode-btn:hover {

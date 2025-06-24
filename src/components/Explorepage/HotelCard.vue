@@ -28,6 +28,9 @@
 <script setup>
 import { useRouter } from 'vue-router'
 
+// ✅ Use environment variable for base URL
+const baseURL = import.meta.env.VITE_API_BASE_URL
+
 // ✅ Destructure props
 const { hotel, index, isSaved } = defineProps({
     hotel: Object,
@@ -48,7 +51,7 @@ const emitSave = () => {
 }
 
 const imageUrl = (img) => {
-    return img.startsWith('http') ? img : `http://localhost:8000${img}`
+    return img.startsWith('http') ? img : `${baseURL}${img}`
 }
 </script>
 

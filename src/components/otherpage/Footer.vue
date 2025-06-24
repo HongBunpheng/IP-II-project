@@ -1,6 +1,6 @@
 <template>
     <footer>
-        <div class="logo">
+        <div class="logo" @click="goToAdmin" style="cursor: pointer">
             <img src="@/assets/picture/logo-white.png" alt="TripTrek Logo" />
         </div>
         <div class="footer-text">
@@ -8,11 +8,18 @@
         </div>
     </footer>
 </template>
+
 <script>
 export default {
     name: 'Footer',
+    methods: {
+        goToAdmin() {
+            this.$router.push('/admin')
+        }
+    }
 }
 </script>
+
 <style>
 footer {
     width: 100vw;
@@ -24,15 +31,18 @@ footer {
     padding: 20px;
     background-color: #25d3b7;
 }
+
 .logo {
     width: 100px;
     height: 100px;
 }
+
 .logo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
+
 .footer-text {
     margin-left: 20px;
     color: #fff;

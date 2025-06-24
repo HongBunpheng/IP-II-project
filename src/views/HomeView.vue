@@ -123,7 +123,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import JournalBox from '@/components/JournalBox.vue'
+import JournalBox from '@/components/Journalpage/JournalBox.vue'
 
 /* NewPlace data */
 const cards = [
@@ -229,7 +229,7 @@ const setSlide = (index) => {
 /* ========== NewPlace Styles ========== */
 .new-place-wrapper {
     position: relative;
-    height: 100vh;
+    height: 90vh;
     color: white;
     font-family: 'Poppins', sans-serif;
     overflow: hidden;

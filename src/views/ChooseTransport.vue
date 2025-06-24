@@ -39,8 +39,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import Transportation from '@/components/Transportation.vue'
-import Header from '@/components/Header.vue'
+import Transportation from '@/components/Explorepage/Transportation.vue'
+import Header from '@/components/otherpage/Header.vue'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
 const transports = ref([])

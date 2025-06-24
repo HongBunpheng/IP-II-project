@@ -1,7 +1,7 @@
 <template>
     <div class="hotel-select">
         <!-- Hero Image -->
-        <img src="@/assets/picture/phnom-penh.png" alt="Phnom Penh" class="hero-image" />
+        <img src="@/assets/picture/m6.jpg" alt="Phnom Penh" class="hero-image" />
 
         <!-- Navigation Bar -->
         <div class="nav-bar">
@@ -22,7 +22,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import HotelCard from '@/components/HotelCard.vue'
+import HotelCard from '@/components/Explorepage/HotelCard.vue'
+
+const baseURL = import.meta.env.VITE_API_BASE_URL
 
 const hotels = ref([])
 const error = ref('')
@@ -31,11 +33,11 @@ const goBack = () => history.back()
 
 onMounted(async () => {
     try {
-        const res = await axios.get('http://localhost:8000/api/hotels')
+        const res = await axios.get(`${baseURL}/api/hotels`)
         hotels.value = res.data.map(hotel => ({
             ...hotel,
             image: hotel.image.map(img =>
-                img.startsWith('http') ? img : `http://localhost:8000/storage/${img}`
+                img.startsWith('http') ? img : `${baseURL}/storage/${img}`
             )
         }))
     } catch (err) {
@@ -44,6 +46,7 @@ onMounted(async () => {
     }
 })
 </script>
+
 
 <style scoped>
 .hotel-select {
@@ -56,7 +59,7 @@ onMounted(async () => {
 .hero-image {
     margin: 0 auto;
     width: 100%;
-    height: auto;
+    height: 70vh;
     object-fit: cover;
     display: block;
     margin-bottom: 20px;
